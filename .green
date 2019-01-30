@@ -1,0 +1,2 @@
+verbose = 3
+run-coverage = True

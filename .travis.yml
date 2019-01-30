@@ -1,40 +1,35 @@
+---
 language: python
+codecov: true
 python:
-  - 3.6
-cache:
-  pip: true
+  - '2.7'
+  - '3.4'
+  - '3.5'
+  - '3.6'
+cache: pip
 sudo: false
 before_install:
-#  - pip things
+  - pip install pipenv --upgrade
 install:
-  - make install
-script:
-  - make ci
-after_script: >
-  echo $TRAVIS_BRANCH; echo $TRAVIS_PULL_REQUEST;
-  if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then
-
-    # Configure Git with Travis CI information
-    git config --global user.email "travis@travis-ci.org" ;
-    git config --global user.name "travis-ci" ;
-
-    # Delete the current repository
-    rm -rf .git ;
-
-    # Clone the destination repository
-    git clone https://${GH_TOKEN}@github.com/jacebrowning/template-python-demo temp ;
-    mv temp/.git TemplateDemo/.git ;
-    rm -rf temp ;
-
-    # Rebuild the repository from the generated files and push to GitHub
-    cd TemplateDemo ;
-    git add --all ;
-    git commit -m "Deploy Travis CI build $TRAVIS_BUILD_NUMBER to GitHub" ;
-    git push -f https://${GH_TOKEN}@github.com/jacebrowning/template-python-demo master ;
-
-  fi
-
-notifications:
-  email:
-    on_success: never
-    on_failure: change
+  - rm -f Pipfile.lock
+  - pipenv lock
+  - pipenv sync --dev
+script: pipenv run green -r -vvv
+branches:
+  only:
+    - master
+jobs:
+  include:
+    - stage: preflight
+      python: '3.6'
+      install:
+        - pipenv sync --dev
+      script:
+        # - pipenv check
+        - yamllint . -s
+        - pylama -v .
+stages:
+  - preflight
+  - test
+after_success:
+  - codecov
