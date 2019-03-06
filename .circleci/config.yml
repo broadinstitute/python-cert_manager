@@ -74,7 +74,7 @@ jobs:
       - image: circleci/python:3.5-stretch
         environment:
           - UPLOAD_COVERAGE=0
-  test37:
+  test27:
     <<: *test-template
     docker:
       - image: circleci/python:2.7-stretch
