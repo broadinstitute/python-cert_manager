@@ -1,0 +1,34 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: detect-aws-credentials
+        args:
+          - --allow-missing-credentials
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      # - id: no-commit-to-branch
+      #   args:
+      #     - -b master
+      #     - -b prod
+      - id: trailing-whitespace
+  - repo: https://github.com/broadinstitute/mirrors-pylama.git
+    rev: v1.0.1
+    hooks:
+      - id: pylama
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.15.0
+    hooks:
+      - id: yamllint
+        args:
+          - -s

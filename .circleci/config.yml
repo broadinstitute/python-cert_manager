@@ -1,0 +1,69 @@
+---
+version: 2
+workflows:
+  version: 2
+  preflight:
+    jobs:
+      - preflight-3.6
+  test:
+    jobs:
+      - test-3.6
+      - test-3.5
+      - test-3.4
+      - test-2.7
+jobs:
+  preflight-3.6:
+    docker:
+      - image: circleci/python:3.6-stretch
+    working_directory: ~/repo
+    environment:
+      PIPENV_COLORBLIND: 1
+      PIPENV_HIDE_EMOJIS: 1
+      PIPENV_NOSPIN: 1
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install pipenv
+            rm -f Pipfile.lock
+            pipenv lock
+            pipenv sync --dev
+      - run:
+          name: Run linting
+          command: |
+            pipenv run yamllint . -s
+            pipenv run pylama -v --skip '.venv/*'
+  test-3.6: &test-template
+    docker:
+      - image: circleci/python:3.6-stretch
+    working_directory: ~/repo
+    environment:
+      PIPENV_COLORBLIND: 1
+      PIPENV_HIDE_EMOJIS: 1
+      PIPENV_NOSPIN: 1
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install pipenv
+            rm -f Pipfile.lock
+            pipenv lock
+            pipenv sync --dev
+      - run:
+          name: Run tests
+          command: |
+            pipenv run green -r -vvv
+  test-3.4:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.4-stretch
+  test-3.5:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5-stretch
+  test-2.7:
+    <<: *test-template
+    docker:
+      - image: circleci/python:2.7-stretch

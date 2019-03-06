@@ -4,6 +4,12 @@
 # Temporary Python files
 *.pyc
 __pycache__/
+.coverage
+/tmp/
 
 # Generated project
+/build/*
+/dist
+/.eggs/
+/*.egg-info
 /TemplateDemo/
