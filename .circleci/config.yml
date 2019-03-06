@@ -4,15 +4,15 @@ workflows:
   version: 2
   preflight:
     jobs:
-      - preflight-3.6
+      - preflight
   test:
     jobs:
-      - test-3.6
-      - test-3.5
-      - test-3.4
-      - test-2.7
+      - test36
+      - test35
+      - test34
+      - test27
 jobs:
-  preflight-3.6:
+  preflight:
     docker:
       - image: circleci/python:3.6-stretch
     working_directory: ~/repo
@@ -34,7 +34,7 @@ jobs:
           command: |
             pipenv run yamllint . -s
             pipenv run pylama -v --skip '.venv/*'
-  test-3.6: &test-template
+  test36: &test-template
     docker:
       - image: circleci/python:3.6-stretch
     working_directory: ~/repo
@@ -55,15 +55,28 @@ jobs:
           name: Run tests
           command: |
             pipenv run green -r -vvv
-  test-3.4:
+      - run:
+          name: Upload coverage report
+          command: |
+            if [[ "$UPLOAD_COVERAGE" != 0 ]]; then
+                pipenv run coverage xml
+                pipenv run codecov --required -X search gcov pycov -f coverage.xml --flags $CIRCLE_JOB
+            fi
+  test34:
     <<: *test-template
     docker:
       - image: circleci/python:3.4-stretch
-  test-3.5:
+        environment:
+          - UPLOAD_COVERAGE=0
+  test35:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch
-  test-2.7:
+        environment:
+          - UPLOAD_COVERAGE=0
+  test27:
     <<: *test-template
     docker:
       - image: circleci/python:2.7-stretch
+        environment:
+          - UPLOAD_COVERAGE=0
