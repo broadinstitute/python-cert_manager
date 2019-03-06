@@ -55,15 +55,28 @@ jobs:
           name: Run tests
           command: |
             pipenv run green -r -vvv
+      - run:
+          name: Upload coverage report
+          command: |
+            if [[ "$UPLOAD_COVERAGE" != 0 ]]; then
+                coverage xml
+                pipenv run codecov --required -X search gcov pycov -f coverage.xml --flags $CIRCLE_JOB
+            fi
   test-3.4:
     <<: *test-template
     docker:
       - image: circleci/python:3.4-stretch
+        environment:
+          - UPLOAD_COVERAGE=0
   test-3.5:
     <<: *test-template
     docker:
       - image: circleci/python:3.5-stretch
+        environment:
+          - UPLOAD_COVERAGE=0
   test-2.7:
     <<: *test-template
     docker:
       - image: circleci/python:2.7-stretch
+        environment:
+          - UPLOAD_COVERAGE=0
