@@ -2,9 +2,11 @@
 
 import logging
 import re
+import sys
 
 import requests
 
+from . import __version__
 from ._helpers import HttpError, traffic_log
 
 LOGGER = logging.getLogger(__name__)
@@ -51,6 +53,7 @@ class Client(object):
             "login": self.__username,
             "customerUri": self.__login_uri,
             "Accept": "application/json",
+            "User-Agent": self.user_agent,
         }
 
         # Setup the Session for certificate auth
@@ -72,6 +75,15 @@ class Client(object):
             self.__headers["password"] = self.__password
 
         self.__session.headers.update(self.__headers)
+
+    @property
+    def user_agent(self):
+        """Return a user-agent string including the module version and Python version."""
+        ver_info = list(map(str, sys.version_info))
+        pyver = ".".join(ver_info[:3])
+        useragent = "cert_manager/%s (Python %s)" % (__version__.__version__, pyver)
+
+        return useragent
 
     @property
     def base_url(self):

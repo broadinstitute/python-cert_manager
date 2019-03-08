@@ -7,8 +7,12 @@
 # https://stackoverflow.com/questions/9323749/python-check-if-one-dictionary-is-a-subset-of-another-larger-dictionary
 #
 
-import responses
+import sys
+
+import mock
 from testtools import TestCase
+
+import responses
 
 from cert_manager.client import Client
 from cert_manager._helpers import HttpError
@@ -27,6 +31,13 @@ class TestClient(TestCase):  # pylint: disable=too-few-public-methods
         # Use the Client fixture
         self.cfixt = self.useFixture(ClientFixture())
         self.client = self.cfixt.client
+
+    def tearDown(self):
+        """Test tear down method"""
+
+        super(TestClient, self).tearDown()
+
+        mock.patch.stopall()
 
 
 class TestTypes(TestClient):
@@ -112,6 +123,22 @@ class TestInit(TestClient):
         # If cert_auth is True, make sure a password header does not exist
         self.assertFalse("password" in client._Client__session.headers)
 
+    def test_versioning(self):
+        """The user-agent header should change if the version number changes."""
+        test_version = "10.9.8"
+        ver_info = list(map(str, sys.version_info))
+        pyver = ".".join(ver_info[:3])
+        user_agent = "cert_manager/%s (Python %s)" % (test_version, pyver)
+
+        ver_patcher = mock.patch("cert_manager.__version__.__version__", test_version)
+        ver_patcher.start()
+
+        client = Client(login_uri=self.cfixt.login_uri, username=self.cfixt.username, password=self.cfixt.password)
+
+        # Make sure the user-agent header is correct in the class and the internal requests.Session object
+        self.assertEqual(client.headers["User-Agent"], user_agent)
+        self.assertEqual(client._Client__session.headers["User-Agent"], user_agent)
+
     def test_need_crt(self):
         """Class should raise an exception without a cert file if cert_auth=True."""
         self.assertRaises(KeyError, Client, base_url=self.cfixt.base_url, login_uri=self.cfixt.login_uri,
@@ -176,7 +203,7 @@ class TestAddHeaders(TestClient):
 
     def test_add(self):
         """The extra headers should be added correctly."""
-        headers = {"User-Agent": "test123", "Connection": "close"}
+        headers = {"Connection": "close"}
 
         self.client.add_headers(headers)
 
@@ -185,6 +212,24 @@ class TestAddHeaders(TestClient):
             self.assertTrue(head in self.client._Client__session.headers)
             self.assertEqual(headers[head], self.client._Client__session.headers[head])
 
+        # Make sure the original headers are still in the internal requests.Session object
+        for head in self.cfixt.headers:
+            self.assertTrue(head in self.client._Client__session.headers)
+            self.assertEqual(self.cfixt.headers[head], self.client._Client__session.headers[head])
+
+    def test_replace(self):
+        """The already existing header should be modified."""
+        headers = {"User-Agent": "test123"}
+
+        self.client.add_headers(headers)
+
+        # Make sure the new headers make their way into the internal requests.Session object
+        for head in headers:
+            self.assertTrue(head in self.client._Client__session.headers)
+            self.assertEqual(headers[head], self.client._Client__session.headers[head])
+
+        # Removed the modified header from the check as it was checked above
+        del self.cfixt.headers["User-Agent"]
         # Make sure the original headers are still in the internal requests.Session object
         for head in self.cfixt.headers:
             self.assertTrue(head in self.client._Client__session.headers)

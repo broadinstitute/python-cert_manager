@@ -5,14 +5,11 @@
 import io
 import setuptools
 
-from cert_manager import APP_VERSION
-
 
 def get_long_description():
     """Retrieve the long description from the README file."""
     # Use io.open to support encoding on Python 2 and 3
     fileh = io.open("README.md", "r", encoding="utf8")
-    # ld = markdown2.markdown(fh.read())
     desc = fileh.read()
     fileh.close()
 
@@ -21,7 +18,7 @@ def get_long_description():
 
 setuptools.setup(
     name="cert_manager",
-    version=APP_VERSION,
+    version="0.1.0",
     author="Andrew Teixeira",
     author_email="teixeira@broadinstitute.org",
     description="Python interface to the Sectigo Certificate Manager REST API",
