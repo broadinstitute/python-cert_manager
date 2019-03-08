@@ -339,8 +339,8 @@ class TestEnroll(TestCertificates):
         # Mock up the data that should be sent with the post
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
-            "numberServers": 1, "serverType": -1, "term": self.test_term, "comments": "cert_manager",
-            "externalRequester": ""
+            "numberServers": 1, "serverType": -1, "term": self.test_term,
+            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": ""
         }
         post_json = json.dumps(post_data)
 

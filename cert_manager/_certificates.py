@@ -134,7 +134,8 @@ class Certificates(Endpoint):
         url = self._url("/enroll")
         data = {
             "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": subject_alt_names, "certType": type_id,
-            "numberServers": 1, "serverType": -1, "term": term, "comments": "cert_manager", "externalRequester": ""
+            "numberServers": 1, "serverType": -1, "term": term, "comments": "Enrolled by %s" % self._client.user_agent,
+            "externalRequester": ""
         }
         result = self._client.post(url, data=data)
 
