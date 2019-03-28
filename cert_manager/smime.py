@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.certificates.smime.SMIME class."""
 
 import logging

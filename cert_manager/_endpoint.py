@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager._endpoint.Endpoint base class."""
 
 import logging

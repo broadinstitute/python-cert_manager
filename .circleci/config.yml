@@ -16,8 +16,8 @@ commands:
           name: 'Init .pypirc'
           command: |
             echo '[pypi]' >> ~/.pypirc
-            echo 'username = broadinst-pypi' >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            echo "username: $PYPI_USER" >> ~/.pypirc
+            echo "password: $PYPI_PASSWORD" >> ~/.pypirc
   lint:
     description: Run all linters
     steps:

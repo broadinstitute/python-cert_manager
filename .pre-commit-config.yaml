@@ -16,6 +16,8 @@ repos:
           - --allow-missing-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
+        exclude: '.bumpversion.cfg'
+      - id: fix-encoding-pragma
       - id: mixed-line-ending
       # - id: no-commit-to-branch
       #   args:

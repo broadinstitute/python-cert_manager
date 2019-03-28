@@ -3,7 +3,14 @@
 """Install cert_manager."""
 
 import io
-import setuptools
+import os
+import sys
+
+from setuptools import find_packages
+from setuptools import setup
+from setuptools.command.install import install
+
+VERSION = "1.0.0"
 
 
 def get_long_description():
@@ -16,9 +23,23 @@ def get_long_description():
     return desc
 
 
-setuptools.setup(
+# This was a great idea!! https://github.com/levlaz/circleci.py/blob/master/setup.py
+class VerifyVersionCommand(install):
+    """Verify that the git tag matches our version."""
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        """Check the CIRCLE_TAG environment variable against the recorded version."""
+        tag = os.getenv("CIRCLE_TAG")
+
+        if tag != VERSION:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(tag, VERSION)
+            sys.exit(info)
+
+
+setup(
     name="cert_manager",
-    version="0.1.0",
+    version=VERSION,
     author="Andrew Teixeira",
     author_email="teixeira@broadinstitute.org",
     description="Python interface to the Sectigo Certificate Manager REST API",
@@ -27,7 +48,7 @@ setuptools.setup(
     license="BSD",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(exclude=("tests")),
+    packages=find_packages(exclude=("tests")),
     url="https://github.com/broadinstitute/python-cert_manager",
     classifiers=[
         "Programming Language :: Python",
@@ -43,4 +64,5 @@ setuptools.setup(
     install_requires=["requests <3"],
     python_requires=">=2.7, <4",
     setup_requires=["setuptools_scm"],
+    cmdclass={"verify": VerifyVersionCommand},
 )

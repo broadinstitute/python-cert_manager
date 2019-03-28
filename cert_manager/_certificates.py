@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager._certificate.Certificates base class."""
 
 import logging
+from requests.exceptions import HTTPError
 
-from ._helpers import HttpError, Pending
+from ._helpers import Pending
 from ._endpoint import Endpoint
 
 LOGGER = logging.getLogger(__name__)
@@ -91,7 +93,7 @@ class Certificates(Endpoint):
 
         try:
             result = self._client.get(url)
-        except HttpError:
+        except HTTPError:
             raise Pending("certificate %d still in 'pending' state" % cert_id)
 
         # The certificate is ready for collection

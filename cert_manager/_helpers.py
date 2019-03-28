@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
 """Define helper functions used by classes in this module."""
 
 from functools import wraps
 import logging
 import re
 try:
-    from urllib import unquote
+    from urllib import unquote  # pylint: disable=unused-import
 except Exception:
-    from urllib.parse import unquote
+    from urllib.parse import unquote  # pylint: disable=unused-import
+
+from requests.exceptions import HTTPError
 
 
 def traffic_log(traffic_logger=None):
@@ -62,11 +65,11 @@ def traffic_log(traffic_logger=None):
             # Run the wrapped function
             try:
                 result = func(*args, **kwargs)
-            except HttpError as herr:
-                # If it's of type HttpError, we can still usually get the result data
-                traffic_logger.debug("Result code: %s" % herr.http_result.status_code)
-                traffic_logger.debug("Result headers: %s" % herr.http_result.headers)
-                traffic_logger.debug("Text result: %s" % herr.http_result.text)
+            except HTTPError as herr:
+                # If it's of type HTTPError, we can still usually get the result data
+                traffic_logger.debug("Result code: %s" % herr.response.status_code)
+                traffic_logger.debug("Result headers: %s" % herr.response.headers)
+                traffic_logger.debug("Text result: %s" % herr.response.text)
 
                 # Re-raise the original exception
                 raise herr
@@ -123,42 +126,6 @@ def version_hack(service, version="v1"):
         return api_version  # true decorator
 
     return decorator
-
-
-class HttpError(Exception):
-    """Serve as a generic Exception indicating an HTTP error."""
-
-    def __init__(self, result):
-        """Initialize the exception class."""
-        data = None
-
-        # Store the result in the exception object
-        self.__result = result
-
-        # Generic last-resort error message
-        msg = "Unknown HTTP error"
-
-        # Make sure that not receiving JSON doesn't trigger a nested Exception
-        try:
-            data = result.json()
-        except Exception:  # pylint: disable=broad-except
-            data = {}
-
-        if "description" in data:
-            msg = unquote(data["description"])
-
-        message = "%s: %s" % (self.__result.status_code, msg)
-
-        # Call the base class constructor with the parameters it needs
-        super(HttpError, self).__init__(message)
-
-    @property
-    def http_result(self):
-        """Return the internal __result variable.
-
-        :return obj: A requests.Response object
-        """
-        return self.__result
 
 
 class Pending(Exception):
