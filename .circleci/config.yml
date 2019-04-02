@@ -1,16 +1,79 @@
 ---
-version: 2
-workflows:
-  version: 2
-  preflight:
-    jobs:
-      - preflight
-  test:
-    jobs:
-      - test36
-      - test35
-      - test34
-      - test27
+version: 2.1
+commands:
+  codecov:
+    description: 'Install and cache dependencies then run Python tests'
+    steps:
+      - run:
+          name: 'Upload coverage report'
+          command: |
+            pipenv run coverage xml
+            pipenv run codecov --required -X search gcov -f coverage.xml --flags unittests
+  init-pypi:
+    description: 'Initialize the .pypirc file'
+    steps:
+      - run:
+          name: 'Init .pypirc'
+          command: |
+            echo '[pypi]' >> ~/.pypirc
+            echo 'username = broadinst-pypi' >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+  lint:
+    description: Run all linters
+    steps:
+      - run:
+          name: 'Run YAMLlint'
+          command: pipenv run yamllint . -s
+      - run:
+          name: 'Run pylama'
+          command: pipenv run pylama -v --skip '.venv/*'
+  pkgtest:
+    description: 'Run a test module install using setup.py'
+    steps:
+      - run:
+          name: 'Smoke Test Install'
+          command: sudo python setup.py install
+  prereq:
+    description: 'Install and cache dependencies'
+    steps:
+      - restore_cache:
+          key: v1-python-cert_manager-{{ checksum "Pipfile" }}-{{ .Environment.CIRCLE_JOB }}
+      - run:
+          name: 'Install Pipenv'
+          command: pip install pipenv
+      - run:
+          name: 'Install Python dependencies'
+          command: |
+            rm -f Pipfile.lock
+            pipenv lock
+            pipenv sync --dev
+      - save_cache:
+          key: v1-python-cert_manager-{{ checksum "Pipfile" }}-{{ .Environment.CIRCLE_JOB }}
+          paths:
+            - ~/.local/share/virtualenvs/repo-eQF46Ow3
+  publish:
+    description: 'Publish the module to PyPi'
+    steps:
+      - run:
+          name: 'Create packages'
+          command: |
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: 'Upload to PyPi'
+          command: pipenv run twine upload dist/*
+  unit-tests:
+    description: 'Run Python tests'
+    steps:
+      - run:
+          name: 'Run unit tests'
+          command: pipenv run green -r -vvv
+  verify-tag:
+    description: 'Verify the internal version vs. the git tag'
+    steps:
+      - run:
+          name: 'Verify git tag vs. version'
+          command: python setup.py verify
 jobs:
   preflight:
     docker:
@@ -22,61 +85,75 @@ jobs:
       PIPENV_NOSPIN: 1
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            pip install pipenv
-            rm -f Pipfile.lock
-            pipenv lock
-            pipenv sync --dev
-      - run:
-          name: Run linting
-          command: |
-            pipenv run yamllint . -s
-            pipenv run pylama -v --skip '.venv/*'
-  test36: &test-template
+      - prereq
+      - lint
+  run-tests:
+    parameters:
+      version:
+        type: string
+        default: '3.6'
     docker:
-      - image: circleci/python:3.6-stretch
-    working_directory: ~/repo
+      - image: circleci/python:<< parameters.version >>
     environment:
       PIPENV_COLORBLIND: 1
       PIPENV_HIDE_EMOJIS: 1
       PIPENV_NOSPIN: 1
+    working_directory: ~/repo
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            pip install pipenv
-            rm -f Pipfile.lock
-            pipenv lock
-            pipenv sync --dev
-      - run:
-          name: Run tests
-          command: |
-            pipenv run green -r -vvv
-      - run:
-          name: Upload coverage report
-          command: |
-            if [[ "$UPLOAD_COVERAGE" != 0 ]]; then
-                pipenv run coverage xml
-                pipenv run codecov --required -X search gcov pycov -f coverage.xml --flags $CIRCLE_JOB
-            fi
-  test34:
-    <<: *test-template
+      - prereq
+      - unit-tests
+      - pkgtest
+      - codecov
+  deploy:
     docker:
-      - image: circleci/python:3.4-stretch
-        environment:
-          - UPLOAD_COVERAGE=0
-  test35:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-stretch
-        environment:
-          - UPLOAD_COVERAGE=0
-  test27:
-    <<: *test-template
-    docker:
-      - image: circleci/python:2.7-stretch
-        environment:
-          - UPLOAD_COVERAGE=0
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - prereq
+      - verify-tag
+      - init-pypi
+      - publish
+workflows:
+  preflight:
+    jobs:
+      - preflight
+  test_and_deploy:
+    jobs:
+      # - build:
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      - run-tests:
+          name: 'python-2.7'
+          version: '2.7'
+          # requires:
+          #   - build
+      - run-tests:
+          name: 'python-3.4'
+          version: '3.4'
+          # requires:
+          #   - build
+      - run-tests:
+          name: 'python-3.5'
+          version: '3.5'
+          # requires:
+          #   - build
+      - run-tests:
+          name: 'python-3.6'
+          version: '3.6'
+          # requires:
+          #   - build
+      - run-tests:
+          name: 'python-3.7'
+          version: '3.7'
+          # requires:
+          #   - build
+      - deploy:
+          # requires:
+          #   - build
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
