@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.person.Person class."""
 
 import logging

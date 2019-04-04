@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.person.Person unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=no-member
@@ -8,10 +9,10 @@ try:
 except Exception:
     from urllib.parse import quote, unquote
 
+from requests.exceptions import HTTPError
 import responses
 
 from cert_manager.person import Person
-from cert_manager._helpers import HttpError
 
 from .lib.testbase import ClientFixture
 
@@ -67,7 +68,7 @@ class TestFind(TestPerson):
 
     @responses.activate
     def test_not_found(self):
-        """The function should raise an exception if a person by that email is not found."""
+        """The function should raise an HTTPError exception if a person by that email is not found."""
         # Setup the mocked response
         test_email = "test@example.com"
         quoted_email = quote(test_email.replace(".", "%2E"))
@@ -77,7 +78,7 @@ class TestFind(TestPerson):
         responses.add(responses.GET, test_url, json=test_result, status=404)
 
         person = Person(client=self.client)
-        self.assertRaises(HttpError, person.find, email=test_email)
+        self.assertRaises(HTTPError, person.find, email=test_email)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)

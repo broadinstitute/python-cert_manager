@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.client.Client class."""
 
 import logging
@@ -7,7 +8,7 @@ import sys
 import requests
 
 from . import __version__
-from ._helpers import HttpError, traffic_log
+from ._helpers import traffic_log
 
 LOGGER = logging.getLogger(__name__)
 
@@ -137,10 +138,8 @@ class Client(object):
         :return obj: A requests.Response object received as a response
         """
         result = self.__session.get(url, headers=headers)
-
         # Raise an exception if the return code is in an error range
-        if result.status_code > 299:
-            raise HttpError(result)
+        result.raise_for_status()
 
         return result
 
@@ -154,10 +153,8 @@ class Client(object):
         :return obj: A requests.Response object received as a response
         """
         result = self.__session.post(url, json=data, headers=headers)
-
         # Raise an exception if the return code is in an error range
-        if result.status_code > 299:
-            raise HttpError(result)
+        result.raise_for_status()
 
         return result
 
@@ -171,10 +168,8 @@ class Client(object):
         :return obj: A requests.Response object received as a response
         """
         result = self.__session.put(url, data=data, headers=headers)
-
         # Raise an exception if the return code is in an error range
-        if result.status_code > 299:
-            raise HttpError(result)
+        result.raise_for_status()
 
         return result
 
@@ -187,9 +182,7 @@ class Client(object):
         :return obj: A requests.Response object received as a response
         """
         result = self.__session.delete(url, headers=headers)
-
         # Raise an exception if the return code is in an error range
-        if result.status_code > 299:
-            raise HttpError(result)
+        result.raise_for_status()
 
         return result

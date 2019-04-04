@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.organization.Organization unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -7,11 +8,11 @@
 # https://stackoverflow.com/questions/9323749/python-check-if-one-dictionary-is-a-subset-of-another-larger-dictionary
 #
 
+from requests.exceptions import HTTPError
 import responses
 from testtools import TestCase
 
 from cert_manager.organization import Organization
-from cert_manager._helpers import HttpError
 
 from .lib.testbase import ClientFixture
 
@@ -83,11 +84,11 @@ class TestInit(TestOrganization):
 
     @responses.activate
     def test_bad_http(self):
-        """The class should raise an exception if organizations cannot be retrieved from the API."""
+        """The class should raise an HTTPError exception if organizations cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=404)
 
-        self.assertRaises(HttpError, Organization, client=self.client)
+        self.assertRaises(HTTPError, Organization, client=self.client)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)

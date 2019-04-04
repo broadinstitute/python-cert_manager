@@ -117,8 +117,26 @@ To start a development environment, you should be able to just run the `dev.sh` 
 
 The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/usr/src`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/usr/src` directory by simply typing `green` as [green][5] has been setup to with the correct parameters.
 
+## Releases
+
+Releases to the codebase are typically done using the [bump2version][6] tool.  This tool takes care of updating the version in all necessary files, updating its own configuration, and making a GitHub commit and tag.  We typically do version bumps as part of a PR, so you don't want to have [bump2version][6] tag the version at the same time it does the commit as commit hashes may change.  Therefore, to bump the version a patch level, one would run the command:
+
+```sh
+bump2version --verbose --no-tag patch
+```
+
+Once the PR is merged, you can then checkout the new master branch and tag it using the new version number that is now in `.bumpversion.cfg`:
+
+```sh
+git checkout master
+git pull --rebase
+git tag 1.0.0 -m 'Bump version: 0.1.0 → 1.0.0'
+git push --tags
+```
+
 [1]: https://www.python.org/ "Python"
 [2]: https://sectigo.com/ "Sectigo"
 [3]: https://pipenv.readthedocs.io/en/latest/ "Pipenv"
 [4]: https://www.docker.com/ "Docker"
 [5]: https://github.com/CleanCut/green "green"
+[6]: https://pypi.org/project/bump2version/ "bump2version"

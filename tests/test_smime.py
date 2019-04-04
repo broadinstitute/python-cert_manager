@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.ssl.SMIME unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access

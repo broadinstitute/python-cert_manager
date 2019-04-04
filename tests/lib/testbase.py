@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define some basic classes and functions for use in unit tests."""
 
 import sys

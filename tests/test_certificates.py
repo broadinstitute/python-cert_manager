@@ -1,14 +1,16 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager._certificates.Certificates unit tests."""
 # responses is too tricky for pylint, so ignore the false-positive errors generated.
 # pylint: disable=no-member
 
 import json
 
+from requests.exceptions import HTTPError
 import responses
 from testtools import TestCase
 
 from cert_manager._certificates import Certificates
-from cert_manager._helpers import HttpError, Pending
+from cert_manager._helpers import Pending
 
 from .lib.testbase import ClientFixture
 
@@ -157,12 +159,12 @@ class TestTypes(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={"description": "some error"}, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, getattr, self.certobj, "types")
+        self.assertRaises(HTTPError, getattr, self.certobj, "types")
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -212,12 +214,12 @@ class TestCustomFields(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={"description": "some error"}, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, getattr, self.certobj, "custom_fields")
+        self.assertRaises(HTTPError, getattr, self.certobj, "custom_fields")
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -414,12 +416,12 @@ class TestRenew(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HttpError exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.certobj.renew, self.test_id)
+        self.assertRaises(HTTPError, self.certobj.renew, self.test_id)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -455,18 +457,18 @@ class TestRevoke(TestCertificates):
 
     @responses.activate
     def test_no_reason(self):
-        """It should raise an HttpError exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.revoke, self.test_id)
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HttpError exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.certobj.revoke, cert_id=self.test_id, reason="Because")
+        self.assertRaises(HTTPError, self.certobj.revoke, cert_id=self.test_id, reason="Because")
 
         post_json = json.dumps({"reason": "Because"})
 
@@ -514,12 +516,12 @@ class TestReplace(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HttpError exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
         # Call the function
-        self.assertRaises(HttpError, self.certobj.replace, cert_id=self.test_id, csr=self.test_csr,
+        self.assertRaises(HTTPError, self.certobj.replace, cert_id=self.test_id, csr=self.test_csr,
                           common_name=self.test_cn, reason=self.test_reason)
 
         # Mock up the data that should be sent with the post

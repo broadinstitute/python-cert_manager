@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.client.Client unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -12,10 +13,10 @@ import sys
 import mock
 from testtools import TestCase
 
+from requests.exceptions import HTTPError
 import responses
 
 from cert_manager.client import Client
-from cert_manager._helpers import HttpError
 
 from .lib.testbase import ClientFixture
 
@@ -325,13 +326,13 @@ class TestGet(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         json_data = {"description": "some error"}
         responses.add(responses.GET, self.test_url, json=json_data, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.client.get, self.test_url)
+        self.assertRaises(HTTPError, self.client.get, self.test_url)
 
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)
@@ -388,14 +389,14 @@ class TestPost(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
         responses.add(responses.POST, self.test_url, json=output_data, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.client.post, self.test_url, data=input_data)
+        self.assertRaises(HTTPError, self.client.post, self.test_url, data=input_data)
 
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)
@@ -452,14 +453,14 @@ class TestPut(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if an error status code is returned."""
+        """It should raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
         responses.add(responses.PUT, self.test_url, json=output_data, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.client.put, self.test_url, data=input_data)
+        self.assertRaises(HTTPError, self.client.put, self.test_url, data=input_data)
 
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)
@@ -510,12 +511,12 @@ class TestDelete(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an exception if a non-200 status code is returned."""
+        """It should raise an HTTPError exception if a non-200 status code is returned."""
         # Setup the mocked response
         responses.add(responses.DELETE, self.test_url, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HttpError, self.client.delete, self.test_url)
+        self.assertRaises(HTTPError, self.client.delete, self.test_url)
 
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)
