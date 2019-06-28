@@ -1,157 +1,33 @@
 ---
 version: 2.1
-commands:
-  codecov:
-    description: 'Install and cache dependencies then run Python tests'
-    steps:
-      - run:
-          name: 'Upload coverage report'
-          command: |
-            pipenv run coverage xml
-            pipenv run codecov --required -X search gcov -f coverage.xml --flags unittests
-  init-pypi:
-    description: 'Initialize the .pypirc file'
-    steps:
-      - run:
-          name: 'Init .pypirc'
-          command: |
-            echo '[pypi]' >> ~/.pypirc
-            echo "username: $PYPI_USER" >> ~/.pypirc
-            echo "password: $PYPI_PASSWORD" >> ~/.pypirc
-  lint:
-    description: Run all linters
-    steps:
-      - run:
-          name: 'Run YAMLlint'
-          command: pipenv run yamllint . -s
-      - run:
-          name: 'Run pylama'
-          command: pipenv run pylama -v --skip '.venv/*'
-  pkgtest:
-    description: 'Run a test module install using setup.py'
-    steps:
-      - run:
-          name: 'Smoke Test Install'
-          command: sudo python setup.py install
-  prereq:
-    description: 'Install and cache dependencies'
-    steps:
-      - restore_cache:
-          key: v1-python-cert_manager-{{ checksum "Pipfile" }}-{{ .Environment.CIRCLE_JOB }}
-      - run:
-          name: 'Install Pipenv'
-          command: pip install pipenv
-      - run:
-          name: 'Install Python dependencies'
-          command: |
-            rm -f Pipfile.lock
-            pipenv lock
-            pipenv sync --dev
-      - save_cache:
-          key: v1-python-cert_manager-{{ checksum "Pipfile" }}-{{ .Environment.CIRCLE_JOB }}
-          paths:
-            - ~/.local/share/virtualenvs/repo-eQF46Ow3
-  publish:
-    description: 'Publish the module to PyPi'
-    steps:
-      - run:
-          name: 'Create packages'
-          command: |
-            python setup.py sdist
-            python setup.py bdist_wheel
-      - run:
-          name: 'Upload to PyPi'
-          command: pipenv run twine upload dist/*
-  unit-tests:
-    description: 'Run Python tests'
-    steps:
-      - run:
-          name: 'Run unit tests'
-          command: pipenv run green -r -vvv
-  verify-tag:
-    description: 'Verify the internal version vs. the git tag'
-    steps:
-      - run:
-          name: 'Verify git tag vs. version'
-          command: python setup.py verify
-jobs:
-  preflight:
-    docker:
-      - image: circleci/python:3.6-stretch
-    working_directory: ~/repo
-    environment:
-      PIPENV_COLORBLIND: 1
-      PIPENV_HIDE_EMOJIS: 1
-      PIPENV_NOSPIN: 1
-    steps:
-      - checkout
-      - prereq
-      - lint
-  run-tests:
-    parameters:
-      version:
-        type: string
-        default: '3.6'
-    docker:
-      - image: circleci/python:<< parameters.version >>
-    environment:
-      PIPENV_COLORBLIND: 1
-      PIPENV_HIDE_EMOJIS: 1
-      PIPENV_NOSPIN: 1
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - prereq
-      - unit-tests
-      - pkgtest
-      - codecov
-  deploy:
-    docker:
-      - image: circleci/python:3.6
-    steps:
-      - checkout
-      - prereq
-      - verify-tag
-      - init-pypi
-      - publish
+
+orbs:
+  python: 'broadinstitute/bits-python@0.1.1'
+
 workflows:
   preflight:
     jobs:
-      - preflight
+      - python/preflight:
+          name: 'preflight-checks'
   test_and_deploy:
     jobs:
-      # - build:
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      - run-tests:
+      - python/run-tests:
           name: 'python-2.7'
           version: '2.7'
-          # requires:
-          #   - build
-      - run-tests:
+      - python/run-tests:
           name: 'python-3.4'
           version: '3.4'
-          # requires:
-          #   - build
-      - run-tests:
+      - python/run-tests:
           name: 'python-3.5'
           version: '3.5'
-          # requires:
-          #   - build
-      - run-tests:
+      - python/run-tests:
           name: 'python-3.6'
           version: '3.6'
-          # requires:
-          #   - build
-      - run-tests:
+      - python/run-tests:
           name: 'python-3.7'
           version: '3.7'
-          # requires:
-          #   - build
-      - deploy:
-          # requires:
-          #   - build
+      - python/deploy:
+          name: 'pypi-deploy'
           filters:
             tags:
               only: /[0-9]+(\.[0-9]+)*/
