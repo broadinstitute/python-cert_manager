@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  python: 'broadinstitute/bits-python@0.1.1'
+  python: 'broadinstitute/bits-python@0.2.0'
 
 workflows:
   preflight:
@@ -14,9 +14,6 @@ workflows:
       - python/run-tests:
           name: 'python-2.7'
           version: '2.7'
-      - python/run-tests:
-          name: 'python-3.4'
-          version: '3.4'
       - python/run-tests:
           name: 'python-3.5'
           version: '3.5'
