@@ -29,12 +29,12 @@ class VerifyVersionCommand(install):
     description = "verify that the git tag matches our version"
 
     def run(self):
-        """Check the CIRCLE_TAG environment variable against the recorded version."""
+        """Check the environment variable representing the tag name against the recorded version."""
         tag = os.getenv("CIRCLE_TAG")
-
         if tag != VERSION:
             info = "Git tag: {0} does not match the version of this app: {1}".format(tag, VERSION)
             sys.exit(info)
+# end of function (for templating)
 
 
 setup(
@@ -42,7 +42,7 @@ setup(
     version=VERSION,
     author="Andrew Teixeira",
     author_email="teixeira@broadinstitute.org",
-    description="Python interface to the Sectigo Certificate Manager REST API",
+    description="Python interface to the Sectigo Certificate Manager REST API",  # pylint:disable max-line-length
     include_package_data=True,
     keywords=["sectigo", "comodo", "certificate"],
     license="BSD",
@@ -52,9 +52,7 @@ setup(
     url="https://github.com/broadinstitute/python-cert_manager",
     classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -62,7 +60,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=["requests <3"],
-    python_requires=">=2.7, <4",
+    python_requires=">=3.5, <4",
     setup_requires=["setuptools_scm"],
     cmdclass={"verify": VerifyVersionCommand},
 )

@@ -1,0 +1,7 @@
+.[a-z]*
+.git*
+dev.sh
+Dockerfile
+pylama.ini
+README.md
+tests/*
