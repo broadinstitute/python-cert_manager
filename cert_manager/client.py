@@ -130,14 +130,15 @@ class Client(object):
                     del self.__session.headers[head]
 
     @traffic_log(traffic_logger=LOGGER)
-    def get(self, url, headers=None):
+    def get(self, url, headers=None, params=None):
         """Submit a GET request to the provided URL.
 
         :param str url: A URL to query
         :param dict headers: A dictionary with any extra headers to add to the request
+        :apram dict params: A dictionary with parameters
         :return obj: A requests.Response object received as a response
         """
-        result = self.__session.get(url, headers=headers)
+        result = self.__session.get(url, headers=headers, params=params)
         # Raise an exception if the return code is in an error range
         result.raise_for_status()
 
