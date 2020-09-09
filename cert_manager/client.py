@@ -130,18 +130,44 @@ class Client(object):
                     del self.__session.headers[head]
 
     @traffic_log(traffic_logger=LOGGER)
-    def get(self, url, headers=None):
+    def get(self, url, headers=None, params=None):
         """Submit a GET request to the provided URL.
 
         :param str url: A URL to query
         :param dict headers: A dictionary with any extra headers to add to the request
+        :param dict params: A dictionary with any parameters to add to the request URL
         :return obj: A requests.Response object received as a response
         """
-        result = self.__session.get(url, headers=headers)
+        result = self.__session.get(url, headers=headers, params=params)
         # Raise an exception if the return code is in an error range
         result.raise_for_status()
 
         return result
+
+    def get_paginated(self, url, headers=None, params=None, page_size=20):
+        """Submit a GET request to the provided URL with pagination iteration.
+
+        :param str url: A URL to query
+        :param dict headers: A dictionary with any extra headers to add to the request
+        :param dict params: A dictionary with any parameters to add to the request URL
+        :param int page_size: The number of results to be requested in each paginated request
+        :return obj: Yield a requests.Response object received as a response for each request
+        """
+        position = 0
+        result_json = []
+        params = params or {}
+
+        while position == 0 or len(result_json) == page_size:
+            params.update({'position': position, 'size': page_size})
+            result = self.get(url, headers=headers, params=params)
+            try:
+                result_json = result.json()
+            except Exception:
+                break
+            if not isinstance(result_json, list) or not result_json:
+                break
+            position += page_size
+            yield result
 
     @traffic_log(traffic_logger=LOGGER)
     def post(self, url, headers=None, data=None):
