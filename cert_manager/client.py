@@ -167,7 +167,7 @@ class Client(object):
         :param dict data: A dictionary with the data to use for the body of the PUT
         :return obj: A requests.Response object received as a response
         """
-        result = self.__session.put(url, data=data, headers=headers)
+        result = self.__session.put(url, json=data, headers=headers)
         # Raise an exception if the return code is in an error range
         result.raise_for_status()
 
