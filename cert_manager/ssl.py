@@ -17,4 +17,4 @@ class SSL(Certificates):
         :param object client: An instantiated cert_manager.Client object
         :param string api_version: The API version to use; the default is "v1"
         """
-        super(SSL, self).__init__(client=client, endpoint="/ssl", api_version=api_version)
+        super().__init__(client=client, endpoint="/ssl", api_version=api_version)

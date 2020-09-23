@@ -19,7 +19,7 @@ class Organization(Endpoint):
         :param object client: An instantiated cert_manager.Client object
         :param string api_version: The API version to use; the default is "v1"
         """
-        super(Organization, self).__init__(client=client, endpoint="/organization", api_version=api_version)
+        super().__init__(client=client, endpoint="/organization", api_version=api_version)
 
         self.__orgs = None
         self.all()

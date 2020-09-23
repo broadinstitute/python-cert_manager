@@ -25,7 +25,7 @@ class TestTrafficLog(TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestTrafficLog, self).setUp()
+        super().setUp()
 
         # self.mock_logger = mock.Mock(spec=logging.Logger)
 

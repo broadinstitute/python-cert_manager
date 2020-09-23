@@ -7,7 +7,7 @@ This library provides a [Python][1] interface to the [Sectigo][2] Certificate Ma
 
 ## Basics
 
-cert_manager still runs on Python 2.7, and Python >= 3.4
+`cert_manager` runs on [Python][1] >= 3.6
 
 ## Features
 
@@ -33,7 +33,7 @@ Other endpoints we hope to add in the near future:
 You can use pip to install cert_manager:
 
 ```sh
-pipenv install cert_manager
+pip install cert_manager
 ```
 
 ## Examples
@@ -116,6 +116,20 @@ To start a development environment, you should be able to just run the `dev.sh` 
 ```
 
 The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/usr/src`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/usr/src` directory by simply typing `green` as [green][5] has been setup to with the correct parameters.
+
+## Changelog
+
+To generate the `CHANGELOG.md`, you will need [Docker][4] and a GitHub personal access token.  We currently use [github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator) for this purpose.  The following should generate the file using information from GitHub:
+
+```sh
+docker run -it --rm \
+    -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
+    -v "$(pwd)":/working \
+    -w /working \
+    ferrarimarco/github-changelog-generator --verbose
+```
+
+As a note, this repository uses the default labels for formatting the `CHANGELOG.md`.  Label information can be found here: [Advanced-change-log-generation-examples](https://github.com/github-changelog-generator/github-changelog-generator/wiki/Advanced-change-log-generation-examples#section-options)
 
 ## Releases
 
