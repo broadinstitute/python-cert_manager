@@ -10,7 +10,7 @@ from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.install import install
 
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 
 
 def get_long_description():

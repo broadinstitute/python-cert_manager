@@ -22,7 +22,7 @@ class TestCertificates(TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestCertificates, self).setUp()
+        super().setUp()
 
         # Make sure the Client fixture is created and setup
         self.cfixt = self.useFixture(ClientFixture())
@@ -91,7 +91,7 @@ class TestTypes(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestTypes, self).setUp()
+        super().setUp()
 
         self.test_url = self.api_url + "/types"
 
@@ -176,7 +176,7 @@ class TestCustomFields(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestCustomFields, self).setUp()
+        super().setUp()
 
         self.test_url = self.api_url + "/customFields"
 
@@ -231,7 +231,7 @@ class TestCollect(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestCollect, self).setUp()
+        super().setUp()
 
         self.test_id = 121212
         self.test_type = "x509CO"
@@ -298,7 +298,7 @@ class TestEnroll(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestEnroll, self).setUp()
+        super().setUp()
 
         self.test_ct_name = "InCommon SSL (SHA-2)"
         self.test_term = 365
@@ -395,7 +395,7 @@ class TestRenew(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestRenew, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_url = self.api_url + "/renewById/%d" % self.test_id
@@ -433,7 +433,7 @@ class TestRevoke(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestRevoke, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_url = self.api_url + "/revoke/%d" % self.test_id
@@ -483,7 +483,7 @@ class TestReplace(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestReplace, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_cn = "test.foo.bar"

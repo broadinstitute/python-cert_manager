@@ -27,7 +27,7 @@ class TestClient(TestCase):  # pylint: disable=too-few-public-methods
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestClient, self).setUp()
+        super().setUp()
 
         # Use the Client fixture
         self.cfixt = self.useFixture(ClientFixture())
@@ -36,7 +36,7 @@ class TestClient(TestCase):  # pylint: disable=too-few-public-methods
     def tearDown(self):
         """Test tear down method"""
 
-        super(TestClient, self).tearDown()
+        super().tearDown()
 
         mock.patch.stopall()
 
@@ -284,7 +284,7 @@ class TestGet(TestClient):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestGet, self).setUp()
+        super().setUp()
 
         # An example URL to use in testing
         self.test_url = self.cfixt.base_url + "/test/url"
@@ -345,7 +345,7 @@ class TestPost(TestClient):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestPost, self).setUp()
+        super().setUp()
 
         # An example URL to use in testing
         self.test_url = self.cfixt.base_url + "/test/url"
@@ -409,7 +409,7 @@ class TestPut(TestClient):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestPut, self).setUp()
+        super().setUp()
 
         # An example URL to use in testing
         self.test_url = self.cfixt.base_url + "/test/url"
@@ -473,7 +473,7 @@ class TestDelete(TestClient):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestDelete, self).setUp()
+        super().setUp()
 
         # An example URL to use in testing
         self.test_url = self.cfixt.base_url + "/test/url"
