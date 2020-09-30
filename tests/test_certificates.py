@@ -305,6 +305,7 @@ class TestEnroll(TestCertificates):
         self.test_org = 1234
         self.test_san = "blah.foo,baz.com"
         self.test_url = self.api_url + "/enroll"
+        self.test_external_requester = "email@domain.com"
 
         self.test_csr = TestEnroll.fake_csr()
         self.test_result = {"renewId": "xwL9Mux8-eLNTsweYYv86Z7r", "sslId": 999}
@@ -336,13 +337,13 @@ class TestEnroll(TestCertificates):
 
         # Call the function
         resp = self.certobj.enroll(cert_type_name=self.test_ct_name, csr=self.test_csr, term=self.test_term,
-                                   org_id=self.test_org)
+                                   org_id=self.test_org, external_requester=self.test_external_requester)
 
         # Mock up the data that should be sent with the post
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": ""
+            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": self.test_external_requester
         }
         post_json = json.dumps(post_data)
 
