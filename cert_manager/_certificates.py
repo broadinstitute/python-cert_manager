@@ -108,7 +108,7 @@ class Certificates(Endpoint):
         :param int term: The length, in days, for the certificate to be issued
         :param int org_id: The ID of the organization in which to enroll the certificate
         :param list subject_alt_names: A list of Subject Alternative Names
-        :param list external_requester: One or more e-mail adresses o
+        :param list external_requester: One or more e-mail addresses
         :return dict: The certificate_id and the normal status messages for errors
         """
         cert_types = self.types
