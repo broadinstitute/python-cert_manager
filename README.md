@@ -2,7 +2,7 @@
 
 This library provides a [Python][1] interface to the [Sectigo][2] Certificate Manager REST API.  python-cert_manager is open sourced under the [BSD 3-Clause license](LICENSE.txt).
 
-[![CircleCI](https://circleci.com/gh/broadinstitute/python-cert_manager/tree/main.svg?style=svg)](https://circleci.com/gh/broadinstitute/python-cert_manager/tree/main)
+![checks](https://github.com/broadinstitute/python-cert_manager/workflows/checks/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/broadinstitute/python-cert_manager/branch/main/graph/badge.svg)](https://codecov.io/gh/broadinstitute/python-cert_manager)
 
 ## Basics

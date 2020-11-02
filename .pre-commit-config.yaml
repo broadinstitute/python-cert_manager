@@ -1,7 +1,7 @@
 ---
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v3.3.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -25,15 +25,14 @@ repos:
           - --django
       - id: no-commit-to-branch
         args:
-          - -b master
-          - -b prod
+          - -b main
       - id: trailing-whitespace
   - repo: https://github.com/broadinstitute/mirrors-pylama.git
     rev: v1.0.1
     hooks:
       - id: pylama
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.24.2
+    rev: v1.25.0
     hooks:
       - id: yamllint
         args:

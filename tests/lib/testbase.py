@@ -9,10 +9,12 @@ from cert_manager.client import Client
 from cert_manager import __version__
 
 
+# pylint:disable=too-few-public-methods
+# pylint:disable=attribute-defined-outside-init
 class ClientFixture(fixtures.Fixture):
     """Build a fixture for a default cert_manager.client.Client object."""
 
-    def _setUp(self):
+    def _setUp(self):  # pylint: disable=invalid-name
         """Setup the Client object and the values used to build the object."""
         # Setup default testing values
         self.base_url = "https://certs.example.com/api"
