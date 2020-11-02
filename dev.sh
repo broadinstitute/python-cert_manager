@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_IMAGE='cert_manager:latest'
+DOCKER_IMAGE='cert_manager:dev'
 SUDO=
 
 SCRIPT_DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

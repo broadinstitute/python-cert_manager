@@ -33,7 +33,7 @@ class TestClient(TestCase):  # pylint: disable=too-few-public-methods
         self.cfixt = self.useFixture(ClientFixture())
         self.client = self.cfixt.client
 
-    def tearDown(self):
+    def tearDown(self):  # pylint: disable=invalid-name
         """Test tear down method"""
 
         super().tearDown()
