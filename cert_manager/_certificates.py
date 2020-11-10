@@ -33,7 +33,7 @@ class Certificates(Endpoint):
         :param string endpoint: The URL of the API endpoint (ex. "/ssl")
         :param string api_version: The API version to use; the default is "v1"
         """
-        super(Certificates, self).__init__(client=client, endpoint=endpoint, api_version=api_version)
+        super().__init__(client=client, endpoint=endpoint, api_version=api_version)
 
         # Set to None initially.  Will be filled in by methods later.
         self.__cert_types = None
@@ -93,8 +93,8 @@ class Certificates(Endpoint):
 
         try:
             result = self._client.get(url)
-        except HTTPError:
-            raise Pending("certificate %d still in 'pending' state" % cert_id)
+        except HTTPError as exc:
+            raise Pending("certificate %d still in 'pending' state" % cert_id) from exc
 
         # The certificate is ready for collection
         return result.content.decode(result.encoding)
@@ -108,6 +108,7 @@ class Certificates(Endpoint):
         :param int term: The length, in days, for the certificate to be issued
         :param int org_id: The ID of the organization in which to enroll the certificate
         :param list subject_alt_names: A list of Subject Alternative Names
+        :param list external_requester: One or more e-mail addresses
         :return dict: The certificate_id and the normal status messages for errors
         """
         cert_types = self.types
@@ -118,6 +119,7 @@ class Certificates(Endpoint):
         term = kwargs.get("term")
         org_id = kwargs.get("org_id")
         subject_alt_names = kwargs.get("subject_alt_names", None)
+        external_requester = kwargs.get("external_requester", None)
 
         # Make sure a valid certificate type name was provided
         if cert_type_name not in cert_types:
@@ -137,7 +139,7 @@ class Certificates(Endpoint):
         data = {
             "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": subject_alt_names, "certType": type_id,
             "numberServers": 1, "serverType": -1, "term": term, "comments": "Enrolled by %s" % self._client.user_agent,
-            "externalRequester": ""
+            "externalRequester": external_requester
         }
         result = self._client.post(url, data=data)
 

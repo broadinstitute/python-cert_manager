@@ -22,7 +22,7 @@ class TestCertificates(TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestCertificates, self).setUp()
+        super().setUp()
 
         # Make sure the Client fixture is created and setup
         self.cfixt = self.useFixture(ClientFixture())
@@ -91,7 +91,7 @@ class TestTypes(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestTypes, self).setUp()
+        super().setUp()
 
         self.test_url = self.api_url + "/types"
 
@@ -176,7 +176,7 @@ class TestCustomFields(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestCustomFields, self).setUp()
+        super().setUp()
 
         self.test_url = self.api_url + "/customFields"
 
@@ -231,7 +231,7 @@ class TestCollect(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestCollect, self).setUp()
+        super().setUp()
 
         self.test_id = 121212
         self.test_type = "x509CO"
@@ -298,13 +298,14 @@ class TestEnroll(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestEnroll, self).setUp()
+        super().setUp()
 
         self.test_ct_name = "InCommon SSL (SHA-2)"
         self.test_term = 365
         self.test_org = 1234
         self.test_san = "blah.foo,baz.com"
         self.test_url = self.api_url + "/enroll"
+        self.test_external_requester = "email@domain.com"
 
         self.test_csr = TestEnroll.fake_csr()
         self.test_result = {"renewId": "xwL9Mux8-eLNTsweYYv86Z7r", "sslId": 999}
@@ -336,13 +337,13 @@ class TestEnroll(TestCertificates):
 
         # Call the function
         resp = self.certobj.enroll(cert_type_name=self.test_ct_name, csr=self.test_csr, term=self.test_term,
-                                   org_id=self.test_org)
+                                   org_id=self.test_org, external_requester=self.test_external_requester)
 
         # Mock up the data that should be sent with the post
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": ""
+            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": self.test_external_requester
         }
         post_json = json.dumps(post_data)
 
@@ -395,7 +396,7 @@ class TestRenew(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestRenew, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_url = self.api_url + "/renewById/%d" % self.test_id
@@ -433,7 +434,7 @@ class TestRevoke(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestRevoke, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_url = self.api_url + "/revoke/%d" % self.test_id
@@ -483,7 +484,7 @@ class TestReplace(TestCertificates):
 
     def setUp(self):
         """Initialize the class."""
-        super(TestReplace, self).setUp()
+        super().setUp()
 
         self.test_id = 1234
         self.test_cn = "test.foo.bar"

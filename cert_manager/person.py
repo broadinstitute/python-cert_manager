@@ -21,7 +21,7 @@ class Person(Endpoint):
         :param object client: An instantiated cert_manager.Client object
         :param string api_version: The API version to use; the default is "v1"
         """
-        super(Person, self).__init__(client=client, endpoint="/person", api_version=api_version)
+        super().__init__(client=client, endpoint="/person", api_version=api_version)
 
     def find(self, email):
         """Return a list of people with the given email from the Sectigo API.

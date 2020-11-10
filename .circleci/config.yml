@@ -12,17 +12,14 @@ workflows:
   test_and_deploy:
     jobs:
       - python/run-tests:
-          name: 'python-2.7'
-          version: '2.7'
-      - python/run-tests:
-          name: 'python-3.5'
-          version: '3.5'
-      - python/run-tests:
           name: 'python-3.6'
           version: '3.6'
       - python/run-tests:
           name: 'python-3.7'
           version: '3.7'
+      - python/run-tests:
+          name: 'python-3.8'
+          version: '3.8'
       - python/deploy:
           name: 'pypi-deploy'
           filters:

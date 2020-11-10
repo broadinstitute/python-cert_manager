@@ -16,4 +16,4 @@ class SMIME(Certificates):
         :param object client: An instantiated cert_manager.Client object
         :param string api_version: The API version to use; the default is "v1"
         """
-        super(SMIME, self).__init__(client=client, endpoint="/smime", api_version=api_version)
+        super().__init__(client=client, endpoint="/smime", api_version=api_version)

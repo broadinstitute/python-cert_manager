@@ -18,7 +18,7 @@ class TestSMIME(TestCase):
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
-        super(TestSMIME, self).setUp()
+        super().setUp()
 
         # Make sure the Client fixture is created and setup
         self.cfixt = self.useFixture(ClientFixture())
