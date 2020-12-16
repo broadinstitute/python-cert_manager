@@ -149,6 +149,8 @@ class Certificates(Endpoint):
         """List of SSL certificates.
         :param int size: Count of returned entries
         :param int position: Position shift
+        :return: List of certificates based on count and position
+        :rtype: list
         """
         url = self._url("/")
         result = self._client.get(url, query=kwargs)
