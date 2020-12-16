@@ -17,12 +17,12 @@ class Client(object):
     """Serve as a Base class for calls to the Sectigo Cert Manager APIs."""
 
     DOWNLOAD_TYPES = [
-        "base64",  # PKCS#7 Base64 encoded
-        "bin",     # PKCS#7 Bin encoded
-        "x509",    # X509, Base64 encoded
-        "x509CO",  # X509 Certificate only, Base64 encoded
-        "x509IO",  # X509 Intermediates/root only, Base64 encoded
-        "x509IOR", # X509 Intermediates/root only Reverse, Base64 encoded
+        "base64",   # PKCS#7 Base64 encoded
+        "bin",      # PKCS#7 Bin encoded
+        "x509",     # X509, Base64 encoded
+        "x509CO",   # X509 Certificate only, Base64 encoded
+        "x509IO",   # X509 Intermediates/root only, Base64 encoded
+        "x509IOR",  # X509 Intermediates/root only Reverse, Base64 encoded
     ]
 
     def __init__(self, **kwargs):
