@@ -17,11 +17,11 @@ class Client(object):
     """Serve as a Base class for calls to the Sectigo Cert Manager APIs."""
 
     DOWNLOAD_TYPES = [
-        "base64",   # PKCS#7 Base64 encoded
-        "bin",      # PKCS#7 Bin encoded
-        "x509",     # X509, Base64 encoded
-        "x509CO",   # X509 Certificate only, Base64 encoded
-        "x509IO",   # X509 Intermediates/root only, Base64 encoded
+        "base64",  # PKCS#7 Base64 encoded
+        "bin",  # PKCS#7 Bin encoded
+        "x509",  # X509, Base64 encoded
+        "x509CO",  # X509 Certificate only, Base64 encoded
+        "x509IO",  # X509 Intermediates/root only, Base64 encoded
         "x509IOR",  # X509 Intermediates/root only Reverse, Base64 encoded
     ]
 
@@ -67,7 +67,9 @@ class Client(object):
             # Warn about using /api instead of /private/api if doing certificate auth
             if not re.search("/private", self.__base_url):
                 cert_uri = re.sub("/api", "/private/api", self.__base_url)
-                LOGGER.warning("base URI should probably be %s due to certificate auth", cert_uri)
+                LOGGER.warning(
+                    "base URI should probably be %s due to certificate auth", cert_uri
+                )
 
         else:
             # If we're not doing certificate auth, we need a password, so make sure an exception is raised if
@@ -130,14 +132,15 @@ class Client(object):
                     del self.__session.headers[head]
 
     @traffic_log(traffic_logger=LOGGER)
-    def get(self, url, headers=None):
+    def get(self, url, headers=None, query=None):
         """Submit a GET request to the provided URL.
 
         :param str url: A URL to query
         :param dict headers: A dictionary with any extra headers to add to the request
+        :param dict query: A dictionary with query parameters
         :return obj: A requests.Response object received as a response
         """
-        result = self.__session.get(url, headers=headers)
+        result = self.__session.get(url, headers=headers, params=query)
         # Raise an exception if the return code is in an error range
         result.raise_for_status()
 

@@ -145,6 +145,16 @@ class Certificates(Endpoint):
 
         return result.json()
 
+    def list(self, **kwargs):
+        """List of SSL certificates.
+        :param int size: Count of returned entries
+        :param int position: Position shift
+        """
+        url = self._url("/")
+        result = self._client.get(url, query=kwargs)
+
+        return result.json()
+
     def renew(self, cert_id):
         """Renew the certificate specified by the certificate ID.
 
