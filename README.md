@@ -2,8 +2,8 @@
 
 This library provides a [Python][1] interface to the [Sectigo][2] Certificate Manager REST API.  python-cert_manager is open sourced under the [BSD 3-Clause license](LICENSE.txt).
 
-[![CircleCI](https://circleci.com/gh/broadinstitute/python-cert_manager/tree/master.svg?style=svg)](https://circleci.com/gh/broadinstitute/python-cert_manager/tree/master)
-[![codecov](https://codecov.io/gh/broadinstitute/python-cert_manager/branch/master/graph/badge.svg)](https://codecov.io/gh/broadinstitute/python-cert_manager)
+![checks](https://github.com/broadinstitute/python-cert_manager/workflows/checks/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/broadinstitute/python-cert_manager/branch/main/graph/badge.svg)](https://codecov.io/gh/broadinstitute/python-cert_manager)
 
 ## Basics
 
@@ -129,6 +129,16 @@ docker run -it --rm \
     ferrarimarco/github-changelog-generator --verbose
 ```
 
+To generate the log for an upcoming release that has not yet been tagged, you can run a command to include the upcoming release version.  For example, `2.0.0`:
+
+```sh
+docker run -it --rm \
+    -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
+    -v "$(pwd)":/working \
+    -w /working \
+    ferrarimarco/github-changelog-generator --verbose --future-release 2.0.0 --unreleased
+```
+
 As a note, this repository uses the default labels for formatting the `CHANGELOG.md`.  Label information can be found here: [Advanced-change-log-generation-examples](https://github.com/github-changelog-generator/github-changelog-generator/wiki/Advanced-change-log-generation-examples#section-options)
 
 ## Releases
@@ -139,10 +149,10 @@ Releases to the codebase are typically done using the [bump2version][6] tool.  T
 bump2version --verbose --no-tag patch
 ```
 
-Once the PR is merged, you can then checkout the new master branch and tag it using the new version number that is now in `.bumpversion.cfg`:
+Once the PR is merged, you can then checkout the new `main` branch and tag it using the new version number that is now in `.bumpversion.cfg`:
 
 ```sh
-git checkout master
+git checkout main
 git pull --rebase
 git tag 1.0.0 -m 'Bump version: 0.1.0 → 1.0.0'
 git push --tags
