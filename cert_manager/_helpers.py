@@ -128,5 +128,22 @@ def version_hack(service, version="v1"):
     return decorator
 
 
+def paginate(func):
+    """Iterate over a listing until the number of results is less that the size parameter.
+    """
+    def decorator(self, *args, **kwargs):
+        """Decorate the wrapped function."""
+        size = kwargs.get('size', 200)  # max seems to be 200 by default
+        position = kwargs.get('position', 0)  # 0-..
+        retval = func(self, *args, size=size, position=position, **kwargs)
+        yield from retval
+        while len(retval) == size:
+            position += size
+            retval = func(self, *args, size=size, position=position, **kwargs)
+            yield from retval
+
+    return decorator
+
+
 class Pending(Exception):
     """Serve as a generic Exception indicating a certificate is in a pending state."""
