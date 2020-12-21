@@ -129,17 +129,29 @@ def version_hack(service, version="v1"):
 
 
 def paginate(func):
-    """Iterate over a listing until the number of results is less that the size parameter.
-    """
-    def decorator(self, *args, **kwargs):
-        """Decorate the wrapped function."""
-        size = kwargs.get('size', 200)  # max seems to be 200 by default
-        position = kwargs.get('position', 0)  # 0-..
-        retval = func(self, *args, size=size, position=position, **kwargs)
-        yield from retval
-        while len(retval) == size:
+    """Iterate through pages in API calls to retrieve all data from an endpoint."""
+
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        """Decorate the wrapped function.
+
+        Iterate through pages in API calls to retrieve all data from an endpoint.
+        The `size` and `position` parameters passed through `kwargs` to this function will be used
+        by the pagination wrapper to page through results.
+
+        :param list args: Positional parameters to pass to the wrapped function
+        :param dict kwargs: A dictionary with any parameters to add to the request URL
+
+        :return obj: Yield results from the wrapped function's response for each request
+        """
+        size = kwargs.pop("size", 200)  # max seems to be 200 by default
+        position = kwargs.pop("position", 0)  # 0-..
+
+        lastsize = size
+        while lastsize == size:
+            retval = func(*args, size=size, position=position, **kwargs)
+            lastsize = len(retval)
             position += size
-            retval = func(self, *args, size=size, position=position, **kwargs)
             yield from retval
 
     return decorator

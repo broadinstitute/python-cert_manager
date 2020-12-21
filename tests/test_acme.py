@@ -7,8 +7,9 @@
 from functools import wraps
 
 from requests.exceptions import HTTPError
-import responses
 from testtools import TestCase
+
+import responses
 
 from cert_manager.acme import ACMEAccount, ACMEAccountCreationResponseError
 
@@ -23,16 +24,16 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
         """Return the base ACME Account URL for the default API version"""
         return self.get_api_url()
 
-    def get_api_url(self, api_version='v1'):
+    def get_api_url(self, api_version="v1"):
         """Return the base ACME Account URL for a particular API version"""
-        return '{}/acme/{}/account'.format(
+        return "{}/acme/{}/account".format(
             self.cfixt.base_url,
             api_version
         )
 
     def get_acme_account_url(self, acme_id, **kwargs):
         """Return the ACME Account URL for the specified acme_id"""
-        return '{}/{}'.format(
+        return "{}/{}".format(
             self.get_api_url(**kwargs),
             acme_id
         )
@@ -40,15 +41,15 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
     def get_valid_response_entry(self, acme_id):
         """Return the first entry in valid_response with a matching acme_id"""
         for entry in self.valid_response:
-            if entry['id'] == acme_id:
+            if entry["id"] == acme_id:
                 return entry
-        raise KeyError('id {} not found in valid_response'.format(acme_id))
+        raise KeyError("id {} not found in valid_response".format(acme_id))
 
     def get_acme_account_data(self, acme_id, domains=None):
         """Return a matching entry from valid_response as ACME account data,
         i.e. with SCM domains (empty by default)"""
         valid_response = self.get_valid_response_entry(acme_id).copy()
-        valid_response.setdefault('domains', domains or [])
+        valid_response.setdefault("domains", domains or [])
         return valid_response
 
     def setUp(self):  # pylint: disable=invalid-name
@@ -63,66 +64,66 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
         self.org_id = 1234
 
         self.base_params = {
-            'organizationId': str(self.org_id)
+            "organizationId": str(self.org_id)
         }
 
         # Setup a test response one would expect normally
         self.valid_response = [
             {
-                'id': 1234,
-                'name': 'api_account1',
-                'status': 'pending',
-                'macKey': 'wtHoOUf8lyPFryvee2vFD8YsMLlhxQVOtNz2hwmTIJLfXauERXqYqzzxcA7b2Dpah84wjchbR8N1FhbFyrBAot',
-                'macId': '1SiwNov7jxsUQf3osQD2R4',
-                'acmeServer': 'https://acme.sectigo.com/v2/OV',
-                'organizationId': self.org_id,
-                'certValidationType': 'OV',
-                'accountId': '1SiwNov7jxsUQf3osQD2R4',
-                'ovOrderNumber': 387134123,
-                'contacts': '',
-                'evDetails': {}
+                "id": 1234,
+                "name": "api_account1",
+                "status": "pending",
+                "macKey": "wtHoOUf8lyPFryvee2vFD8YsMLlhxQVOtNz2hwmTIJLfXauERXqYqzzxcA7b2Dpah84wjchbR8N1FhbFyrBAot",
+                "macId": "1SiwNov7jxsUQf3osQD2R4",
+                "acmeServer": "https://acme.sectigo.com/v2/OV",
+                "organizationId": self.org_id,
+                "certValidationType": "OV",
+                "accountId": "1SiwNov7jxsUQf3osQD2R4",
+                "ovOrderNumber": 387134123,
+                "contacts": "",
+                "evDetails": {}
             },
             {
-                'id': 4321,
-                'name': 'api_account2',
-                'status': 'valid',
-                'macKey': 'Xk9R79FfbdtNzUVRPDvX161NMSgG4WSjgni6grcaYAYUpRrAXfW69acFrajud03nSMONzIvbAGHiVxULSnmWgv',
-                'macId': 'mZLT4rsopz1veRo9S6IWhQ',
-                'acmeServer': 'https://acme.sectigo.com/v2/OV',
-                'organizationId': self.org_id,
-                'certValidationType': 'OV',
-                'accountId': 'mZLT4rsopz1veRo9S6IWhQ',
-                'ovOrderNumber': 387134123,
-                'contacts': '',
-                'evDetails': {}
+                "id": 4321,
+                "name": "api_account2",
+                "status": "valid",
+                "macKey": "Xk9R79FfbdtNzUVRPDvX161NMSgG4WSjgni6grcaYAYUpRrAXfW69acFrajud03nSMONzIvbAGHiVxULSnmWgv",
+                "macId": "mZLT4rsopz1veRo9S6IWhQ",
+                "acmeServer": "https://acme.sectigo.com/v2/OV",
+                "organizationId": self.org_id,
+                "certValidationType": "OV",
+                "accountId": "mZLT4rsopz1veRo9S6IWhQ",
+                "ovOrderNumber": 387134123,
+                "contacts": "",
+                "evDetails": {}
             },
             {
-                'id': 4322,
-                'name': 'api_account3',
-                'status': 'pending',
-                'macKey': 'nupONsz5B8Nvl8eccd3yFiiVPvPCWXUWMBo0oCcT2gPYAs07yGDhF7UXN8esFHd9kt5I5pMgdR3s443V1EAvsA',
-                'macId': 'n4QsTzHBKSIFu3D7nTxzY8',
-                'acmeServer': 'https://acme.sectigo.com/v2/EV',
-                'organizationId': self.org_id,
-                'certValidationType': 'EV',
-                'accountId': 'n4QsTzHBKSIFu3D7nTxzY8',
-                'ovOrderNumber': 0,
-                'contacts': '',
-                'evDetails': {
-                    'orgName': 'Example Org',
-                    'orgCountry': 'EX',
-                    'postOfficeBox': '',
-                    'orgAddress1': 'Example Address',
-                    'orgAddress2': '',
-                    'orgAddress3': '',
-                    'orgLocality': 'Example Locality',
-                    'orgStateOrProvince': 'Example State',
-                    'orgPostalCode': '12345',
-                    'orgJoiState': '',
-                    'orgJoiLocality': '',
-                    'assumedName': '',
-                    'dateOfIncorporation': '',
-                    'companyNumber': ''
+                "id": 4322,
+                "name": "api_account3",
+                "status": "pending",
+                "macKey": "nupONsz5B8Nvl8eccd3yFiiVPvPCWXUWMBo0oCcT2gPYAs07yGDhF7UXN8esFHd9kt5I5pMgdR3s443V1EAvsA",
+                "macId": "n4QsTzHBKSIFu3D7nTxzY8",
+                "acmeServer": "https://acme.sectigo.com/v2/EV",
+                "organizationId": self.org_id,
+                "certValidationType": "EV",
+                "accountId": "n4QsTzHBKSIFu3D7nTxzY8",
+                "ovOrderNumber": 0,
+                "contacts": "",
+                "evDetails": {
+                    "orgName": "Example Org",
+                    "orgCountry": "EX",
+                    "postOfficeBox": "",
+                    "orgAddress1": "Example Address",
+                    "orgAddress2": "",
+                    "orgAddress3": "",
+                    "orgLocality": "Example Locality",
+                    "orgStateOrProvince": "Example State",
+                    "orgPostalCode": "12345",
+                    "orgJoiState": "",
+                    "orgJoiLocality": "",
+                    "assumedName": "",
+                    "dateOfIncorporation": "",
+                    "companyNumber": ""
                 }
             }
         ]
@@ -146,7 +147,7 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
         params = dict(responses.parse_qsl(query_string))
         match_params = self.base_params.copy()
         match_params.update(extra_params or {})
-        self.assertDictContainsSubset(match_params, params)
+        self.assertGreaterEqual(params.items(), match_params.items())
 
 
 class TestInit(TestACMEAccount):
@@ -253,30 +254,27 @@ def _test_find_test_factory(params=None):
     @responses.activate
     def generic_test(self):
         """Generic test for .find request parameters/response fields"""
-        api_params[params_to_api['org_id']] = str(self.org_id)
+        api_params[params_to_api["org_id"]] = str(self.org_id)
         valid_response = [
             entry for entry in self.valid_response
             if all([
-                    str(entry[k]).lower().find(str(api_params[k]).lower()) != -1
-                    for k in api_params
+                str(entry[k]).lower().find(str(api_params[k]).lower()) != -1
+                for k in api_params
             ])
         ]
         # Setup the mocked response
-        responses.add(responses.GET, self.api_url, json=valid_response,
-                      status=200, match_querystring=False)
-
+        responses.add(
+            responses.GET, self.api_url, json=valid_response, status=200, match_querystring=False
+        )
         acme = ACMEAccount(client=self.client)
-        data = acme.find(self.org_id, **params)
+        data = list(acme.find(self.org_id, **params))
 
         # Verify all the query information
         # There should only be one call when "find" is called.
         # Due to pagination, this is only guaranteed as long as the number of
         # entries returned is less than the page size
         self.assertEqual(len(responses.calls), 1)
-        self.match_url_with_qs(
-            responses.calls[0].request.url,
-            api_params
-        )
+        self.match_url_with_qs(responses.calls[0].request.url, api_params)
         self.assertEqual(data, valid_response)
     return generic_test
 
@@ -284,38 +282,38 @@ def _test_find_test_factory(params=None):
 class TestFind(TestACMEAccount):
     """Test the .find method."""
 
-    test_name = _test_find_test_factory({'name': 'api_account1'})
+    test_name = _test_find_test_factory({"name": "api_account1"})
     test_name.__doc__ = """The function should return all the data about the
     matched acme account name(s)."""
 
     test_acme_server = _test_find_test_factory(
-        {'acme_server': 'https://acme.sectigo.com/v2/OV'})
+        {"acme_server": "https://acme.sectigo.com/v2/OV"})
     test_acme_server.__doc__ = """The function should return all the data about
     the matched acme account server(s)."""
 
     test_cert_validation_type = _test_find_test_factory(
-        {'cert_validation_type': 'EV'})
+        {"cert_validation_type": "EV"})
     test_cert_validation_type.__doc__ = """The function should return all the
     data about the matched acme account validation type(s)."""
 
-    test_cert_status = _test_find_test_factory({'status': 'Valid'})
+    test_cert_status = _test_find_test_factory({"status": "Valid"})
     test_cert_status.__doc__ = """The function should return all the data about
     the matched acme account status(es)."""
 
     test_ne_server_and_cert_validation_type = _test_find_test_factory({
-        'acme_server': 'https://acme.sectigo.com/v2/OV',
-        'cert_validation_type': 'EV'
+        "acme_server": "https://acme.sectigo.com/v2/OV",
+        "cert_validation_type": "EV"
     })
     test_ne_server_and_cert_validation_type.__doc__ = """The function should
     return an empty list if the acme account server and vaildation type do not
     match."""
 
-    test_ne_name = _test_find_test_factory({'name': 'no such account'})
+    test_ne_name = _test_find_test_factory({"name": "no such account"})
     test_ne_name.__doc__ = """The function should return an empty list if the
     acme account name does not match."""
 
     test_ne_server = _test_find_test_factory(
-        {'acme_server': 'https://acme.sectigo.com/v2/XYZ'})
+        {"acme_server": "https://acme.sectigo.com/v2/XYZ"})
     test_ne_server.__doc__ = """The function should return an empty list if the
     acme account server does not match."""
 
@@ -326,7 +324,9 @@ class TestFind(TestACMEAccount):
     def test_need_org_id(self):
         """The function should raise an exception without an org_id parameter."""
         acme = ACMEAccount(client=self.client)
-        self.assertRaises(TypeError, acme.find)
+        # We need to wrap this all crazy because it now returns an iterator
+        result = acme.find()  # pylint:disable=no-value-for-parameter
+        self.assertRaises(TypeError, result.__next__)
 
 
 class TestGet(TestACMEAccount):
@@ -368,13 +368,13 @@ class TestGet(TestACMEAccount):
         self.assertRaises(HTTPError, acme.get, acme_id)
 
 
-def _test_create_test_factory(acme_id=1234, header='location', **kwargs):
-    params = ['name', 'acmeServer', 'organizationId', 'evDetails']
+def _test_create_test_factory(acme_id=1234, header="location", **kwargs):
+    params = ["name", "acmeServer", "organizationId", "evDetails"]
 
     def wrapper(func):
         @wraps(func)
         def wrapped_func(self):
-            location = kwargs.get('location',
+            location = kwargs.get("location",
                                   self.get_acme_account_url(acme_id))
             response_headers = {
                 header: location
@@ -407,9 +407,9 @@ class TestCreate(TestACMEAccount):
         # missing name, acme_server, org_id
         self.assertRaises(TypeError, acme.create)
         # missing acme_server, org_id
-        self.assertRaises(TypeError, acme.create, 'name')
+        self.assertRaises(TypeError, acme.create, "name")
         # missing org_id
-        self.assertRaises(TypeError, acme.create, 'name', 'acme_server')
+        self.assertRaises(TypeError, acme.create, "name", "acme_server")
 
     @responses.activate
     @_test_create_test_factory()
@@ -424,7 +424,7 @@ class TestCreate(TestACMEAccount):
         acme = ACMEAccount(client=self.client)
         response = acme.create(*args)
 
-        self.assertEqual(response, {'id': acme_id})
+        self.assertEqual(response, {"id": acme_id})
 
     @responses.activate
     @_test_create_test_factory()
@@ -464,7 +464,7 @@ class TestCreate(TestACMEAccount):
                           *args)
 
     @responses.activate
-    @_test_create_test_factory(header='NotYourHeader')
+    @_test_create_test_factory(header="NotYourHeader")
     def test_create_failure_missing_location_header(self, _, response_headers,
                                                     args, request_params):
         """
@@ -485,7 +485,7 @@ class TestCreate(TestACMEAccount):
                           *args)
 
     @responses.activate
-    @_test_create_test_factory(location='not_an_ACME_account_URL')
+    @_test_create_test_factory(location="not_an_ACME_account_URL")
     def test_create_failure_acme_id_not_found(self, _, response_headers, args,
                                               request_params):
         """
@@ -508,8 +508,8 @@ class TestCreate(TestACMEAccount):
 
 def _test_update_delete_test_factory(func):
     acme_id = 1234
-    new_name = 'api_account1_new_name'
-    if func.__name__.find('test_update') == 0:
+    new_name = "api_account1_new_name"
+    if func.__name__.find("test_update") == 0:
         args = (acme_id, new_name)
     else:
         args = (acme_id,)
@@ -619,16 +619,16 @@ def _test_add_remove_domains_test_factory(func):
     @wraps(func)
     def wrapped_func(self):
         acme_data = self.get_acme_account_data(acme_id, domains=[
-            'example.com',
-            'example.org'
+            "example.com",
+            "example.org"
         ])
-        request_domains = acme_data['domains']
-        response_domains = ['example.com']
-        api_url = '{}/domains'.format(self.get_acme_account_url(acme_id))
-        if func.__name__.find('test_add') == 0:
-            resp_key = 'notAddedDomains'
+        request_domains = acme_data["domains"]
+        response_domains = ["example.com"]
+        api_url = "{}/domains".format(self.get_acme_account_url(acme_id))
+        if func.__name__.find("test_add") == 0:
+            resp_key = "notAddedDomains"
         else:
-            resp_key = 'notRemovedDomains'
+            resp_key = "notRemovedDomains"
         args = (acme_id, api_url, request_domains,
                 {resp_key: response_domains})
         return func(self, *args)

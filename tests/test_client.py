@@ -9,7 +9,6 @@
 #
 
 import sys
-from urllib.parse import urlencode
 
 import mock
 from testtools import TestCase
@@ -362,64 +361,6 @@ class TestGet(TestClient):
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-
-
-class TestGetPaginated(TestClient):
-    """Test the get_paginated method."""
-
-    def setUp(self):  # pylint: disable=invalid-name
-        """Initialize the class."""
-        # Call the inherited setUp method
-        super().setUp()
-
-        # An example URL to use in testing
-        self.test_url = self.cfixt.base_url + "/test/url"
-
-    @responses.activate
-    def test_success(self):
-        """
-        It should trigger the expected number of GET requests with the expected
-        pagination parameters and yield the expected number of results.
-        """
-        # Setup the mocked response
-        json_data = {"some": "data"}
-        page_size = 3
-        total = 8
-        (*url_parts, _, _) = responses.urlsplit(self.test_url)
-        cursor = 0
-        response_count = 0
-        while cursor < total:
-            params = {'position': cursor, 'size': page_size}
-            url = responses.urlunsplit((*url_parts, urlencode(params), None))
-            delta = total - cursor
-            count = page_size if delta >= page_size else delta
-            resp = [json_data] * count
-            responses.add(responses.GET, url, json=resp, status=200)
-            response_count += 1
-            cursor += count
-
-        # Call the function
-        results = []
-        for result in self.client.get_paginated(self.test_url,
-                                                page_size=page_size):
-            results += result.json()
-
-        # Verify all the query information
-        self.assertEqual(results, [json_data] * total)
-        self.assertEqual(len(responses.calls), response_count)
-
-    @responses.activate
-    def test_no_json_response(self):
-        """It should yield no responses if the (first) response is not JSON."""
-        # Setup the mocked response
-        responses.add(responses.GET, self.test_url, body='no json', status=200,
-                      match_querystring=False)
-
-        # Call the function
-        res = self.client.get_paginated(self.test_url)
-
-        # Verify the result
-        self.assertEqual(len(list(res)), 0)
 
 
 class TestPost(TestClient):
