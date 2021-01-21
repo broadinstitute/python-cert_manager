@@ -388,9 +388,8 @@ class TestEnroll(TestCertificates):
             org_id=self.test_org)
 
         # Verify all the query information
-        self.assertEqual(len(responses.calls), 2)
+        self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_types_url)
-        self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
 
     @responses.activate
     def test_bad_term(self):
@@ -408,9 +407,8 @@ class TestEnroll(TestCertificates):
             org_id=self.test_org)
 
         # Verify all the query information
-        self.assertEqual(len(responses.calls), 2)
+        self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_types_url)
-        self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
 
     @responses.activate
     def test_mandatory_custom_fields_success(self):
