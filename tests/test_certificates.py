@@ -468,6 +468,33 @@ class TestEnroll(TestCertificates):
         self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
 
     @responses.activate
+    def test_custom_fields_duplicate_keys(self):
+        """It should raise an Exception if mandatory custom fields are missing """
+        # Setup the mocked responses
+        test_cf_duplicate_fields = [
+            {"name": "testName", "value": "testValue"},
+            {"name": "testName", "value": "testValue2"}
+        ]
+
+        # We need to mock the /types and /customFields URLs as well
+        # since Certificates.types and Certificate.custom_fields are called from enroll
+        responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
+        responses.add(responses.GET, self.test_customfields_url, json=self.cf_data_mandatory, status=200)
+        responses.add(responses.POST, self.test_url, json=self.test_result, status=200)
+
+        # Call the function, expecting an exception
+        self.assertRaises(
+            Exception, self.certobj.enroll, cert_type_name=self.test_ct_name, csr=self.test_csr, term=self.test_term,
+            org_id=self.test_org, external_requester=self.test_external_requester,
+            custom_fields=test_cf_duplicate_fields
+        )
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 2)
+        self.assertEqual(responses.calls[0].request.url, self.test_types_url)
+        self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
+
+    @responses.activate
     def test_custom_fields_invalid(self):
         """It should raise an Exception if elements of the custom_fields list are anything other than dicts """
         # Setup the mocked responses
