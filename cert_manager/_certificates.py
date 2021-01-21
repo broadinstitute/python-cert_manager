@@ -77,6 +77,35 @@ class Certificates(Endpoint):
 
         return self.__custom_fields
 
+    def _validate_custom_fields(self, custom_fields):
+        """Check the structure and contents of a list of dicts representing custom fields
+        Raise exceptions if validation fails
+
+        :raises Exception: if any of the validation steps fail
+        """
+        # Make sure all custom fields are valid if present
+        custom_field_names = [f['name'] for f in self.custom_fields]
+        for custom_field in custom_fields:
+            if not isinstance(custom_field, dict):
+                msg = "Values in the custom_fields list must be dictionaries, not {}"
+                raise Exception(msg.format(type(custom_field)))
+            if not ('name' in custom_field and 'value' in custom_field):
+                raise Exception(
+                    "Dictionaries in the custom_fields list must contain both a 'name' key and 'value' key"
+                )
+            if custom_field.get('name') not in custom_field_names:
+                msg = "Custom field {} not defined for your account. defined custom fields are {}"
+                raise Exception(msg.format(custom_field.get('name'), custom_field_names))
+        mandatory_fields = [f['name'] for f in self.custom_fields if f['mandatory'] is True]
+        for field_name in mandatory_fields:
+            # for each mandatory field, there should be exactly one dict in the custom_fields list
+            # whose name matches that mandatory field name
+            matching_fields = [f for f in custom_fields if f['name'] == field_name]
+            if len(matching_fields) < 1:
+                raise Exception("Missing mandatory custom field {}".format(field_name))
+            if len(matching_fields) > 1:
+                raise Exception("Too many custom field objects with name {}".format(field_name))
+
     def collect(self, cert_id, cert_format):
         """Retrieve an existing certificate from the API.
 
@@ -113,9 +142,6 @@ class Certificates(Endpoint):
             Note: each object must have a 'name' key and a 'value' key
         :return dict: The certificate_id and the normal status messages for errors
         """
-        cert_types = self.types
-        existing_custom_fields = self.custom_fields
-
         # Retrieve all the arguments
         cert_type_name = kwargs.get("cert_type_name")
         csr = kwargs.get("csr")
@@ -126,11 +152,11 @@ class Certificates(Endpoint):
         custom_fields = kwargs.get("custom_fields", list())
 
         # Make sure a valid certificate type name was provided
-        if cert_type_name not in cert_types:
+        if cert_type_name not in self.types:
             raise Exception("Incorrect certificate type specified: '{}'".format(cert_type_name))
 
-        type_id = cert_types[cert_type_name]["id"]
-        terms = cert_types[cert_type_name]["terms"]
+        type_id = self.types[cert_type_name]["id"]
+        terms = self.types[cert_type_name]["terms"]
 
         # Make sure a valid term is specified
         if term not in terms:
@@ -139,28 +165,7 @@ class Certificates(Endpoint):
             trm = ", ".join(list(map(str, terms)))
             raise Exception("Incorrect term specified: {}.  Valid terms are {}.".format(term, trm))
 
-        # Make sure all custom fields are valid if present
-        custom_field_names = [f['name'] for f in existing_custom_fields]
-        for custom_field in custom_fields:
-            if not isinstance(custom_field, dict):
-                msg = "Values in the custom_fields list must be dictionaries, not {}"
-                raise Exception(msg.format(type(custom_field)))
-            if not ('name' in custom_field and 'value' in custom_field):
-                raise Exception(
-                    "Dictionaries in the custom_fields list must contain both a 'name' key and 'value' key"
-                )
-            if custom_field.get('name') not in custom_field_names:
-                msg = "Custom field {} not defined for your account. defined custom fields are {}"
-                raise Exception(msg.format(custom_field.get('name'), custom_field_names))
-        mandatory_fields = [f['name'] for f in existing_custom_fields if f['mandatory'] is True]
-        for field_name in mandatory_fields:
-            # for each mandatory field, there should be exactly one dict in the custom_fields list
-            # whose name matches that mandatory field name
-            matching_fields = [f for f in custom_fields if f['name'] == field_name]
-            if len(matching_fields) < 1:
-                raise Exception("Missing mandatory custom field {}".format(field_name))
-            if len(matching_fields) > 1:
-                raise Exception("Too many custom field objects with name {}".format(field_name))
+        self._validate_custom_fields(custom_fields)
 
         url = self._url("/enroll")
         data = {
