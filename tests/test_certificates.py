@@ -324,6 +324,10 @@ class TestEnroll(TestCertificates):
             {"id": 57, "name": "testName", "mandatory": False},
             {"id": 59, "name": "testName2", "mandatory": False},
         ]
+        self.cf_data_mandatory = [
+            {"id": 57, "name": "testName", "mandatory": True},
+            {"id": 59, "name": "testName2", "mandatory": False},
+        ]
 
     @staticmethod
     def fake_csr():
@@ -445,16 +449,12 @@ class TestEnroll(TestCertificates):
     def test_mandatory_custom_fields_missing(self):
         """It should raise an Exception if mandatory custom fields are missing """
         # Setup the mocked responses
-        cf_data_mandatory = [
-            {"id": 57, "name": "testName", "mandatory": True},
-            {"id": 59, "name": "testName2", "mandatory": False},
-        ]
         test_cf_missing_mandatory_field = [{"name": "testName2", "value": "testValue"}]
 
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
         responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
-        responses.add(responses.GET, self.test_customfields_url, json=cf_data_mandatory, status=200)
+        responses.add(responses.GET, self.test_customfields_url, json=self.cf_data_mandatory, status=200)
         responses.add(responses.POST, self.test_url, json=self.test_result, status=200)
 
         # Call the function, expecting an exception
