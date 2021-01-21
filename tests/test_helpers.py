@@ -6,6 +6,7 @@
 import json
 import logging
 import sys
+import types
 
 import mock
 from testtools import TestCase
@@ -13,7 +14,81 @@ from testtools import TestCase
 import requests
 import responses
 
-from cert_manager._helpers import traffic_log
+from cert_manager._helpers import paginate, traffic_log
+
+
+class TestPaginate(TestCase):
+    """Tests for the cert_manager._helpers.paginate wrapper function."""
+
+    def setUp(self):  # pylint: disable=invalid-name
+        """Initialize the class."""
+        # Call the inherited setUp method
+        super().setUp()
+
+        self.test_url = "http://example.com/api"
+        self.test_headers = {"Content-Type": "application/json"}
+        self.test_data = [
+            {"some": "data", "another": "thing"},
+            {"more": "things"},
+            {"what": "is", "this": "record"},
+            {"last": "item"}
+        ]
+        self.exc = None
+        self.response_index = 0
+        self.num_calls = 0
+
+    @paginate
+    def wrapped_function(self, *args, **kwargs):  # pylint: disable=unused-argument
+        """Provide a working function to wrap for the tests."""
+        # Mimic raising an exception
+        # pylint: disable=raising-bad-type
+        if isinstance(self.exc, BaseException):
+            raise self.exc
+
+        self.assertEqual(kwargs.get("url"), self.test_url)
+        self.assertEqual(kwargs.get("headers"), self.test_headers)
+
+        return self.test_data
+
+    @paginate
+    def fake_paging(self, *args, **kwargs):  # pylint: disable=unused-argument
+        """Provide a working paging function for the tests."""
+        self.num_calls += 1
+        index = self.response_index
+        if index < len(self.test_data):
+            data = [self.test_data[index]]
+            self.response_index += 1
+            return data
+
+        return []
+
+    def test_correct(self):
+        """The inner function should be called with the correct parameters."""
+        data = []
+
+        # Call the test function
+        result = self.wrapped_function(url=self.test_url, headers=self.test_headers)
+        self.assertTrue(isinstance(result, types.GeneratorType))
+
+        for res in result:
+            data.append(res)
+
+        # Test that the return value passes through correctly
+        self.assertEqual(data, self.test_data)
+
+    def test_paging(self):
+        """The inner function should be called with the correct parameters the correct number of times."""
+        data = []
+
+        # Call the test function
+        result = self.fake_paging(url=self.test_url, headers=self.test_headers, size=1)
+
+        for res in result:
+            data.append(res)
+
+        # Test that the return value passes through correctly
+        self.assertEqual(data, self.test_data)
+        self.assertEqual(self.num_calls, len(self.test_data) + 1)
 
 
 class TestTrafficLog(TestCase):

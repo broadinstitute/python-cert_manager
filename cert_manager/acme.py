@@ -5,6 +5,7 @@ import re
 import logging
 
 from ._endpoint import Endpoint
+from ._helpers import paginate
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,11 +17,11 @@ class ACMEAccountCreationResponseError(Exception):
 class ACMEAccount(Endpoint):
     """Query the Sectigo Cert Manager REST API for ACME Account data."""
     _find_params_to_api = {
-        'org_id': 'organizationId',
-        'name': 'name',
-        'acme_server': 'acmeServer',
-        'cert_validation_type': 'certValidationType',
-        'status': 'status'
+        "org_id": "organizationId",
+        "name": "name",
+        "acme_server": "acmeServer",
+        "cert_validation_type": "certValidationType",
+        "status": "status"
     }
 
     def __init__(self, client, api_version="v1"):
@@ -32,7 +33,7 @@ class ACMEAccount(Endpoint):
         :param string api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/acme", api_version=api_version)
-        self._api_url = self._url('/account')
+        self._api_url = self._url("/account")
 
         self.__acme_accounts = None
 
@@ -47,32 +48,34 @@ class ACMEAccount(Endpoint):
         if (self.__acme_accounts) and (not force):
             return self.__acme_accounts
 
-        self.__acme_accounts = self.find(org_id)
+        self.__acme_accounts = []
+        result = self.find(org_id)
+        for acct in result:
+            self.__acme_accounts.append(acct)
 
         return self.__acme_accounts
 
+    @paginate
     def find(self, org_id, **kwargs):
         """Return a list of acme accounts matching the parameters.
 
         :param int org_id: The ID of the organization for which to search
+        :param dict kwargs: A dictionary of additional arguments to pass to the API
 
         Any other List ACME accounts request parameters can be provided as
         keyword arguments.
 
         :return list: A list of dictionaries representing the matched acme accounts
         """
-        kwargs['org_id'] = org_id
+        kwargs["org_id"] = org_id
         params = {
             self._find_params_to_api[param]: kwargs.get(param)
             for param in self._find_params_to_api
         }
 
-        results = []
+        result = self._client.get(self._api_url, params=params)
 
-        for result in self._client.get_paginated(self._api_url, params=params):
-            results += result.json()
-
-        return results
+        return result.json()
 
     def get(self, acme_id):
         """Return a dictionary of acme account information.
@@ -97,10 +100,10 @@ class ACMEAccount(Endpoint):
         :return dict: The creation result
         """
         data = {
-            'name': name,
-            'acmeServer': acme_server,
-            'organizationId': org_id,
-            'evDetails': ev_details or {}
+            "name": name,
+            "acmeServer": acme_server,
+            "organizationId": org_id,
+            "evDetails": ev_details or {}
         }
 
         result = self._client.post(self._api_url, data=data)
@@ -111,8 +114,8 @@ class ACMEAccount(Endpoint):
                 "Unexpected HTTP status {}".format(result.status_code)
             )
         try:
-            loc = result.headers['Location']
-            acme_id = re.search(r'/([0-9]+)$', loc)[1]
+            loc = result.headers["Location"]
+            acme_id = re.search(r"/([0-9]+)$", loc)[1]
         # result.headers lookup fails
         except KeyError as exc:
             raise ACMEAccountCreationResponseError(
@@ -121,10 +124,10 @@ class ACMEAccount(Endpoint):
         # re.search does not match, at all or the first group
         except (TypeError, IndexError) as exc:
             raise ACMEAccountCreationResponseError(
-                "Did not find an ACME ID in Response Location URL: {}".format(
-                    loc)
+                "Did not find an ACME ID in Response Location URL: {}".format(loc)
             ) from exc
-        return {'id': int(acme_id)}
+
+        return {"id": int(acme_id)}
 
     def update(self, acme_id, name):
         """Update an acme account.
@@ -134,9 +137,7 @@ class ACMEAccount(Endpoint):
 
         :return bool: Update success or failure
         """
-        data = {
-            'name': name
-        }
+        data = {"name": name}
         url = self._url(str(acme_id))
         result = self._client.put(url, data=data)
 
@@ -163,12 +164,12 @@ class ACMEAccount(Endpoint):
         :return dict: A dictionary containing a list of domains not added
         """
         data = {
-            'domains': [
-                {'name': domain}
+            "domains": [
+                {"name": domain}
                 for domain in domains
             ]
         }
-        url = self._url('/{}/domains'.format(acme_id))
+        url = self._url("/{}/domains".format(acme_id))
         result = self._client.post(url, data=data)
 
         return result.json()
@@ -182,18 +183,14 @@ class ACMEAccount(Endpoint):
         :return dict: A dictionary containing a list of domains not removed
         """
         data = {
-            'domains': [
-                {'name': domain}
+            "domains": [
+                {"name": domain}
                 for domain in domains
             ]
         }
-        url = self._url('/{}/domains'.format(acme_id))
+        url = self._url("/{}/domains".format(acme_id))
         # Client().delete does not accept json, so work around it
-        result = self._client.session.request(
-            'DELETE',
-            url,
-            json=data
-        )
+        result = self._client.session.request("DELETE", url, json=data)
         result.raise_for_status()
 
         return result.json()
