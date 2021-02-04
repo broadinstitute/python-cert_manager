@@ -615,9 +615,9 @@ class TestRevoke(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return JSON if a 200-level status code is returned with data."""
+        """It should return an empty dict if a 204 No Content response is returned."""
         # Setup the mocked responses
-        responses.add(responses.POST, self.test_url, json={}, status=204)
+        responses.add(responses.POST, self.test_url, body='', status=204)
 
         # Call the function
         resp = self.certobj.revoke(cert_id=self.test_id, reason="Because")
@@ -670,9 +670,9 @@ class TestReplace(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return JSON if a 200-level status code is returned with data."""
+        """It should return an empty dict if a 204 No Content response is returned."""
         # Setup the mocked responses
-        responses.add(responses.POST, self.test_url, json={}, status=200)
+        responses.add(responses.POST, self.test_url, body='', status=200)
 
         # Call the function
         resp = self.certobj.replace(cert_id=self.test_id, csr=self.test_csr, common_name=self.test_cn,

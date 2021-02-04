@@ -212,8 +212,9 @@ class Certificates(Endpoint):
         data = {"csr": csr, "commonName": common_name, "subjectAlternativeNames": subject_alt_names, "reason": reason}
 
         result = self._client.post(url, data=data)
+        result.raise_for_status()
 
-        return result.json()
+        return {}
 
     def revoke(self, cert_id, reason=""):
         """Revoke the certificate specified by the certificate ID.
@@ -232,5 +233,6 @@ class Certificates(Endpoint):
         data = {"reason": reason}
 
         result = self._client.post(url, data=data)
+        result.raise_for_status()
 
-        return result.json()
+        return {}
