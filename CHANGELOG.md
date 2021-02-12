@@ -1,5 +1,36 @@
 # Changelog
 
+## [2.0.0](https://github.com/broadinstitute/python-cert_manager/tree/2.0.0) (2021-05-26)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/1.0.0...2.0.0)
+
+**Breaking changes:**
+
+- Remove Python 2 support [\#17](https://github.com/broadinstitute/python-cert_manager/pull/17) ([coreone](https://github.com/coreone))
+- CircleCI update and remove support for Python 3.4 [\#11](https://github.com/broadinstitute/python-cert_manager/pull/11) ([coreone](https://github.com/coreone))
+
+**Implemented enhancements:**
+
+- Add extra format types [\#29](https://github.com/broadinstitute/python-cert_manager/pull/29) ([matejzero](https://github.com/matejzero))
+- Add custom\_fields handling to Certificates.enroll method [\#25](https://github.com/broadinstitute/python-cert_manager/pull/25) ([alextremblay](https://github.com/alextremblay))
+- Style cleanup, reduce to one paginate method, Python 3.9 testing [\#23](https://github.com/broadinstitute/python-cert_manager/pull/23) ([coreone](https://github.com/coreone))
+- Migrate to Poetry and GitHub Actions [\#21](https://github.com/broadinstitute/python-cert_manager/pull/21) ([coreone](https://github.com/coreone))
+- feat: Add external requester field [\#19](https://github.com/broadinstitute/python-cert_manager/pull/19) ([ravanapel](https://github.com/ravanapel))
+- Add support for ACME endpoint\(s\) [\#16](https://github.com/broadinstitute/python-cert_manager/pull/16) ([zmousm](https://github.com/zmousm))
+- Adding more features support in SSL certificates [\#15](https://github.com/broadinstitute/python-cert_manager/pull/15) ([trolldbois](https://github.com/trolldbois))
+- Start using CircleCI orb, disable TravisCI [\#10](https://github.com/broadinstitute/python-cert_manager/pull/10) ([coreone](https://github.com/coreone))
+
+**Fixed bugs:**
+
+- Remove custom HttpError exception [\#6](https://github.com/broadinstitute/python-cert_manager/issues/6)
+- Fix \#26, JSONDecodeError when receiving HTTP 204 empty response from API [\#27](https://github.com/broadinstitute/python-cert_manager/pull/27) ([alextremblay](https://github.com/alextremblay))
+
+**Closed issues:**
+
+- JSONDecodeError when using the SSL.revoke method [\#26](https://github.com/broadinstitute/python-cert_manager/issues/26)
+- Add support for custom fields to Certificates.enroll [\#24](https://github.com/broadinstitute/python-cert_manager/issues/24)
+- Unable to specify External Requester [\#18](https://github.com/broadinstitute/python-cert_manager/issues/18)
+
 ## [1.0.0](https://github.com/broadinstitute/python-cert_manager/tree/1.0.0) (2019-04-04)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/d2c8e5d7000efe2afdd8fcec69d2ef4033ebdd3f...1.0.0)
