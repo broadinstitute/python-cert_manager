@@ -24,6 +24,9 @@ class Certificates(Endpoint):
         "base64",   # for PKCS#7 Base64 encoded,
         "bin",      # for PKCS#7 Bin encoded
         "x509IOR",  # for X509 Intermediates/root only Reverse, Base64 encoded
+        "pem",      # for Certificate (w/ chain), PEM encoded
+        "pemco",    # for Certificate only, PEM encoded
+        "pemia",    # for Certificate (w/ issuer after), PEM encoded
     ]
 
     def __init__(self, client, endpoint, api_version="v1"):
