@@ -21,6 +21,6 @@ if ! $SUDO docker image ls | awk '{print $1":"$2}' | grep -q "$DOCKER_IMAGE"; th
     $SUDO docker build -t "$DOCKER_IMAGE" .
 fi
 
-$SUDO docker run $TTY --rm -v "$SCRIPT_DIR":/usr/src "$DOCKER_IMAGE" "$@"
+$SUDO docker run $TTY --rm -v "$SCRIPT_DIR":/working "$DOCKER_IMAGE" "$@"
 
 popd >/dev/null || exit 1

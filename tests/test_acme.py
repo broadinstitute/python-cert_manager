@@ -257,10 +257,10 @@ def _test_find_test_factory(params=None):
         api_params[params_to_api["org_id"]] = str(self.org_id)
         valid_response = [
             entry for entry in self.valid_response
-            if all([
+            if all(
                 str(entry[k]).lower().find(str(api_params[k]).lower()) != -1
                 for k in api_params
-            ])
+            )
         ]
         # Setup the mocked response
         responses.add(
