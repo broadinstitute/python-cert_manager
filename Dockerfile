@@ -4,7 +4,6 @@ COPY Pipfile* /usr/src/
 
 WORKDIR /usr/src
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN apk update \
     && apk add bash gcc git libffi-dev libxml2-dev libxslt-dev musl-dev openssl-dev rust \
     && pip install pipenv==2018.11.26 --upgrade \
