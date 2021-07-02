@@ -209,14 +209,14 @@ class TestAddHeaders(TestClient):
         self.client.add_headers(headers)
 
         # Make sure the new headers make their way into the internal requests.Session object
-        for head in headers:
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(headers[head], self.client._Client__session.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in self.client._Client__session.headers)
+            self.assertEqual(hval, self.client._Client__session.headers[header])
 
         # Make sure the original headers are still in the internal requests.Session object
-        for head in self.cfixt.headers:
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], self.client._Client__session.headers[head])
+        for header in self.cfixt.headers:
+            self.assertTrue(header in self.client._Client__session.headers)
+            self.assertEqual(self.cfixt.headers[header], self.client._Client__session.headers[header])
 
     def test_replace(self):
         """The already existing header should be modified."""
@@ -225,16 +225,16 @@ class TestAddHeaders(TestClient):
         self.client.add_headers(headers)
 
         # Make sure the new headers make their way into the internal requests.Session object
-        for head in headers:
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(headers[head], self.client._Client__session.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in self.client._Client__session.headers)
+            self.assertEqual(hval, self.client._Client__session.headers[header])
 
         # Removed the modified header from the check as it was checked above
         del self.cfixt.headers["User-Agent"]
         # Make sure the original headers are still in the internal requests.Session object
-        for head in self.cfixt.headers:
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], self.client._Client__session.headers[head])
+        for header in self.cfixt.headers:
+            self.assertTrue(header in self.client._Client__session.headers)
+            self.assertEqual(self.cfixt.headers[header], self.client._Client__session.headers[header])
 
     def test_not_dictionary(self):
         """It should raise an exception when not passed a dictionary."""
@@ -320,9 +320,9 @@ class TestGet(TestClient):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
-        for head in headers:
-            self.assertTrue(head in responses.calls[0].request.headers)
-            self.assertEqual(headers[head], responses.calls[0].request.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in responses.calls[0].request.headers)
+            self.assertEqual(hval, responses.calls[0].request.headers[header])
 
     @responses.activate
     def test_params(self):
@@ -407,9 +407,9 @@ class TestPost(TestClient):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
-        for head in headers:
-            self.assertTrue(head in responses.calls[0].request.headers)
-            self.assertEqual(headers[head], responses.calls[0].request.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in responses.calls[0].request.headers)
+            self.assertEqual(hval, responses.calls[0].request.headers[header])
 
     @responses.activate
     def test_failure(self):
@@ -471,9 +471,9 @@ class TestPut(TestClient):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
-        for head in headers:
-            self.assertTrue(head in responses.calls[0].request.headers)
-            self.assertEqual(headers[head], responses.calls[0].request.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in responses.calls[0].request.headers)
+            self.assertEqual(hval, responses.calls[0].request.headers[header])
 
     @responses.activate
     def test_failure(self):
@@ -529,9 +529,9 @@ class TestDelete(TestClient):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
-        for head in headers:
-            self.assertTrue(head in responses.calls[0].request.headers)
-            self.assertEqual(headers[head], responses.calls[0].request.headers[head])
+        for header, hval in headers.items():
+            self.assertTrue(header in responses.calls[0].request.headers)
+            self.assertEqual(hval, responses.calls[0].request.headers[header])
 
     @responses.activate
     def test_failure(self):
