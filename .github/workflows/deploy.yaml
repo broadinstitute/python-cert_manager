@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: 'Checkout repo'
-        uses: 'actions/checkout@v2'
+        uses: 'actions/checkout@v2.3.4'
 
       - name: 'Set up Python 3.8'
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2.2.2
         with:
           python-version: 3.8
 
@@ -31,7 +31,7 @@ jobs:
           echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
 
       - name: 'Cache poetry'
-        uses: 'actions/cache@v1'
+        uses: 'actions/cache@v2.1.6'
         with:
           path: '.venv'
           key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}

@@ -70,7 +70,7 @@ class ACMEAccount(Endpoint):
         kwargs["org_id"] = org_id
         params = {
             self._find_params_to_api[param]: kwargs.get(param)
-            for param in self._find_params_to_api
+            for param in self._find_params_to_api  # pylint:disable=consider-using-dict-items
         }
 
         result = self._client.get(self._api_url, params=params)
