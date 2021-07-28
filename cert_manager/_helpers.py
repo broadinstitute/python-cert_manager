@@ -107,20 +107,20 @@ def version_hack(service, version="v1"):
             if not version:
                 raise Exception("version_hack: No version provided")
 
-            api = self.create_api_url(self.base_url, service, version)
+            api = self.create_api_url(self._client.base_url, service, version)
             save_url = self.api_url
-            self.api_url = api
+            self._api_url = api
 
             try:
                 retval = func(self, *args, **kwargs)
 
                 # Reset the api_url back to the original
-                self.api_url = save_url
+                self._api_url = save_url
 
                 return retval
             except Exception as exc:
                 # Reset the api_url back to the original
-                self.api_url = save_url
+                self._api_url = save_url
                 raise exc
 
         return api_version  # true decorator
