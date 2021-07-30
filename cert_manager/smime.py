@@ -42,7 +42,7 @@ class SMIME(Certificates):
         :param str email: Person email
         :return iter: An iterator object is returned to cycle through the certificates
         """
-        email = kwargs.get("email")
+        email = kwargs["email"]
 
         result = self._client.get(self._url(f"/byPersonEmail/{email}"))
         return result.json()
@@ -122,7 +122,8 @@ class SMIME(Certificates):
         :param int backend_cert_id: The Certificate ID given on enroll success
         :return str: the string representing the certificate in the requested format
         """
-
+        if not backend_cert_id:
+            raise ValueError("Argument 'backend_cert_id' can't be None")
         url = self._url(f"/collect/{backend_cert_id}")
 
         try:
@@ -149,8 +150,8 @@ class SMIME(Certificates):
         :param bool revoke: Revoke previous certificate if true. Default is True
         """
         # Retrieve all the arguments
-        backend_cert_id = kwargs.get("backend_cert_id")
-        csr = kwargs.get("csr")
+        backend_cert_id = kwargs["backend_cert_id"]
+        csr = kwargs["csr"]
         reason = kwargs.get("reason")
         revoke = kwargs.get("revoke", True)
 
@@ -167,9 +168,12 @@ class SMIME(Certificates):
         """
         url = self._url(f"/revoke/order/{backend_cert_id}")
 
+        if not backend_cert_id:
+            raise ValueError("Argument 'backend_cert_id' can't be None")
+
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
         if (not reason) or (len(reason) > 511):
-            raise Exception("Sectigo limit: reason must be > 0 character and < 512 characters")
+            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
 
         data = {"reason": reason}
         self._client.post(url, data=data)
@@ -183,9 +187,12 @@ class SMIME(Certificates):
         """
         url = self._url("/revoke")
 
+        if not email:
+            raise ValueError("Argument 'email' can't be empty or None")
+
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
         if (not reason) or (len(reason) > 511):
-            raise Exception("Sectigo limit: reason must be > 0 character and < 512 characters")
+            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
 
         data = {"email": email, "reason": reason}
         self._client.post(url, data=data)
