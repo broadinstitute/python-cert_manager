@@ -3,7 +3,7 @@
 import logging
 from requests.exceptions import HTTPError
 from ._certificates import Certificates
-from ._helpers import Pending
+from ._helpers import Pending, Revoked
 from ._helpers import paginate, version_hack
 
 LOGGER = logging.getLogger(__name__)
@@ -125,16 +125,16 @@ class SMIME(Certificates):
 
         url = self._url(f"/collect/{backend_cert_id}")
 
-        """ TODO: The 'Client' class doesn't allow to get error message that are in JSON into the body, because
-        it raises an exception if the Status Code is >= 400. Should be refactored to either:
-            * Collect and parse the error and raise custom exceptions depending on the error
-            * Don't raise exception and let the calling function manage the error
-        For example in this case, an error 400 could be a pending or revoked certificate.
-        """
         try:
             result = self._client.get(url)
         except HTTPError as exc:
-            raise Pending(f"certificate {backend_cert_id} still in 'pending' state") from exc
+            err_code = exc.response.json().get("code")
+            if err_code == Revoked.CODE:
+                raise Pending(f"certificate {backend_cert_id} in 'revoked' state") from exc
+            elif err_code == Pending.CODE:
+                raise Pending(f"certificate {backend_cert_id} still in 'pending' state") from exc
+            else:
+                raise exc
 
         # The certificate is ready for collection
         return result.content.decode(result.encoding)
@@ -156,9 +156,7 @@ class SMIME(Certificates):
 
         url = self._url(f"/replace/order/{backend_cert_id}")
         data = {"csr": csr, "reason": reason, "revoke": revoke}
-        print(f"Replace: POST on {url} with data = {data}")
-        result = self._client.post(url, data=data)
-        result.raise_for_status()
+        self._client.post(url, data=data)
 
     def revoke(self, backend_cert_id, reason=""):
         """Revoke a client certificate specified by the certificate ID.
@@ -174,9 +172,7 @@ class SMIME(Certificates):
             raise Exception("Sectigo limit: reason must be > 0 character and < 512 characters")
 
         data = {"reason": reason}
-
-        result = self._client.post(url, data=data)
-        result.raise_for_status()
+        self._client.post(url, data=data)
 
     def revoke_by_email(self, email, reason=""):
         """Revoke all client certificate related to an email
@@ -192,6 +188,4 @@ class SMIME(Certificates):
             raise Exception("Sectigo limit: reason must be > 0 character and < 512 characters")
 
         data = {"email": email, "reason": reason}
-
-        result = self._client.post(url, data=data)
-        result.raise_for_status()
+        self._client.post(url, data=data)
