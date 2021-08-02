@@ -132,7 +132,7 @@ class SMIME(Certificates):
         except HTTPError as exc:
             err_code = exc.response.json().get("code")
             if err_code == Revoked.CODE:
-                raise Pending(f"certificate {cert_id} in 'revoked' state") from exc
+                raise Revoked(f"certificate {cert_id} in 'revoked' state") from exc
             if err_code == Pending.CODE:
                 raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
             raise exc

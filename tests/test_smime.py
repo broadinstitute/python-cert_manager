@@ -345,7 +345,7 @@ class TestCollect(TestSMIME):
 
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
-        self.assertRaises(Pending, smime.collect, self.test_id)
+        self.assertRaises(Revoked, smime.collect, self.test_id)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
