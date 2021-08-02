@@ -15,6 +15,7 @@ from cert_manager._helpers import Pending, Revoked
 from .lib.testbase import ClientFixture
 from .test_certificates import TestCertificates
 
+
 # pylint: disable=too-few-public-methods
 class TestSMIME(TestCase):
     """Serve as a Base class for all tests of the Certificates class."""
@@ -96,7 +97,7 @@ class TestListByEmail(TestSMIME):
         self.api_version = "v2"     # this endpoint is in v2
         self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
         self.test_url = f"{self.api_url}/byPersonEmail/{self.test_email}"
-        
+
         self.test_result = [
             {"subject": "fry@example.org"}, {"subject": "leila@example.org"},
             {"subject": "farnsworth@example.org"}, {"subject": "bender@example.org"}
@@ -140,6 +141,7 @@ class TestListByEmail(TestSMIME):
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
 
+# pylint: disable=too-many-instance-attributes
 class TestEnroll(TestSMIME):
     """Test the enroll method."""
 
@@ -158,8 +160,8 @@ class TestEnroll(TestSMIME):
         self.test_types_url = f"{self.api_url}/types"
         self.types_data = [
             {
-                "id":15702,"name":"Sectigo SMIME","description":"","terms":[365],
-                "keyTypes":{"RSA":["2048","3072","4096","8192"]},"useSecondaryOrgName":False
+                "id": 15702, "name": "Sectigo SMIME", "description": "", "terms": [365],
+                "keyTypes": {"RSA": ["2048", "3072", "4096", "8192"]}, "useSecondaryOrgName": False,
             },
         ]
         self.test_ct_name = "Sectigo SMIME"
@@ -179,7 +181,7 @@ class TestEnroll(TestSMIME):
         self.test_url = f"{self.api_url}/enroll"
         self.test_csr = TestCertificates.fake_csr()
 
-        self.test_result = json.dumps({"orderNumber":123456,"backendCertId":"123456"})
+        self.test_result = json.dumps({"orderNumber": 123456, "backendCertId": "123456"})
 
     def test_defaults(self):
         """The function should raise an exception when no params are passed"""
@@ -281,6 +283,7 @@ class TestEnroll(TestSMIME):
         self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
         self.assertEqual(responses.calls[2].request.url, self.test_url)
 
+
 class TestCollect(TestSMIME):
     """Test the collect method."""
 
@@ -316,7 +319,7 @@ class TestCollect(TestSMIME):
     def test_no_cert_id(self):
         """The function should raise a ValueError exception if no cert_id is passed"""
         smime = SMIME(client=self.client)
-        self.assertRaises(ValueError, smime.collect, None)  
+        self.assertRaises(ValueError, smime.collect, None)
 
     @responses.activate
     def test_pending(self):
