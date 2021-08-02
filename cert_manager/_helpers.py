@@ -109,7 +109,7 @@ def version_hack(service, version="v1"):
 
             api = self.create_api_url(self._client.base_url, service, version)  # pylint: disable=protected-access
             save_url = self.api_url
-            self._api_url = api # pylint: disable=protected-access
+            self._api_url = api  # pylint: disable=protected-access
 
             try:
                 retval = func(self, *args, **kwargs)
@@ -160,6 +160,7 @@ def paginate(func):
 class Pending(Exception):
     """Serve as a generic Exception indicating a certificate is in a pending state."""
     CODE = -183
+
 
 class Revoked(Exception):
     """Serve as a generic Exception indicating a certificate has been revoked"""

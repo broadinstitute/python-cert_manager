@@ -8,6 +8,7 @@ from ._helpers import paginate, version_hack
 
 LOGGER = logging.getLogger(__name__)
 
+
 class SMIME(Certificates):
     """Query the Sectigo Cert Manager REST API for S/MIME data."""
 
@@ -38,7 +39,7 @@ class SMIME(Certificates):
     @version_hack(service="smime", version="v2")
     def list_by_email(self, **kwargs):
         """Return a list of all client certificates for a person with given email
-        
+
         :param str email: Person email
         :return iter: An iterator object is returned to cycle through the certificates
         """
@@ -114,28 +115,27 @@ class SMIME(Certificates):
 
         return result.json()
 
-    def collect(self, backend_cert_id):
+    def collect(self, cert_id):
         """Retrieve an existing client certificate from the API.
 
         This method will raise a Pending exception if the certificate is still in a pending state.
 
-        :param int backend_cert_id: The Certificate ID given on enroll success
+        :param int cert_id: The Certificate ID given on enroll success
         :return str: the string representing the certificate in the requested format
         """
-        if not backend_cert_id:
-            raise ValueError("Argument 'backend_cert_id' can't be None")
-        url = self._url(f"/collect/{backend_cert_id}")
+        if not cert_id:
+            raise ValueError("Argument 'cert_id' can't be None")
+        url = self._url(f"/collect/{cert_id}")
 
         try:
             result = self._client.get(url)
         except HTTPError as exc:
             err_code = exc.response.json().get("code")
             if err_code == Revoked.CODE:
-                raise Pending(f"certificate {backend_cert_id} in 'revoked' state") from exc
-            elif err_code == Pending.CODE:
-                raise Pending(f"certificate {backend_cert_id} still in 'pending' state") from exc
-            else:
-                raise exc
+                raise Pending(f"certificate {cert_id} in 'revoked' state") from exc
+            if err_code == Pending.CODE:
+                raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
+            raise exc
 
         # The certificate is ready for collection
         return result.content.decode(result.encoding)
@@ -144,32 +144,32 @@ class SMIME(Certificates):
     def replace(self, **kwargs):
         """Replace a pre-existing client certificate.
 
-        :param int backend_cert_id: The certificate ID
+        :param int cert_id: The certificate ID
         :param string csr: The Certificate Signing Request (CSR)
         :param str reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
         :param bool revoke: Revoke previous certificate if true. Default is True
         """
         # Retrieve all the arguments
-        backend_cert_id = kwargs["backend_cert_id"]
+        cert_id = kwargs["cert_id"]
         csr = kwargs["csr"]
         reason = kwargs.get("reason")
         revoke = kwargs.get("revoke", True)
 
-        url = self._url(f"/replace/order/{backend_cert_id}")
+        url = self._url(f"/replace/order/{cert_id}")
         data = {"csr": csr, "reason": reason, "revoke": revoke}
         self._client.post(url, data=data)
 
-    def revoke(self, backend_cert_id, reason=""):
+    def revoke(self, cert_id, reason=""):
         """Revoke a client certificate specified by the certificate ID.
 
         :param int cert_id: The certificate ID
         :param str reason: The Reason for revocation.
             Reason can be up to 512 characters and cannot be blank (i.e. empty string)
         """
-        url = self._url(f"/revoke/order/{backend_cert_id}")
+        url = self._url(f"/revoke/order/{cert_id}")
 
-        if not backend_cert_id:
-            raise ValueError("Argument 'backend_cert_id' can't be None")
+        if not cert_id:
+            raise ValueError("Argument 'cert_id' can't be None")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
         if (not reason) or (len(reason) > 511):

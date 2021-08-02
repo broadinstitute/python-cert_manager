@@ -225,8 +225,8 @@ class TestEnroll(TestSMIME):
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
         self.assertRaises(
-            Exception, smime.enroll, cert_type_name=ct_name, csr=self.test_csr, 
-            term=self.test_term, org_id=self.test_org, email=self.test_email, 
+            Exception, smime.enroll, cert_type_name=ct_name, csr=self.test_csr,
+            term=self.test_term, org_id=self.test_org, email=self.test_email,
             first_name=self.test_first_name, last_name=self.test_last_name,
         )
 
@@ -247,9 +247,9 @@ class TestEnroll(TestSMIME):
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
         self.assertRaises(
-            Exception, smime.enroll, cert_type_name=self.test_ct_name, csr=self.test_csr, 
-            term=term, org_id=self.test_org, email=self.test_email, 
-            first_name=self.test_first_name, last_name=self.test_last_name,   
+            Exception, smime.enroll, cert_type_name=self.test_ct_name, csr=self.test_csr,
+            term=term, org_id=self.test_org, email=self.test_email,
+            first_name=self.test_first_name, last_name=self.test_last_name,
         )
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -269,9 +269,9 @@ class TestEnroll(TestSMIME):
         # Call the function
         smime = SMIME(client=self.client)
         resp = smime.enroll(
-            cert_type_name=self.test_ct_name, csr=self.test_csr, 
-            term=self.test_term, org_id=self.test_org, email=self.test_email, 
-            first_name=self.test_first_name, last_name=self.test_last_name, custom_fields=self.test_cf   
+            cert_type_name=self.test_ct_name, csr=self.test_csr,
+            term=self.test_term, org_id=self.test_org, email=self.test_email,
+            first_name=self.test_first_name, last_name=self.test_last_name, custom_fields=self.test_cf,
         )
 
         # Verify all the query information
@@ -306,7 +306,7 @@ class TestCollect(TestSMIME):
 
         # Call the function
         smime = SMIME(client=self.client)
-        resp = smime.collect(backend_cert_id=self.test_id)
+        resp = smime.collect(cert_id=self.test_id)
 
         # Verify all the query information
         self.assertEqual(resp, self.test_cert)
@@ -322,7 +322,7 @@ class TestCollect(TestSMIME):
     def test_pending(self):
         """It should raise a Pending exception if an Http error with the pending code in the body is returned."""
         # Setup the mocked response
-        body = json.dumps({"code":Pending.CODE,"description":"Certificate is not collectable."})
+        body = json.dumps({"code": Pending.CODE, "description": "Certificate is not collectable."})
         responses.add(responses.GET, self.test_url, body=body, status=400)
 
         # Call the function, expecting an exception
@@ -337,7 +337,7 @@ class TestCollect(TestSMIME):
     def test_revoked(self):
         """It should raise a Revoked exception if an Http error with the pending code in the body is returned."""
         # Setup the mocked response
-        body = json.dumps({"code":Revoked.CODE,"description":"The Certificate has been revoked!"})
+        body = json.dumps({"code": Revoked.CODE, "description": "The Certificate has been revoked!"})
         responses.add(responses.GET, self.test_url, body=body, status=400)
 
         # Call the function, expecting an exception
@@ -390,7 +390,7 @@ class TestReplace(TestSMIME):
         # Call the function
         smime = SMIME(client=self.client)
         smime.replace(
-            backend_cert_id=self.test_cert_id, csr=self.test_csr,
+            cert_id=self.test_cert_id, csr=self.test_csr,
         )
 
         # Verify all the query information
@@ -422,7 +422,7 @@ class TestRevoke(TestSMIME):
         # Call the function
         smime = SMIME(client=self.client)
         smime.revoke(
-            backend_cert_id=self.test_cert_id, reason="Beacause",
+            cert_id=self.test_cert_id, reason="Beacause",
         )
 
         # Verify all the query information
@@ -432,7 +432,7 @@ class TestRevoke(TestSMIME):
     def test_no_cert_id(self):
         """The function should raise a ValueError exception if no cert_id is passed"""
         smime = SMIME(client=self.client)
-        self.assertRaises(ValueError, smime.revoke, None)    
+        self.assertRaises(ValueError, smime.revoke, None)
 
     def test_no_reason(self):
         """It should raise a ValueError exception if the reason is left empty."""
@@ -448,7 +448,7 @@ class TestRevoke(TestSMIME):
 
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
-        self.assertRaises(HTTPError, smime.revoke, backend_cert_id=self.test_cert_id, reason="Because")
+        self.assertRaises(HTTPError, smime.revoke, cert_id=self.test_cert_id, reason="Because")
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
