@@ -82,7 +82,7 @@ class SMIME(Certificates):
         common_name = kwargs.get("common_name")
         term = kwargs.get("term")
         org_id = kwargs.get("org_id")
-        custom_fields = kwargs.get("custom_fields", list())
+        custom_fields = kwargs.get("custom_fields", [])
         eppn = kwargs.get("eppn")
         upn = kwargs.get("upn")
 

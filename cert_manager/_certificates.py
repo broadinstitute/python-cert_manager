@@ -152,7 +152,7 @@ class Certificates(Endpoint):
         org_id = kwargs.get("org_id")
         subject_alt_names = kwargs.get("subject_alt_names", None)
         external_requester = kwargs.get("external_requester", None)
-        custom_fields = kwargs.get("custom_fields", list())
+        custom_fields = kwargs.get("custom_fields", [])
 
         # Make sure a valid certificate type name was provided
         if cert_type_name not in self.types:
