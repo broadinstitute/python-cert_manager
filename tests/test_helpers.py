@@ -168,13 +168,13 @@ class TestTrafficLog(TestCase):
         # Test that all the logging calls happen as expected
         self.assertEqual(self.mock_logger.debug.call_count, 6)
         self.mock_logger.debug.assert_any_call(
-            "Performing a %s on url: %s" % ("wrapped_function".upper(), self.test_url)
+            f"Performing a {'wrapped_function'.upper()} on url: {self.test_url}"
         )
-        self.mock_logger.debug.assert_any_call("Extra request headers: %s" % self.test_headers)
-        self.mock_logger.debug.assert_any_call("Data: %s" % self.test_data)
+        self.mock_logger.debug.assert_any_call(f"Extra request headers: {self.test_headers}")
+        self.mock_logger.debug.assert_any_call(f"Data: {self.test_data}")
         self.mock_logger.debug.assert_any_call("Result code: 200")
-        self.mock_logger.debug.assert_any_call("Result headers: %s" % self.res_headers)
-        self.mock_logger.debug.assert_any_call('Text result: %s' % json.dumps(self.test_json_resp))
+        self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
+        self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_correct_positional(self):
         """Data should be logged to the provided logger if passed as positional arguments."""
@@ -187,13 +187,13 @@ class TestTrafficLog(TestCase):
         # Test that all the logging calls happen as expected
         self.assertEqual(self.mock_logger.debug.call_count, 6)
         self.mock_logger.debug.assert_any_call(
-            "Performing a %s on url: %s" % ("wrapped_function".upper(), self.test_url)
+            f"Performing a {'wrapped_function'.upper()} on url: {self.test_url}"
         )
-        self.mock_logger.debug.assert_any_call("Extra request headers: %s" % self.test_headers)
-        self.mock_logger.debug.assert_any_call("Data: %s" % self.test_data)
+        self.mock_logger.debug.assert_any_call(f"Extra request headers: {self.test_headers}")
+        self.mock_logger.debug.assert_any_call(f"Data: {self.test_data}")
         self.mock_logger.debug.assert_any_call("Result code: 200")
-        self.mock_logger.debug.assert_any_call("Result headers: %s" % self.res_headers)
-        self.mock_logger.debug.assert_any_call('Text result: %s' % json.dumps(self.test_json_resp))
+        self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
+        self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_fewer_lines(self):
         """Some logs should not be printed if the values are empty."""
@@ -203,11 +203,11 @@ class TestTrafficLog(TestCase):
         # Test that all the logging calls happen as expected
         self.assertEqual(self.mock_logger.debug.call_count, 4)
         self.mock_logger.debug.assert_any_call(
-            "Performing a %s on url: %s" % ("wrapped_function".upper(), self.test_url)
+            f"Performing a {'wrapped_function'.upper()} on url: {self.test_url}"
         )
         self.mock_logger.debug.assert_any_call("Result code: 200")
-        self.mock_logger.debug.assert_any_call("Result headers: %s" % self.res_headers)
-        self.mock_logger.debug.assert_any_call('Text result: %s' % json.dumps(self.test_json_resp))
+        self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
+        self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_inner_exception(self):
         """An exception should be raised by the wrapper if an exception is raised by the wrapped function."""
@@ -224,8 +224,8 @@ class TestTrafficLog(TestCase):
         # Make sure the proper exception is raised
         self.assertRaisesRegex(requests.exceptions.HTTPError, err_msg, self.wrapped_error_function, url=self.test_url)
         self.mock_logger.debug.assert_any_call("Result code: 404")
-        self.mock_logger.debug.assert_any_call("Result headers: %s" % self.res_headers)
-        self.mock_logger.debug.assert_any_call('Text result: %s' % json.dumps(self.test_json_resp))
+        self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
+        self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_bad_param_exception(self):
         """An exception should be raised by wrapper if no logging instance is provided."""

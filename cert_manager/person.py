@@ -37,7 +37,7 @@ class Person(Endpoint):
         # So, basically: test@test.domain.com -> test%40test%252Edomain%252Ecom
         quoted_email = quote(email.replace(".", "%2E"))
 
-        url = self._url("/id/byEmail/%s" % quoted_email)
+        url = self._url(f"/id/byEmail/{quoted_email}")
 
         result = self._client.get(url)
 

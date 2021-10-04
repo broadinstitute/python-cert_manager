@@ -31,7 +31,7 @@ class TestCertificates(TestCase):
         # Set some default values
         self.ep_path = "/test"
         self.api_version = "v1"
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
 
         # Create a Certificate object to use in any tests that need one
         self.certobj = Certificates(client=self.client, endpoint=self.ep_path, api_version=self.api_version)
@@ -42,7 +42,7 @@ class TestCertificates(TestCase):
         data = "-----BEGIN CERTIFICATE REQUEST-----\n"
         for row in range(1, 18):
             char = chr(row + 64)
-            data += char * 64 + "\n"
+            data += f"{char * 64}\n"
         data += "-----END CERTIFICATE REQUEST-----\n"
 
         return data
@@ -55,7 +55,7 @@ class TestCertificates(TestCase):
             char = chr(row + 64)
             if row > 26:
                 char = chr(row + 70)
-            data += char * 64 + "\n"
+            data += f"{char * 64}\n"
         data += "-----END CERTIFICATE-----\n"
 
         return data
@@ -76,7 +76,7 @@ class TestInit(TestCertificates):
     def test_version(self):
         """Parameters should be set correctly inside the class with a custom version."""
         version = "v2"
-        api_url = self.cfixt.base_url + self.ep_path + "/" + version
+        api_url = f"{self.cfixt.base_url}{self.ep_path}/{version}"
 
         end = Certificates(client=self.client, endpoint=self.ep_path, api_version=version)
 
@@ -93,7 +93,7 @@ class TestTypes(TestCertificates):
         """Initialize the class."""
         super().setUp()
 
-        self.test_url = self.api_url + "/types"
+        self.test_url = f"{self.api_url}/types"
 
         self.types_data = [
             {'id': 224, 'name': 'InCommon SSL (SHA-2)', 'terms': [365, 730]},
@@ -178,7 +178,7 @@ class TestCustomFields(TestCertificates):
         """Initialize the class."""
         super().setUp()
 
-        self.test_url = self.api_url + "/customFields"
+        self.test_url = f"{self.api_url}/customFields"
 
         self.cf_data = [
             [{"id": 57, "name": "testName", "mandatory": True}]
@@ -235,7 +235,7 @@ class TestCollect(TestCertificates):
 
         self.test_id = 121212
         self.test_type = "x509CO"
-        self.test_url = self.api_url + "/collect/%d/%s" % (self.test_id, self.test_type)
+        self.test_url = f"{self.api_url}/collect/{self.test_id}/{self.test_type}"
 
         self.test_cert = TestCollect.fake_cert()
 
@@ -305,7 +305,7 @@ class TestEnroll(TestCertificates):
         self.test_term = 365
         self.test_org = 1234
         self.test_san = "blah.foo,baz.com"
-        self.test_url = self.api_url + "/enroll"
+        self.test_url = f"{self.api_url}/enroll"
         self.test_external_requester = "email@domain.com"
         self.test_cf = [{"name": "testName", "value": "testValue"}]
 
@@ -313,13 +313,13 @@ class TestEnroll(TestCertificates):
         self.test_result = {"renewId": "xwL9Mux8-eLNTsweYYv86Z7r", "sslId": 999}
 
         # This also needs to get types, so we'll need to mock that call too
-        self.test_types_url = self.api_url + "/types"
+        self.test_types_url = f"{self.api_url}/types"
         self.types_data = [
             {'id': 224, 'name': 'InCommon SSL (SHA-2)', 'terms': [365, 730]},
         ]
 
         # This also needs to get custom fields, so we'll mock out that call too
-        self.test_customfields_url = self.api_url + "/customFields"
+        self.test_customfields_url = f"{self.api_url}/customFields"
         self.cf_data = [
             {"id": 57, "name": "testName", "mandatory": False},
             {"id": 59, "name": "testName2", "mandatory": False},
@@ -335,7 +335,7 @@ class TestEnroll(TestCertificates):
         data = "-----BEGIN CERTIFICATE REQUEST-----\n"
         for row in range(1, 18):
             char = chr(row + 64)
-            data += char * 64 + "\n"
+            data += f"{char * 64}\n"
         data += "-----END CERTIFICATE REQUEST-----\n"
 
         return data
@@ -359,7 +359,7 @@ class TestEnroll(TestCertificates):
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": self.test_external_requester
+            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester
         }
         post_json = json.dumps(post_data)
 
@@ -430,7 +430,7 @@ class TestEnroll(TestCertificates):
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": "Enrolled by %s" % self.client.user_agent, "externalRequester": self.test_external_requester,
+            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester,
             "customFields": self.test_cf
         }
         post_json = json.dumps(post_data)
@@ -573,7 +573,7 @@ class TestRenew(TestCertificates):
         super().setUp()
 
         self.test_id = 1234
-        self.test_url = self.api_url + "/renewById/%d" % self.test_id
+        self.test_url = f"{self.api_url}/renewById/{self.test_id}"
 
     @responses.activate
     def test_success(self):
@@ -611,7 +611,7 @@ class TestRevoke(TestCertificates):
         super().setUp()
 
         self.test_id = 1234
-        self.test_url = self.api_url + "/revoke/%d" % self.test_id
+        self.test_url = f"{self.api_url}/revoke/{self.test_id}"
 
     @responses.activate
     def test_success(self):
@@ -666,7 +666,7 @@ class TestReplace(TestCertificates):
         self.test_san = "test.blah.foo,test.baz.com"
         self.test_csr = TestReplace.fake_csr()
 
-        self.test_url = self.api_url + "/replace/%d" % self.test_id
+        self.test_url = f"{self.api_url}/replace/{self.test_id}"
 
     @responses.activate
     def test_success(self):

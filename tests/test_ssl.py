@@ -30,7 +30,7 @@ class TestSSL(TestCase):
         # Set some default values
         self.ep_path = "/ssl"
         self.api_version = "v1"
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
 
 
 class TestInit(TestSSL):
@@ -48,7 +48,7 @@ class TestInit(TestSSL):
     def test_version(self):
         """Parameters should be set correctly inside the class with a custom version."""
         version = "v2"
-        api_url = self.cfixt.base_url + self.ep_path + "/" + version
+        api_url = f"{self.cfixt.base_url}{self.ep_path}/{version}"
 
         end = SSL(client=self.client, api_version=version)
 
@@ -72,7 +72,7 @@ class TestGet(TestSSL):
         """The function should return the record for the cert_id passed."""
         # Setup the mocked response
         cert_id = "1234567"
-        test_url = "{}/{}".format(self.api_url, cert_id)
+        test_url = f"{self.api_url}/{cert_id}"
         test_result = {"commonName": "test.example.org"}
 
         responses.add(responses.GET, test_url, json=test_result, status=200)
@@ -90,7 +90,7 @@ class TestGet(TestSSL):
         """The function should raise an exception when the cert_id doesn't exist."""
         # Setup the mocked response
         cert_id = "1234567"
-        test_url = "{}/{}".format(self.api_url, cert_id)
+        test_url = f"{self.api_url}/{cert_id}"
         test_result = {"commonName": "test.example.org"}
 
         responses.add(responses.GET, test_url, json=test_result, status=400)
@@ -106,7 +106,7 @@ class TestList(TestSSL):
     def test_defaults(self):
         """The function should return all certificate records."""
         # Setup the mocked response
-        test_url = "{}?size=200&position=0".format(self.api_url)
+        test_url = f"{self.api_url}?size=200&position=0"
         test_result = [
             {"commonName": "test.example.org"}, {"commonName": "test2.example.org"},
             {"commonName": "test3.example.org"}, {"commonName": "test4.example.org"},

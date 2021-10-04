@@ -110,9 +110,7 @@ class ACMEAccount(Endpoint):
 
         # for status >= 400, HTTPError is raised
         if result.status_code != 201:
-            raise ACMEAccountCreationResponseError(
-                "Unexpected HTTP status {}".format(result.status_code)
-            )
+            raise ACMEAccountCreationResponseError(f"Unexpected HTTP status {result.status_code}")
         try:
             loc = result.headers["Location"]
             acme_id = re.search(r"/([0-9]+)$", loc)[1]
@@ -124,7 +122,7 @@ class ACMEAccount(Endpoint):
         # re.search does not match, at all or the first group
         except (TypeError, IndexError) as exc:
             raise ACMEAccountCreationResponseError(
-                "Did not find an ACME ID in Response Location URL: {}".format(loc)
+                f"Did not find an ACME ID in Response Location URL: {loc}"
             ) from exc
 
         return {"id": int(acme_id)}
@@ -169,7 +167,7 @@ class ACMEAccount(Endpoint):
                 for domain in domains
             ]
         }
-        url = self._url("/{}/domains".format(acme_id))
+        url = self._url(f"/{acme_id}/domains")
         result = self._client.post(url, data=data)
 
         return result.json()
@@ -188,7 +186,7 @@ class ACMEAccount(Endpoint):
                 for domain in domains
             ]
         }
-        url = self._url("/{}/domains".format(acme_id))
+        url = self._url(f"/{acme_id}/domains")
         # Client().delete does not accept json, so work around it
         result = self._client.session.request("DELETE", url, json=data)
         result.raise_for_status()

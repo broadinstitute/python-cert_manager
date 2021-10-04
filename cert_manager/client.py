@@ -82,7 +82,7 @@ class Client(object):
         """Return a user-agent string including the module version and Python version."""
         ver_info = list(map(str, sys.version_info))
         pyver = ".".join(ver_info[:3])
-        useragent = "cert_manager/%s (Python %s)" % (__version__.__version__, pyver)
+        useragent = f"cert_manager/{__version__.__version__} (Python {pyver})"
 
         return useragent
 

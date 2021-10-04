@@ -27,7 +27,7 @@ class TestEndpoint(TestCase):
         # Set some default values
         self.ep_path = "/test"
         self.api_version = "v1"
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
 
 
 class TestInit(TestEndpoint):
@@ -45,7 +45,7 @@ class TestInit(TestEndpoint):
     def test_version(self):
         """Parameters should be set correctly inside the class with a custom version."""
         version = "v2"
-        api_url = self.cfixt.base_url + self.ep_path + "/" + version
+        api_url = f"{self.cfixt.base_url}{self.ep_path}/{version}"
 
         end = Endpoint(client=self.client, endpoint=self.ep_path, api_version=version)
 
@@ -86,7 +86,7 @@ class TestCreateApiUrl(TestEndpoint):
     def test_extra_slashes(self):
         """Return a clean API URL when called with parameters containing extra slashes."""
         url = Endpoint.create_api_url(
-            self.cfixt.base_url + "///", "//" + self.ep_path, "////" + self.api_version
+            f"{self.cfixt.base_url}///", f"//{self.ep_path}", f"////{self.api_version}"
         )
 
         # Make sure the values match
@@ -101,7 +101,7 @@ class TestUrl(TestEndpoint):
         end = Endpoint(client=self.client, endpoint=self.ep_path)
 
         suffix = "/help"
-        url = self.api_url + suffix
+        url = f"{self.api_url}{suffix}"
 
         # Make sure the values match
         self.assertEqual(end._url(suffix), url)
@@ -111,7 +111,7 @@ class TestUrl(TestEndpoint):
         end = Endpoint(client=self.client, endpoint=self.ep_path)
 
         suffix = "help"
-        url = self.api_url + "/" + suffix
+        url = f"{self.api_url}/{suffix}"
 
         # Make sure the values match
         self.assertEqual(end._url(suffix), url)
@@ -121,7 +121,7 @@ class TestUrl(TestEndpoint):
         end = Endpoint(client=self.client, endpoint=self.ep_path)
 
         suffix = "//help///"
-        url = self.api_url + "/help"
+        url = f"{self.api_url}/help"
 
         # Make sure the values match
         self.assertEqual(end._url(suffix), url)

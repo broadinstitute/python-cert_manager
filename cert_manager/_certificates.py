@@ -105,9 +105,9 @@ class Certificates(Endpoint):
             # whose name matches that mandatory field name
             matching_fields = [f for f in custom_fields if f['name'] == field_name]
             if len(matching_fields) < 1:
-                raise Exception("Missing mandatory custom field {}".format(field_name))
+                raise Exception(f"Missing mandatory custom field {field_name}")
             if len(matching_fields) > 1:
-                raise Exception("Too many custom field objects with name {}".format(field_name))
+                raise Exception(f"Too many custom field objects with name {field_name}")
 
     def collect(self, cert_id, cert_format):
         """Retrieve an existing certificate from the API.
@@ -119,14 +119,14 @@ class Certificates(Endpoint):
         :return str: the string representing the certificate in the requested format
         """
         if cert_format not in self.valid_formats:
-            raise Exception("Invalid cert format %s provided" % cert_format)
+            raise Exception(f"Invalid cert format {cert_format} provided")
 
-        url = self._url("/collect/{}/{}".format(cert_id, cert_format))
+        url = self._url(f"/collect/{cert_id}/{cert_format}")
 
         try:
             result = self._client.get(url)
         except HTTPError as exc:
-            raise Pending("certificate %d still in 'pending' state" % cert_id) from exc
+            raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
 
         # The certificate is ready for collection
         return result.content.decode(result.encoding)
@@ -156,7 +156,7 @@ class Certificates(Endpoint):
 
         # Make sure a valid certificate type name was provided
         if cert_type_name not in self.types:
-            raise Exception("Incorrect certificate type specified: '{}'".format(cert_type_name))
+            raise Exception(f"Incorrect certificate type specified: '{cert_type_name}'")
 
         type_id = self.types[cert_type_name]["id"]
         terms = self.types[cert_type_name]["terms"]
@@ -166,14 +166,14 @@ class Certificates(Endpoint):
             # You have to do the list/map/str thing because join can only operate on
             # a list of strings, and this will be a list of numbers
             trm = ", ".join(list(map(str, terms)))
-            raise Exception("Incorrect term specified: {}.  Valid terms are {}.".format(term, trm))
+            raise Exception(f"Incorrect term specified: {term}.  Valid terms are {trm}.")
 
         self._validate_custom_fields(custom_fields)
 
         url = self._url("/enroll")
         data = {
             "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": subject_alt_names, "certType": type_id,
-            "numberServers": 1, "serverType": -1, "term": term, "comments": "Enrolled by %s" % self._client.user_agent,
+            "numberServers": 1, "serverType": -1, "term": term, "comments": f"Enrolled by {self._client.user_agent}",
             "externalRequester": external_requester
         }
         if custom_fields:
@@ -188,7 +188,7 @@ class Certificates(Endpoint):
         :param int cert_id: The certificate ID
         :return dict: The renewal result. "Successful" on success
         """
-        url = self._url("/renewById/{}".format(cert_id))
+        url = self._url(f"/renewById/{cert_id}")
         result = self._client.post(url, data="")
 
         return result.json()
@@ -211,7 +211,7 @@ class Certificates(Endpoint):
         reason = kwargs.get("reason")
         subject_alt_names = kwargs.get("subject_alt_names", None)
 
-        url = self._url("/replace/{}".format(cert_id))
+        url = self._url(f"/replace/{cert_id}")
         data = {"csr": csr, "commonName": common_name, "subjectAlternativeNames": subject_alt_names, "reason": reason}
 
         result = self._client.post(url, data=data)
@@ -227,7 +227,7 @@ class Certificates(Endpoint):
             Reason can be up to 512 characters and cannot be blank (i.e. empty string)
         :return dict: The revocation result. "Successful" on success
         """
-        url = self._url("/revoke/{}".format(cert_id))
+        url = self._url(f"/revoke/{cert_id}")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
         if (not reason) or (len(reason) > 511):

@@ -32,7 +32,7 @@ class TestSMIME(TestCase):
         # Set some default values
         self.ep_path = "/smime"
         self.api_version = "v1"
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
 
 
 class TestInit(TestSMIME):
@@ -50,7 +50,7 @@ class TestInit(TestSMIME):
     def test_version(self):
         """Parameters should be set correctly inside the class with a custom version."""
         version = "v2"
-        api_url = self.cfixt.base_url + self.ep_path + "/" + version
+        api_url = f"{self.cfixt.base_url}{self.ep_path}/{version}"
 
         end = SMIME(client=self.client, api_version=version)
 
@@ -95,7 +95,7 @@ class TestListByEmail(TestSMIME):
 
         self.test_email = "zoidberg@example.org"
         self.api_version = "v2"     # this endpoint is in v2
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
         self.test_url = f"{self.api_url}/byPersonEmail/{self.test_email}"
 
         self.test_result = [
@@ -167,7 +167,7 @@ class TestEnroll(TestSMIME):
         self.test_ct_name = "Sectigo SMIME"
 
         # This also needs to get custom fields, so we'll mock out that call too
-        self.test_customfields_url = self.api_url + "/customFields"
+        self.test_customfields_url = f"{self.api_url}/customFields"
         self.cf_data = [
             {"id": 57, "name": "testName", "mandatory": False},
             {"id": 59, "name": "testName2", "mandatory": False},
@@ -375,7 +375,7 @@ class TestReplace(TestSMIME):
 
         self.test_cert_id = 1234
         self.api_version = "v2"     # this endpoint is in v2
-        self.api_url = self.cfixt.base_url + self.ep_path + "/" + self.api_version
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
         self.test_url = f"{self.api_url}/replace/order/{self.test_cert_id}"
         self.test_csr = TestCertificates.fake_csr()
 
