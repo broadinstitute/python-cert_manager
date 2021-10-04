@@ -29,7 +29,7 @@ class TestPerson(TestCase):  # pylint: disable=too-few-public-methods
         self.cfixt = self.useFixture(ClientFixture())
         self.client = self.cfixt.client
 
-        self.api_url = "%s/person/v1" % self.cfixt.base_url
+        self.api_url = f"{self.cfixt.base_url}/person/v1"
 
 
 class TestInit(TestPerson):
@@ -53,7 +53,7 @@ class TestFind(TestPerson):
         # Setup the mocked response
         test_email = "test@example.com"
         quoted_email = quote(test_email.replace(".", "%2E"))
-        test_url = self.api_url + "/id/byEmail/" + quoted_email
+        test_url = f"{self.api_url}/id/byEmail/{quoted_email}"
         test_result = {"personId": 51}
 
         responses.add(responses.GET, test_url, json=test_result, status=200)
@@ -72,8 +72,8 @@ class TestFind(TestPerson):
         # Setup the mocked response
         test_email = "test@example.com"
         quoted_email = quote(test_email.replace(".", "%2E"))
-        test_url = self.api_url + "/id/byEmail/" + quoted_email
-        test_result = {"code": -105, "description": "Person with e-mail: %s was not found" % unquote(quoted_email)}
+        test_url = f"{self.api_url}/id/byEmail/{quoted_email}"
+        test_result = {"code": -105, "description": f"Person with e-mail: {unquote(quoted_email)} was not found"}
 
         responses.add(responses.GET, test_url, json=test_result, status=404)
 

@@ -26,24 +26,18 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
 
     def get_api_url(self, api_version="v1"):
         """Return the base ACME Account URL for a particular API version"""
-        return "{}/acme/{}/account".format(
-            self.cfixt.base_url,
-            api_version
-        )
+        return f"{self.cfixt.base_url}/acme/{api_version}/account"
 
     def get_acme_account_url(self, acme_id, **kwargs):
         """Return the ACME Account URL for the specified acme_id"""
-        return "{}/{}".format(
-            self.get_api_url(**kwargs),
-            acme_id
-        )
+        return f"{self.get_api_url(**kwargs)}/{acme_id}"
 
     def get_valid_response_entry(self, acme_id):
         """Return the first entry in valid_response with a matching acme_id"""
         for entry in self.valid_response:
             if entry["id"] == acme_id:
                 return entry
-        raise KeyError("id {} not found in valid_response".format(acme_id))
+        raise KeyError(f"id {acme_id} not found in valid_response")
 
     def get_acme_account_data(self, acme_id, domains=None):
         """Return a matching entry from valid_response as ACME account data,
@@ -624,7 +618,7 @@ def _test_add_remove_domains_test_factory(func):
         ])
         request_domains = acme_data["domains"]
         response_domains = ["example.com"]
-        api_url = "{}/domains".format(self.get_acme_account_url(acme_id))
+        api_url = f"{self.get_acme_account_url(acme_id)}/domains"
         if func.__name__.find("test_add") == 0:
             resp_key = "notAddedDomains"
         else:

@@ -129,7 +129,7 @@ class TestInit(TestClient):
         test_version = "10.9.8"
         ver_info = list(map(str, sys.version_info))
         pyver = ".".join(ver_info[:3])
-        user_agent = "cert_manager/%s (Python %s)" % (test_version, pyver)
+        user_agent = f"cert_manager/{test_version} (Python {pyver})"
 
         ver_patcher = mock.patch("cert_manager.__version__.__version__", test_version)
         ver_patcher.start()
@@ -287,7 +287,7 @@ class TestGet(TestClient):
         super().setUp()
 
         # An example URL to use in testing
-        self.test_url = self.cfixt.base_url + "/test/url"
+        self.test_url = f"{self.cfixt.base_url}/test/url"
 
     @responses.activate
     def test_success(self):
@@ -372,7 +372,7 @@ class TestPost(TestClient):
         super().setUp()
 
         # An example URL to use in testing
-        self.test_url = self.cfixt.base_url + "/test/url"
+        self.test_url = f"{self.cfixt.base_url}/test/url"
 
     @responses.activate
     def test_success(self):
@@ -436,7 +436,7 @@ class TestPut(TestClient):
         super().setUp()
 
         # An example URL to use in testing
-        self.test_url = self.cfixt.base_url + "/test/url"
+        self.test_url = f"{self.cfixt.base_url}/test/url"
 
     @responses.activate
     def test_success(self):
@@ -500,7 +500,7 @@ class TestDelete(TestClient):
         super().setUp()
 
         # An example URL to use in testing
-        self.test_url = self.cfixt.base_url + "/test/url"
+        self.test_url = f"{self.cfixt.base_url}/test/url"
 
     @responses.activate
     def test_success(self):

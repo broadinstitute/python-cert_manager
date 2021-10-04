@@ -56,20 +56,20 @@ def traffic_log(traffic_logger=None):
 
             # Print out before messages with URL and header data
             if url:
-                traffic_logger.debug("Performing a %s on url: %s" % (func_name, url))
+                traffic_logger.debug(f"Performing a {func_name} on url: {url}")
             if headers:
-                traffic_logger.debug("Extra request headers: %s" % headers)
+                traffic_logger.debug(f"Extra request headers: {headers}")
             if data:
-                traffic_logger.debug("Data: %s" % data)
+                traffic_logger.debug(f"Data: {data}")
 
             # Run the wrapped function
             try:
                 result = func(*args, **kwargs)
             except HTTPError as herr:
                 # If it's of type HTTPError, we can still usually get the result data
-                traffic_logger.debug("Result code: %s" % herr.response.status_code)
-                traffic_logger.debug("Result headers: %s" % herr.response.headers)
-                traffic_logger.debug("Text result: %s" % herr.response.text)
+                traffic_logger.debug(f"Result code: {herr.response.status_code}")
+                traffic_logger.debug(f"Result headers: {herr.response.headers}")
+                traffic_logger.debug(f"Text result: {herr.response.text}")
 
                 # Re-raise the original exception
                 raise herr
@@ -79,9 +79,9 @@ def traffic_log(traffic_logger=None):
 
             # If everything went fine, more logging
             if result:
-                traffic_logger.debug("Result code: %s" % result.status_code)
-                traffic_logger.debug("Result headers: %s" % result.headers)
-                traffic_logger.debug("Text result: %s" % result.text)
+                traffic_logger.debug(f"Result code: {result.status_code}")
+                traffic_logger.debug(f"Result headers: {result.headers}")
+                traffic_logger.debug(f"Text result: {result.text}")
             return result
         return log_traffic
     return decorator

@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: pylama
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.26.1
+    rev: v1.26.3
     hooks:
       - id: yamllint
         args:

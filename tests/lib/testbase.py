@@ -28,7 +28,7 @@ class ClientFixture(fixtures.Fixture):
         # data that the user-agent should have in it.
         ver_info = list(map(str, sys.version_info))
         pyver = ".".join(ver_info[:3])
-        self.user_agent = "cert_manager/%s (Python %s)" % (__version__.__version__, pyver)
+        self.user_agent = f"cert_manager/{__version__.__version__} (Python {pyver})"
 
         # Make a Client object
         self.client = Client(base_url=self.base_url, login_uri=self.login_uri, username=self.username,

@@ -29,7 +29,7 @@ class TestOrganization(TestCase):  # pylint: disable=too-few-public-methods
         self.cfixt = self.useFixture(ClientFixture())
         self.client = self.cfixt.client
 
-        self.api_url = "%s/organization/v1" % self.cfixt.base_url
+        self.api_url = f"{self.cfixt.base_url}/organization/v1"
 
         # Setup a test response one would expect normally
         self.valid_response = [
@@ -65,7 +65,7 @@ class TestInit(TestOrganization):
         """The URL should change if api_version is passed as a parameter."""
         # Set a new version
         version = "v3"
-        api_url = "%s/organization/%s" % (self.cfixt.base_url, version)
+        api_url = f"{self.cfixt.base_url}/organization/{version}"
 
         # Setup the mocked response
         responses.add(responses.GET, api_url, json=self.valid_response, status=200)

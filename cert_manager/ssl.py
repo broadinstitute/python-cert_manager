@@ -39,7 +39,7 @@ class SSL(Certificates):
 
     def get(self, cert_id):
         """Retrieve a certificate corresponding to the given certificate ID."""
-        url = self._url("/{}".format(cert_id))
+        url = self._url(f"/{cert_id}")
         result = self._client.get(url)
 
         return result.json()
