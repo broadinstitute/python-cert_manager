@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cert_manager"
-version = "2.0.0"
+version = "2.1.0"
 description = "Python interface to the Sectigo Certificate Manager REST API"
 license = "BSD-3-Clause"
 authors = ["Andrew Teixeira <teixeira@broadinstitute.org>"]

@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0](https://github.com/broadinstitute/python-cert_manager/tree/2.1.0) (2021-12-06)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.0.0...2.1.0)
+
+**Implemented enhancements:**
+
+- Move to f-strings [\#56](https://github.com/broadinstitute/python-cert_manager/pull/56) ([coreone](https://github.com/coreone))
+- First implementation of smime calls [\#39](https://github.com/broadinstitute/python-cert_manager/pull/39) ([joachimBurket](https://github.com/joachimBurket))
+
+**Closed issues:**
+
+- New release [\#61](https://github.com/broadinstitute/python-cert_manager/issues/61)
+- PyPi outdated version? [\#30](https://github.com/broadinstitute/python-cert_manager/issues/30)
+
 ## [2.0.0](https://github.com/broadinstitute/python-cert_manager/tree/2.0.0) (2021-05-26)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/1.0.0...2.0.0)
