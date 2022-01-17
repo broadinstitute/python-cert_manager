@@ -170,7 +170,7 @@ pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
 name = "green"
-version = "3.3.0"
+version = "3.4.0"
 description = "Green is a clean, colorful, fast python test runner."
 category = "dev"
 optional = false
@@ -880,7 +880,7 @@ flake8 = [
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
 green = [
-    {file = "green-3.3.0.tar.gz", hash = "sha256:a4d86f2dfa4ccbc86f24bcb9c9ab8bf34219c876c24e9f0603aab4dfe73bb575"},
+    {file = "green-3.4.0.tar.gz", hash = "sha256:6325681c94afd0f225c7ea2dcfedfde88c859d60da384d54c9ee70b91e434b14"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
