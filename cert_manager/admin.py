@@ -9,8 +9,10 @@ from ._endpoint import Endpoint
 
 LOGGER = logging.getLogger(__name__)
 
+
 class AdminCreationResponseError(Exception):
     """An error (other than HTTPError) occurred while processing Admin Creation API response"""
+
 
 class Admin(Endpoint):
     """Query the Sectigo Cert Manager REST API for Admin data."""

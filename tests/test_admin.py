@@ -19,7 +19,6 @@ from .lib.testbase import ClientFixture
 class TestAdmin(TestCase):  # pylint: disable=too-few-public-methods
     """Serve as a Base class for all tests of the Admin class."""
 
-
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
         # Call the inherited setUp method
@@ -33,23 +32,17 @@ class TestAdmin(TestCase):  # pylint: disable=too-few-public-methods
 
         # Setup a test response one would expect normally
         self.valid_response = [
-            {   'id': 1234,
-                'login': 'user1@example.com',
-                'forename': 'Test1',
-                'surname': 'User1',
-                'email': 'user1@example.com'
+            {
+                'id': 1234, 'login': 'user1@example.com', 'forename': 'Test1',
+                'surname': 'User1', 'email': 'user1@example.com'
             },
-            {   'id': 4321,
-                'login': 'user2@example.com',
-                'forename': 'Test2',
-                'surname': 'User2',
-                'email': 'user2@example.com'
+            {
+                'id': 4321, 'login': 'user2@example.com', 'forename': 'Test2',
+                'surname': 'User2', 'email': 'user2@example.com'
             },
-            {   'id': 4322,
-                'login': 'user3',
-                'forename': 'Test3',
-                'surname': 'User3',
-                'email': 'user3@example.com'
+            {
+                'id': 4322, 'login': 'user3', 'forename': 'Test3',
+                'surname': 'User3', 'email': 'user3@example.com'
             }
         ]
 
@@ -206,6 +199,7 @@ class TestGet(TestAdmin):
         admin = Admin(client=self.client)
         self.assertRaises(HTTPError, admin.get, admin_id)
 
+
 class TestGetIdps(TestAdmin):
     """Test the .get_idps method."""
 
@@ -288,7 +282,7 @@ class TestCreate(TestAdmin):
             'forename': 'Test1',
             'surname': 'User1',
             'password': 'password',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
         }
         response = admin.create(**post_data)
 
@@ -316,7 +310,7 @@ class TestCreate(TestAdmin):
             'forename': 'Test1',
             'surname': 'User1',
             'password': '',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
             'identityProviderId': 12,
             'idpPersonId': 'user1@example.com'
         }
@@ -342,11 +336,11 @@ class TestCreate(TestAdmin):
 
         create_args = {
             'login': 'user1@example.com',
-            'email': 'user1', # This would be a malformed email and would throw a 400 error from the API
+            'email': 'user1',  # This would be a malformed email and would throw a 400 error from the API
             'forename': 'Test1',
             'surname': 'User1',
             'password': 'password',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
         }
         self.assertRaises(ValueError, admin.create, **create_args)
 
@@ -372,10 +366,9 @@ class TestCreate(TestAdmin):
             'forename': 'Test1',
             'surname': 'User1',
             'password': 'password',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
-
 
     @responses.activate
     def test_create_failure_missing_location_header(self):
@@ -398,7 +391,7 @@ class TestCreate(TestAdmin):
             'forename': 'Test1',
             'surname': 'User1',
             'password': 'password',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
 
@@ -423,7 +416,7 @@ class TestCreate(TestAdmin):
             'forename': 'Test1',
             'surname': 'User1',
             'password': 'password',
-            'credentials': [{'role':'DRAO_SSL',"orgId":123}],
+            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
 
@@ -561,7 +554,6 @@ class TestUpdate(TestAdmin):
 
         admin = Admin(client=self.client)
 
-        create_args = {
-            'email': 'user1@example.com', #This malformed email would return an error from the API
-        }
-        self.assertRaises(ValueError, admin.update, admin_id, **create_args)
+        update_args = {'email': 'user1@example.com'}  # This malformed email would return an error from the API
+
+        self.assertRaises(ValueError, admin.update, admin_id, **update_args)
