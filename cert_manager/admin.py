@@ -27,11 +27,11 @@ class Admin(Endpoint):
         self.all()
 
     def all(self, force=False):
-        """Return a list of organizations from Sectigo.
+        """Return a list of admins from Sectigo.
 
         :param bool force: If set to True, force refreshing the data from the API
 
-        :return list: A list of dictionaries representing the organizations
+        :return list: A list of dictionaries representing the admins
         """
         if (self.__admins) and (not force):
             return self.__admins
@@ -89,11 +89,11 @@ class Admin(Endpoint):
         return {"id": int(admin_id)}
 
     def get(self, admin_id):
-        """Return a dictionary of admin account information.
+        """Return a dictionary of admin information.
 
-        :param int admin_id: The ID of the admin account to query
+        :param int admin_id: The ID of the admin to query
 
-        return dict: The account information
+        return dict: The admin information
         """
         url = self._url(str(admin_id))
         result = self._client.get(url)
@@ -111,9 +111,9 @@ class Admin(Endpoint):
         return result.json()
 
     def delete(self, admin_id):
-        """Delete an admin account.
+        """Delete an admin.
 
-        :param int admin_id: The ID of the acme account to delete
+        :param int admin_id: The ID of the admin to delete
 
         :return bool: Deletion success or failure
         """
@@ -123,9 +123,9 @@ class Admin(Endpoint):
         return result.ok
 
     def update(self, admin_id, **kwargs):
-        """Update an admin account.
+        """Update an admin.
 
-        :param int admin_id: The ID of the admin account to update
+        :param int admin_id: The ID of the admin to update
         :param dict kwargs: A dictionary of properties to update
 
         :return bool: Update success or failure
