@@ -52,12 +52,12 @@ class Admin(Endpoint):
         Return: return_description
         """
         data = {
-            'login': login,
-            'email': email,
-            'forename': forename,
-            'surname': surname,
-            'password': password,
-            'credentials': credentials,
+            "login": login,
+            "email": email,
+            "forename": forename,
+            "surname": surname,
+            "password": password,
+            "credentials": credentials,
         }
         for key, value in kwargs.items():
             data[key] = value
@@ -68,7 +68,7 @@ class Admin(Endpoint):
             status_code = exc.response.status_code
             if status_code == 400:
                 err_response = exc.response.json()
-                raise ValueError(err_response['description']) from exc
+                raise ValueError(err_response["description"]) from exc
             raise exc
 
         # for status >= 400, HTTPError is raised
@@ -107,7 +107,7 @@ class Admin(Endpoint):
 
         :return list: A list of dictionaries representing the IDPs
         """
-        url = self._url('idp')
+        url = self._url("idp")
         result = self._client.get(url)
 
         return result.json()
@@ -143,7 +143,7 @@ class Admin(Endpoint):
             status_code = exc.response.status_code
             if status_code == 400:
                 err_response = exc.response.json()
-                raise ValueError(err_response['description']) from exc
+                raise ValueError(err_response["description"]) from exc
             raise exc
 
         return result.ok

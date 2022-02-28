@@ -33,27 +33,27 @@ class TestAdmin(TestCase):  # pylint: disable=too-few-public-methods
         # Setup a test response one would expect normally
         self.valid_response = [
             {
-                'id': 1234, 'login': 'user1@example.com', 'forename': 'Test1',
-                'surname': 'User1', 'email': 'user1@example.com'
+                "id": 1234, "login": "user1@example.com", "forename": "Test1",
+                "surname": "User1", "email": "user1@example.com"
             },
             {
-                'id': 4321, 'login': 'user2@example.com', 'forename': 'Test2',
-                'surname': 'User2', 'email': 'user2@example.com'
+                "id": 4321, "login": "user2@example.com", "forename": "Test2",
+                "surname": "User2", "email": "user2@example.com"
             },
             {
-                'id': 4322, 'login': 'user3', 'forename': 'Test3',
-                'surname': 'User3', 'email': 'user3@example.com'
+                "id": 4322, "login": "user3", "forename": "Test3",
+                "surname": "User3", "email": "user3@example.com"
             }
         ]
 
         # Setup a test response for getting a specific Admin
         self.valid_individual_response = self.valid_response[0]
-        self.valid_individual_response['status'] = "Active"
+        self.valid_individual_response["status"] = "Active"
 
         # Setup a test response for IDPs
         self.valid_idp_response = [
-            {'id': 12, 'name': 'Example IDP 1'},
-            {'id': 34, 'name': 'Example IDP 2'}
+            {"id": 12, "name": "Example IDP 1"},
+            {"id": 34, "name": "Example IDP 2"}
         ]
 
         # Setup JSON to return in an error
@@ -273,21 +273,21 @@ class TestCreate(TestAdmin):
         # Setup the mocked response
         admin_id = 1234
         location = f"{self.api_url}/{str(admin_id)}"
-        responses.add(responses.POST, self.api_url, headers={'Location': location}, status=201)
+        responses.add(responses.POST, self.api_url, headers={"Location": location}, status=201)
 
         admin = Admin(client=self.client)
         post_data = {
-            'login': 'user1@example.com',
-            'email': 'user1@example.com',
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': 'password',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
+            "login": "user1@example.com",
+            "email": "user1@example.com",
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "password",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
         }
         response = admin.create(**post_data)
 
         self.assertEqual(response, {"id": admin_id})
-        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode('utf8'))
+        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode("utf8"))
 
     @responses.activate
     def test_create_success_optional_params(self):
@@ -301,23 +301,23 @@ class TestCreate(TestAdmin):
         # Setup the mocked response
         admin_id = 1234
         location = f"{self.api_url}/{str(admin_id)}"
-        responses.add(responses.POST, self.api_url, headers={'Location': location}, status=201)
+        responses.add(responses.POST, self.api_url, headers={"Location": location}, status=201)
 
         admin = Admin(client=self.client)
         post_data = {
-            'login': 'user1@example.com',
-            'email': 'user1@example.com',
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': '',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
-            'identityProviderId': 12,
-            'idpPersonId': 'user1@example.com'
+            "login": "user1@example.com",
+            "email": "user1@example.com",
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
+            "identityProviderId": 12,
+            "idpPersonId": "user1@example.com"
         }
         response = admin.create(**post_data)
 
         self.assertEqual(response, {"id": admin_id})
-        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode('utf8'))
+        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode("utf8"))
 
     @responses.activate
     def test_create_failure_http_error(self):
@@ -335,12 +335,12 @@ class TestCreate(TestAdmin):
         admin = Admin(client=self.client)
 
         create_args = {
-            'login': 'user1@example.com',
-            'email': 'user1',  # This would be a malformed email and would throw a 400 error from the API
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': 'password',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
+            "login": "user1@example.com",
+            "email": "user1",  # This would be a malformed email and would throw a 400 error from the API
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "password",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
         }
         self.assertRaises(ValueError, admin.create, **create_args)
 
@@ -361,12 +361,12 @@ class TestCreate(TestAdmin):
         admin = Admin(client=self.client)
 
         create_args = {
-            'login': 'user1@example.com',
-            'email': 'user1@example.com',
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': 'password',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
+            "login": "user1@example.com",
+            "email": "user1@example.com",
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "password",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
 
@@ -386,12 +386,12 @@ class TestCreate(TestAdmin):
         admin = Admin(client=self.client)
 
         create_args = {
-            'login': 'user1@example.com',
-            'email': 'user1@example.com',
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': 'password',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
+            "login": "user1@example.com",
+            "email": "user1@example.com",
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "password",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
 
@@ -406,17 +406,17 @@ class TestCreate(TestAdmin):
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
-        responses.add(responses.POST, self.api_url, headers={'Location': 'not a url'}, status=201)
+        responses.add(responses.POST, self.api_url, headers={"Location": "not a url"}, status=201)
 
         admin = Admin(client=self.client)
 
         create_args = {
-            'login': 'user1@example.com',
-            'email': 'user1@example.com',
-            'forename': 'Test1',
-            'surname': 'User1',
-            'password': 'password',
-            'credentials': [{'role': 'DRAO_SSL', "orgId": 123}],
+            "login": "user1@example.com",
+            "email": "user1@example.com",
+            "forename": "Test1",
+            "surname": "User1",
+            "password": "password",
+            "credentials": [{"role": "DRAO_SSL", "orgId": 123}],
         }
         self.assertRaises(AdminCreationResponseError, admin.create, **create_args)
 
@@ -528,13 +528,13 @@ class TestUpdate(TestAdmin):
         admin = Admin(client=self.client)
 
         post_data = {
-            'forename': 'Test1',
-            'surname': 'User1',
+            "forename": "Test1",
+            "surname": "User1",
         }
         response = admin.update(admin_id, **post_data)
 
         self.assertEqual(True, response)
-        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode('utf8'))
+        self.assertEqual(responses.calls[1].request.body, json.dumps(post_data).encode("utf8"))
 
     @responses.activate
     def test_update_failure_http_error(self):
@@ -554,6 +554,6 @@ class TestUpdate(TestAdmin):
 
         admin = Admin(client=self.client)
 
-        update_args = {'email': 'user1@example.com'}  # This malformed email would return an error from the API
+        update_args = {"email": "user1@example.com"}  # This malformed email would return an error from the API
 
         self.assertRaises(ValueError, admin.update, admin_id, **update_args)
