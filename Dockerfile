@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 COPY poetry.lock pyproject.toml README.md /working/
 
@@ -6,6 +6,7 @@ WORKDIR /working
 
 RUN apt-get update \
     && apt-get upgrade -yq \
+    && apt-get install -yq gcc libffi-dev \
     && pip install pip poetry --upgrade \
     && poetry install \
     && rm -f /etc/localtime \

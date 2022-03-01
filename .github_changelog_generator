@@ -1,4 +1,4 @@
-exclude-labels=duplicate,question,invalid,wontfix,maintenance
+exclude-labels=dependencies,duplicate,question,invalid,wontfix,maintenance
 pr-wo-labels=false
 project=python-cert_manager
 unreleased=false

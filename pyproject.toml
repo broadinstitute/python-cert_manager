@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cert_manager"
-version = "2.1.0"
+version = "2.2.0"
 description = "Python interface to the Sectigo Certificate Manager REST API"
 license = "BSD-3-Clause"
 authors = ["Andrew Teixeira <teixeira@broadinstitute.org>"]
@@ -10,7 +10,7 @@ homepage = "https://github.com/broadinstitute/python-cert_manager.git"
 keywords = ["sectigo", "comodo", "certificate"]
 
 [tool.poetry.dependencies]
-python = "^3.6"  # Compatible python versions must be declared here
+python = "^3.7"  # Compatible python versions must be declared here
 requests = "*"
 toml = ">=0.9,<0.11"
 
