@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/broadinstitute/python-cert_manager/tree/2.2.0) (2022-03-01)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.1.0...2.2.0)
+
+**Implemented enhancements:**
+
+- Add functionality to work with Admin endpoint [\#87](https://github.com/broadinstitute/python-cert_manager/pull/87) ([FISHMANPET](https://github.com/FISHMANPET))
+
 ## [2.1.0](https://github.com/broadinstitute/python-cert_manager/tree/2.1.0) (2021-12-06)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.0.0...2.1.0)
