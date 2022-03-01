@@ -44,12 +44,24 @@ class Admin(Endpoint):
 
         return self.__admins
 
-    def create(self, login, email, forename, surname, password, credentials, **kwargs):
-        """sumary_line
+    def create(self, login, email, forename, surname,  # pylint: disable=too-many-arguments
+               password, credentials, **kwargs):
+        """Create a new administrator
 
-        Keyword arguments:
-        argument -- description
-        Return: return_description
+        :param str login: Login name of admin to create
+        :param str email: Email of admin to create
+        :param str forename: Fore/First name of admin
+        :param str surname: Sur/Last name of admin
+        :param list credentials: List of Credentials to apply to admin
+        :param dict kwargs: Additional fields that will be passed to the API
+
+        Formating for "Credentials" can be found in the Sectigo API Documentation.
+        Additional request fields are documented in Sectigo API Documentation
+        https://sectigo.com/faqs/detail/Sectigo-Certificate-Manager-SCM-REST-API/kA01N000000XDkE
+
+        Other parameters that may be useful are privileges, identityProviderId, and idpPersonId
+
+        :return dict: The id of the created admin
         """
         data = {
             "login": login,
