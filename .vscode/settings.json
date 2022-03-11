@@ -1,8 +1,0 @@
-{
-    "python.linting.flake8Enabled": false,
-    "python.linting.pylintEnabled": false,
-    "python.linting.enabled": true,
-    "autoDocstring.docstringFormat": "one-line-sphinx",
-    "python.linting.pylamaEnabled": true,
-    "python.linting.pycodestyleEnabled": false
-}
