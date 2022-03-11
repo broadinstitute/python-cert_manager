@@ -175,14 +175,15 @@ class Client(object):
         return result
 
     @traffic_log(traffic_logger=LOGGER)
-    def delete(self, url, headers=None):
+    def delete(self, url, headers=None, data=None):
         """Submit a DELETE request to the provided URL.
 
         :param str url: A URL to query
         :param dict headers: A dictionary with any extra headers to add to the request
+        :param dict data: A dictionary with the data to use for the body of the DELETE
         :return obj: A requests.Response object received as a response
         """
-        result = self.__session.delete(url, headers=headers)
+        result = self.__session.delete(url, json=data, headers=headers)
         # Raise an exception if the return code is in an error range
         result.raise_for_status()
 

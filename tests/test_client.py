@@ -506,10 +506,11 @@ class TestDelete(TestClient):
     def test_success(self):
         """It should complete correctly if a 200-level status code is returned."""
         # Setup the mocked response
+        input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=204)
 
         # Call the function
-        self.client.delete(self.test_url)
+        self.client.delete(self.test_url, data=input_data)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -519,11 +520,12 @@ class TestDelete(TestClient):
     def test_headers(self):
         """It should add passed headers."""
         # Setup the mocked response
+        input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=204)
 
         # Call the function
         headers = {"newheader": "123"}
-        self.client.delete(self.test_url, headers=headers)
+        self.client.delete(self.test_url, headers=headers, data=input_data)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -537,10 +539,11 @@ class TestDelete(TestClient):
     def test_failure(self):
         """It should raise an HTTPError exception if a non-200 status code is returned."""
         # Setup the mocked response
+        input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(HTTPError, self.client.delete, self.test_url)
+        self.assertRaises(HTTPError, self.client.delete, self.test_url, data=input_data)
 
         # Still make sure it actually did a query and received a result
         self.assertEqual(len(responses.calls), 1)

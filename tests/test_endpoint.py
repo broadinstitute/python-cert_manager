@@ -125,3 +125,15 @@ class TestUrl(TestEndpoint):
 
         # Make sure the values match
         self.assertEqual(end._url(suffix), url)
+
+    def test_multiple_args(self):
+        """Return the full API URL when multiple arguments are passed"""
+        end = Endpoint(client=self.client, endpoint=self.ep_path)
+
+        suffix1 = "help"
+        suffix2 = "1234"
+        suffix3 = "approve"
+        url = f"{self.api_url}/{suffix1}/{suffix2}/{suffix3}"
+
+        # Make sure the values match
+        self.assertEqual(end._url(suffix1, suffix2, suffix3), url)
