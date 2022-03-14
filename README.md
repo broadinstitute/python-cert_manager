@@ -16,16 +16,16 @@ There are many API endpoints under Certificate Manager, and this library current
 * Organization (/organization)
 * Person (/person)
 * SSL (/ssl)
+* Client Administrator (/admin)
+* Domain (/domain)
 
 Other endpoints we hope to add in the near future:
 
-* Client Administrator (/admin)
 * Code Signing Certificates (/csod)
 * Custom Fields (/customField)
 * Domain Control Validation (/dcv)
 * Device Certificates (/device)
 * Discovery (/discovery)
-* Domain (/domain)
 * SMIME (/smime)
 
 ## Installing

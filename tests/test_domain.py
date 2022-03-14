@@ -78,7 +78,7 @@ class TestAll(TestDomain):
     @responses.activate
     def test_cached(self):
         """The function should return all the data, but should not query the API twice."""
-        # Setup the mocked response, refrain from matching the query string
+        # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
         domain = Domain(client=self.client)
@@ -96,7 +96,7 @@ class TestAll(TestDomain):
     @responses.activate
     def test_forced(self):
         """The function should return all the data, but should query the API twice."""
-        # Setup the mocked response, refrain from matching the query string
+        # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
         domain = Domain(client=self.client)
@@ -114,7 +114,7 @@ class TestAll(TestDomain):
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if domain accounts cannot be retrieved from the API."""
+        """The function should raise an HTTPError exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
 
@@ -124,6 +124,96 @@ class TestAll(TestDomain):
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.api_url)
+
+
+class TestFind(TestDomain):
+    """Test the .find method."""
+
+    @responses.activate
+    def test_no_params(self):
+        """Without parameters, the method will return all domains"""
+        # Setup the mocked response
+        responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
+
+        domain = Domain(client=self.client)
+        data = domain.find()
+
+        self.assertEqual(data, self.valid_response)
+
+    @responses.activate
+    def test_params(self):
+        """Parameters will be passed to API"""
+        # Setup the mocked response
+        responses.add(responses.GET, self.api_url, json=self.valid_response[0], status=200)
+
+        api_url = f"{self.api_url}?name=example.com"
+        domain = Domain(client=self.client)
+        data = domain.find(name="example.com")
+
+        # Verify all the query information
+
+        self.assertEqual(responses.calls[0].request.url, api_url)
+        self.assertEqual(data, self.valid_response[0])
+
+    @responses.activate
+    def test_bad_http(self):
+        """The function should raise an HTTPError exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
+
+        domain = Domain(client=self.client)
+        self.assertRaises(HTTPError, domain.find)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
+
+class TestCount(TestDomain):
+    """Test the .count method."""
+
+    @responses.activate
+    def test_no_params(self):
+        """Without parameters, the method will count all domains"""
+        # Setup the mocked response
+        count = {"count": len(self.valid_response)}
+        api_url = f"{self.api_url}/count"
+        responses.add(responses.GET, api_url, json=count, status=200)
+
+        domain = Domain(client=self.client)
+        data = domain.count()
+
+        self.assertEqual(data, count)
+        self.assertEqual(responses.calls[0].request.url, api_url)
+
+    @responses.activate
+    def test_params(self):
+        """Parameters will be passed to API"""
+        # Setup the mocked response
+        count = {"count": len(self.valid_response[0])}
+        api_url = f"{self.api_url}/count"
+        responses.add(responses.GET, api_url, json=count, status=200)
+
+        domain = Domain(client=self.client)
+        data = domain.count(name="example.com")
+
+        # Verify all the query information
+        self.assertEqual(responses.calls[0].request.url, f"{api_url}?name=example.com")
+        self.assertEqual(data, count)
+
+    @responses.activate
+    def test_bad_http(self):
+        """The function should raise an HTTPError exception if counts cannot be retrieved from the API."""
+        # Setup the mocked response
+        api_url = f"{self.api_url}/count"
+        responses.add(responses.GET, api_url, json=self.error_response, status=400)
+
+        domain = Domain(client=self.client)
+        self.assertRaises(HTTPError, domain.count)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, api_url)
 
 
 class TestGet(TestDomain):
@@ -191,15 +281,17 @@ class TestCreate(TestDomain):
 
         # Setup the mocked response
         domain_id = 1234
+        org_id = 4321
+        types = ["SSL"]
         location = f"{self.api_url}/{str(domain_id)}"
         responses.add(responses.POST, self.api_url, headers={"Location": location}, status=201)
 
         domain = Domain(client=self.client)
         post_data = {
             "name": "sub2.example.com",
-            "delegations": [{"orgId": 4321, "certTypes": ["SSL"]}]
+            "delegations": [{"orgId": org_id, "certTypes": types}]
         }
-        response = domain.create("sub2.example.com", 4321, ["SSL"])
+        response = domain.create("sub2.example.com", org_id, types)
 
         self.assertEqual(response, {"id": domain_id})
         self.assertEqual(responses.calls[0].request.body, json.dumps(post_data).encode("utf8"))
@@ -328,7 +420,7 @@ class TestDelete(TestDomain):
         """The function should return True if the deletion succeeded."""
 
         domain_id = 1234
-        api_url = api_url = f"{self.api_url}/{str(domain_id)}"
+        api_url = f"{self.api_url}/{str(domain_id)}"
 
         # Setup the mocked response
         responses.add(responses.DELETE, api_url, status=200)
@@ -354,3 +446,303 @@ class TestDelete(TestDomain):
         domain = Domain(client=self.client)
 
         self.assertRaises(HTTPError, domain.delete, domain_id)
+
+
+class TestActivate(TestDomain):
+    """Test the .activate method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.activate)
+
+    @responses.activate
+    def test_activate_success(self):
+        """The function should return True if the activation succeeded."""
+
+        domain_id = 1234
+        api_url = f"{self.api_url}/{str(domain_id)}/activate"
+
+        # Setup the mocked response
+        responses.add(responses.PUT, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.activate(domain_id)
+
+        self.assertEqual(True, response)
+
+    @responses.activate
+    def test_activate_failure_http_error(self):
+        """
+        The function should raise an HTTPError exception if the deletion
+        failed.
+        """
+
+        domain_id = 1234
+        api_url = f"{self.api_url}/{str(domain_id)}/activate"
+
+        # Setup the mocked response
+        responses.add(responses.PUT, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.activate, domain_id)
+
+
+class TestSuspend(TestDomain):
+    """Test the .suspend method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.suspend)
+
+    @responses.activate
+    def test_suspend_success(self):
+        """The function should return True if the suspension succeeded."""
+
+        domain_id = 1234
+        api_url = f"{self.api_url}/{str(domain_id)}/suspend"
+
+        # Setup the mocked response
+        responses.add(responses.PUT, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.suspend(domain_id)
+
+        self.assertEqual(True, response)
+
+    @responses.activate
+    def test_suspend_failure_http_error(self):
+        """
+        The function should raise an HTTPError exception if the suspension
+        failed.
+        """
+
+        domain_id = 1234
+        api_url = f"{self.api_url}/{str(domain_id)}/suspend"
+
+        # Setup the mocked response
+        responses.add(responses.PUT, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.suspend, domain_id)
+
+
+class TestDelegate(TestDomain):
+    """Test the .delegate method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.delegate)
+
+    @responses.activate
+    def test_delegate_success(self):
+        """The function should return True if the delegation succeeded."""
+
+        domain_id = 1234
+        org_id = 4321
+        types = ["SSL"]
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.delegate(domain_id, org_id, types)
+        post_data = {
+            "orgId": org_id,
+            "certTypes": types
+        }
+
+        self.assertEqual(True, response)
+        self.assertEqual(responses.calls[0].request.body, json.dumps(post_data).encode("utf8"))
+
+    @responses.activate
+    def test_delegate_failure_http_error(self):
+        """The function should raise an HTTPError exception if the delegation failed."""
+
+        domain_id = 1234
+        org_id = 4321
+        types = ["SSL"]
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.delegate, domain_id, org_id, types)
+
+
+class TestRemoveDelegation(TestDomain):
+    """Test the .remove_delegation method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.remove_delegation)
+
+    @responses.activate
+    def test_remove_delegation_success(self):
+        """The function should return True if the delegation removal succeeded."""
+
+        domain_id = 1234
+        org_id = 4321
+        types = ["SSL"]
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation"
+
+        # Setup the mocked response
+        responses.add(responses.DELETE, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.remove_delegation(domain_id, org_id, types)
+        post_data = {
+            "orgId": org_id,
+            "certTypes": types
+        }
+
+        self.assertEqual(True, response)
+        self.assertEqual(responses.calls[0].request.body, json.dumps(post_data).encode("utf8"))
+
+    @responses.activate
+    def test_remove_delegation_failure_http_error(self):
+        """The function should raise an HTTPError exception if the delegation removal failed."""
+
+        domain_id = 1234
+        org_id = 4321
+        types = ["SSL"]
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation"
+
+        # Setup the mocked response
+        responses.add(responses.DELETE, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.remove_delegation, domain_id, org_id, types)
+
+
+class TestApproveDelegation(TestDomain):
+    """Test the .approve_delegation method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.approve_delegation)
+
+    @responses.activate
+    def test_approve_delegation_success(self):
+        """The function should return True if the approval succeeded."""
+
+        domain_id = 1234
+        org_id = 4321
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation/approve"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.approve_delegation(domain_id, org_id)
+        post_data = {
+            "orgId": org_id,
+        }
+
+        self.assertEqual(True, response)
+        self.assertEqual(responses.calls[0].request.body, json.dumps(post_data).encode("utf8"))
+
+    @responses.activate
+    def test_approval_failure_http_error(self):
+        """The function should raise an HTTPError exception if the approval failed."""
+
+        domain_id = 1234
+        org_id = 4321
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation/approve"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.approve_delegation, domain_id, org_id)
+
+
+class TestRejectDelegation(TestDomain):
+    """Test the .reject_delegation method."""
+
+    @responses.activate
+    def test_need_params(self):
+        """
+        The function should raise an exception when called without required
+        parameters.
+        """
+
+        domain = Domain(client=self.client)
+        # missing domain_id
+        self.assertRaises(TypeError, domain.reject_delegation)
+
+    @responses.activate
+    def test_reject_delegation_success(self):
+        """The function should return True if the rejection succeeded."""
+
+        domain_id = 1234
+        org_id = 4321
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation/reject"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=200)
+
+        domain = Domain(client=self.client)
+        response = domain.reject_delegation(domain_id, org_id)
+        post_data = {
+            "orgId": org_id,
+        }
+
+        self.assertEqual(True, response)
+        self.assertEqual(responses.calls[0].request.body, json.dumps(post_data).encode("utf8"))
+
+    @responses.activate
+    def test_reject_failure_http_error(self):
+        """The function should raise an HTTPError exception if the rejection failed."""
+
+        domain_id = 1234
+        org_id = 4321
+        api_url = f"{self.api_url}/{str(domain_id)}/delegation/reject"
+
+        # Setup the mocked response
+        responses.add(responses.POST, api_url, status=404)
+
+        domain = Domain(client=self.client)
+
+        self.assertRaises(HTTPError, domain.reject_delegation, domain_id, org_id)
