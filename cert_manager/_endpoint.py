@@ -50,7 +50,7 @@ class Endpoint(object):
 
         return url
 
-    def _url(self, suffix):
+    def _url(self, *args):
         """Build the endpoint URL based on the API URL inside this object.
 
         :param str suffix: The suffix of the URL you wish to create i.e. for
@@ -58,7 +58,8 @@ class Endpoint(object):
         :return str: The full URL
         """
         url = self._api_url.rstrip("/")
-        url += "/" + suffix.strip("/")
+        for suffix in args:
+            url += "/" + suffix.strip("/")
         LOGGER.debug("URL created: %s", url)
 
         return url

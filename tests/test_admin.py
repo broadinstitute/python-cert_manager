@@ -446,7 +446,7 @@ class TestDelete(TestAdmin):
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
         admin_id = 1234
-        api_url = api_url = f"{self.api_url}/{str(admin_id)}"
+        api_url = f"{self.api_url}/{str(admin_id)}"
 
         # Setup the mocked response
         responses.add(responses.DELETE, api_url, status=204)
