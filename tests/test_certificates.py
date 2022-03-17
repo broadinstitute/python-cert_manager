@@ -372,6 +372,40 @@ class TestEnroll(TestCertificates):
         self.assertEqual(responses.calls[2].request.body, post_json.encode("utf-8"))
 
     @responses.activate
+    def test_san_list(self):
+        """It should correctly handle a list of SANs."""
+        # Setup the mocked responses
+        # We need to mock the /types and /customFields URLs as well
+        # since Certificates.types and Certificate.custom_fields are called from enroll
+        responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
+        responses.add(responses.GET, self.test_customfields_url, json=self.cf_data, status=200)
+
+        responses.add(responses.POST, self.test_url, json=self.test_result, status=200)
+
+        san_list = self.test_san.split(",")
+
+        # Call the function
+        resp = self.certobj.enroll(cert_type_name=self.test_ct_name, csr=self.test_csr, term=self.test_term,
+                                   org_id=self.test_org, external_requester=self.test_external_requester,
+                                   subject_alt_names=san_list)
+
+        # Mock up the data that should be sent with the post
+        post_data = {
+            "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": self.test_san, "certType": 224,
+            "numberServers": 1, "serverType": -1, "term": self.test_term,
+            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester
+        }
+        post_json = json.dumps(post_data)
+
+        # Verify all the query information
+        self.assertEqual(resp, self.test_result)
+        self.assertEqual(len(responses.calls), 3)
+        self.assertEqual(responses.calls[0].request.url, self.test_types_url)
+        self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
+        self.assertEqual(responses.calls[2].request.url, self.test_url)
+        self.assertEqual(responses.calls[2].request.body, post_json.encode("utf-8"))
+
+    @responses.activate
     def test_bad_cert_name(self):
         """It should raise an Exception if the cert_type_name was not found."""
         # Setup the mocked responses
@@ -680,6 +714,29 @@ class TestReplace(TestCertificates):
 
         # Mock up the data that should be sent with the post
         post_data = {"csr": self.test_csr, "commonName": self.test_cn, "subjectAlternativeNames": None,
+                     "reason": self.test_reason}
+        post_json = json.dumps(post_data)
+
+        # Verify all the query information
+        self.assertEqual(resp, {})
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.test_url)
+        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+
+    @responses.activate
+    def test_san_string(self):
+        """It should correctly handle a list of SANs."""
+        # Setup the mocked responses
+        responses.add(responses.POST, self.test_url, body='', status=200)
+
+        san_list = self.test_san.split(",")
+
+        # Call the function
+        resp = self.certobj.replace(cert_id=self.test_id, csr=self.test_csr, common_name=self.test_cn,
+                                    reason=self.test_reason, subject_alt_names=self.test_san)
+
+        # Mock up the data that should be sent with the post
+        post_data = {"csr": self.test_csr, "commonName": self.test_cn, "subjectAlternativeNames": san_list,
                      "reason": self.test_reason}
         post_json = json.dumps(post_data)
 

@@ -81,8 +81,10 @@ org = Organization(client=client)
 ssl = SSL(client=client)
 
 cert_org = org.find(dept_name="MyDept")
+with open("host.csr", "r") as filep:
+    csr = filep.read()
 
-result = ssl.enroll(cert_type_name="InCommon SSL (SHA-2)", csr="host.csr", term=365, org_id=cert_org[0]["id"])
+result = ssl.enroll(cert_type_name="InCommon SSL (SHA-2)", csr=csr, term=365, org_id=cert_org[0]["id"])
 
 # This is just for demonstration purposes.
 # Doing a wait loop like this to poll for the certificate is not the best way to go about this.

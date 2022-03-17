@@ -170,9 +170,14 @@ class Certificates(Endpoint):
 
         self._validate_custom_fields(custom_fields)
 
+        # SAN field needs to be a comma-separated string, not a list, opposite to replace
+        final_san = subject_alt_names
+        if isinstance(subject_alt_names, list):
+            final_san = ",".join(subject_alt_names)
+
         url = self._url("/enroll")
         data = {
-            "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": subject_alt_names, "certType": type_id,
+            "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": final_san, "certType": type_id,
             "numberServers": 1, "serverType": -1, "term": term, "comments": f"Enrolled by {self._client.user_agent}",
             "externalRequester": external_requester
         }
@@ -200,7 +205,7 @@ class Certificates(Endpoint):
         :param string csr: The Certificate Signing Request (CSR)
         :param string common_name: Certificate common name.
         :param str reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
-        :param string subject_alt_names: Subject Alternative Names separated by a ",".
+        :param list subject_alt_names: A list of Subject Alternative Names.
         :return: The result of the operation, "Successful" on success
         :rtype: dict
         """
@@ -211,8 +216,13 @@ class Certificates(Endpoint):
         reason = kwargs.get("reason")
         subject_alt_names = kwargs.get("subject_alt_names", None)
 
+        # SAN field needs to be a list, different than enroll
+        final_san = subject_alt_names
+        if subject_alt_names and not isinstance(subject_alt_names, list):
+            final_san = subject_alt_names.split(",")
+
         url = self._url(f"/replace/{cert_id}")
-        data = {"csr": csr, "commonName": common_name, "subjectAlternativeNames": subject_alt_names, "reason": reason}
+        data = {"csr": csr, "commonName": common_name, "subjectAlternativeNames": final_san, "reason": reason}
 
         result = self._client.post(url, data=data)
         result.raise_for_status()
