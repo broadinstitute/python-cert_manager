@@ -18,6 +18,7 @@ There are many API endpoints under Certificate Manager, and this library current
 * SSL (/ssl)
 * Client Administrator (/admin)
 * Domain (/domain)
+* Report (/report)
 
 Other endpoints we hope to add in the near future:
 
