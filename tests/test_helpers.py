@@ -195,20 +195,6 @@ class TestTrafficLog(TestCase):
         self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
         self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
-    def test_fewer_lines(self):
-        """Some logs should not be printed if the values are empty."""
-        # Call the test function
-        self.wrapped_function(url=self.test_url)
-
-        # Test that all the logging calls happen as expected
-        self.assertEqual(self.mock_logger.debug.call_count, 4)
-        self.mock_logger.debug.assert_any_call(
-            f"Performing a {'wrapped_function'.upper()} on url: {self.test_url}"
-        )
-        self.mock_logger.debug.assert_any_call("Result code: 200")
-        self.mock_logger.debug.assert_any_call(f"Result headers: {self.res_headers}")
-        self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
-
     def test_inner_exception(self):
         """An exception should be raised by the wrapper if an exception is raised by the wrapped function."""
         err_msg = "this is an error"

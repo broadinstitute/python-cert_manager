@@ -26,7 +26,6 @@ def traffic_log(traffic_logger=None):
     def decorator(func):
         """Wrap the actual decorator so a reference to the function can be returned."""
         @wraps(func)
-        # pylint: disable=too-many-branches
         def log_traffic(*args, **kwargs):
             """Decorate the wrapped function."""
             # Make sure traffic_logger was set correctly
@@ -55,12 +54,9 @@ def traffic_log(traffic_logger=None):
                     data = args[3]
 
             # Print out before messages with URL and header data
-            if url:
-                traffic_logger.debug(f"Performing a {func_name} on url: {url}")
-            if headers:
-                traffic_logger.debug(f"Extra request headers: {headers}")
-            if data:
-                traffic_logger.debug(f"Data: {data}")
+            traffic_logger.debug(f"Performing a {func_name} on url: {url}")
+            traffic_logger.debug(f"Extra request headers: {headers}")
+            traffic_logger.debug(f"Data: {data}")
 
             # Run the wrapped function
             try:
