@@ -366,6 +366,67 @@ class TestCollect(TestSMIME):
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
 
+class TestRenew(TestSMIME):
+    """Test the renew method."""
+
+    def setUp(self):
+        """Initialize the class."""
+        super().setUp()
+
+        self.test_order_num = 123456789
+        self.test_serial_num = 987654321
+        self.api_version = "v2"     # this endpoint is in v2
+        self.api_url = f"{self.cfixt.base_url}{self.ep_path}/{self.api_version}"
+        self.test_order_url = f"{self.api_url}/renew/order/{self.test_order_num}"
+        self.test_serial_url = f"{self.api_url}/renew/serial/{self.test_serial_num}"
+        self.test_order_data = {'orderNumber': 123456789, 'backendCertId': '123456789'}
+        self.test_serial_data = {'orderNumber': 987654321, 'backendCertId': '987654321'}
+
+    def test_defaults(self):
+        """Should raise an exception when no params are passed"""
+        smime = SMIME(client=self.client)
+        self.assertRaises(Exception, smime.renew)
+
+    def test_bad_params(self):
+        """Should raise an exception when both order_num and serial_num are provided."""
+        # Setup the mocked response
+        responses.add(responses.POST, self.test_serial_url, json=self.test_serial_data, status=200)
+
+        # Call the function
+        smime = SMIME(client=self.client)
+        self.assertRaises(ValueError, smime.renew, order_num='123456789', serial_num='987654321')
+
+    @responses.activate
+    def test_order_success(self):
+        """Renew by order ID should return a dict if a 200-level status code is returned."""
+        # Setup the mocked response
+        responses.add(responses.POST, self.test_order_url, json=self.test_order_data, status=200)
+
+        # Call the function
+        smime = SMIME(client=self.client)
+        data = smime.renew(order_num='123456789')
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.test_order_url)
+        self.assertEqual(data, self.test_order_data)
+
+    @responses.activate
+    def test_serial_success(self):
+        """Renew by serial number should return a dict if a 200-level status code is returned."""
+        # Setup the mocked response
+        responses.add(responses.POST, self.test_serial_url, json=self.test_serial_data, status=200)
+
+        # Call the function
+        smime = SMIME(client=self.client)
+        data = smime.renew(serial_num='987654321')
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.test_serial_url)
+        self.assertEqual(data, self.test_serial_data)
+
+
 class TestReplace(TestSMIME):
     """Test the replace method."""
 

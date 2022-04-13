@@ -43,3 +43,14 @@ class SSL(Certificates):
         result = self._client.get(url)
 
         return result.json()
+
+    def renew(self, cert_id):
+        """Renew the certificate specified by the certificate ID.
+
+        :param int cert_id: The certificate ID
+        :return dict: The renewal result. "Successful" on success
+        """
+        url = self._url(f"/renewById/{cert_id}")
+        result = self._client.post(url, data="")
+
+        return result.json()
