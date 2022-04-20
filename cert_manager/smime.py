@@ -159,6 +159,27 @@ class SMIME(Certificates):
         data = {"csr": csr, "reason": reason, "revoke": revoke}
         self._client.post(url, data=data)
 
+    @version_hack(service="smime", version="v2")
+    def renew(self, order_num="", serial_num=""):
+        """Renew a client certificate with the specified order or serial number.
+
+        :param int order_num: The certificate order number
+        :param str serial_num: The certificate serial number
+            You can provide either the order or serial number, not both.
+
+        :return dict: A dictionary containing the new order number and cert ID
+        """
+        if order_num and serial_num:
+            raise ValueError("Cannot provide both order number and serial number")
+
+        if order_num:
+            url = self._url(f"/renew/order/{order_num}")
+        else:
+            url = self._url(f"/renew/serial/{serial_num}")
+        ret = self._client.post(url)
+
+        return ret.json()
+
     def revoke(self, cert_id, reason=""):
         """Revoke a client certificate specified by the certificate ID.
 

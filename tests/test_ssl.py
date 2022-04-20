@@ -124,3 +124,43 @@ class TestList(TestSSL):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, test_url)
         self.assertEqual(data, test_result)
+
+
+class TestRenew(TestSSL):
+    """Test the renew method."""
+
+    def setUp(self):
+        """Initialize the class."""
+        super().setUp()
+
+        self.test_id = 1234
+        self.test_url = f"{self.api_url}/renewById/{self.test_id}"
+        # Create an SSL object to use in any tests that need one
+        self.certobj = SSL(client=self.client)
+
+    @responses.activate
+    def test_success(self):
+        """It should return JSON if a 200-level status code is returned with data."""
+        # Setup the mocked responses
+        responses.add(responses.POST, self.test_url, json={}, status=204)
+
+        # Call the function
+        resp = self.certobj.renew(cert_id=self.test_id)
+
+        # Verify all the query information
+        self.assertEqual(resp, {})
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.test_url)
+
+    @responses.activate
+    def test_failure(self):
+        """It should raise an HTTPError exception if an error status code is returned."""
+        # Setup the mocked response
+        responses.add(responses.POST, self.test_url, json={}, status=404)
+
+        # Call the function, expecting an exception
+        self.assertRaises(HTTPError, self.certobj.renew, self.test_id)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.test_url)
