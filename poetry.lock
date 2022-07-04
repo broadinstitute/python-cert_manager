@@ -161,7 +161,7 @@ python-versions = "*"
 
 [[package]]
 name = "fixtures"
-version = "4.0.0"
+version = "4.0.1"
 description = "Fixtures, reusable state for writing clean tests and more."
 category = "dev"
 optional = false
@@ -169,7 +169,6 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 pbr = ">=5.7.0"
-testtools = ">=2.5.0"
 
 [package.extras]
 docs = ["docutils"]
@@ -931,8 +930,7 @@ extras = [
     {file = "extras-1.0.0.tar.gz", hash = "sha256:132e36de10b9c91d5d4cc620160a476e0468a88f16c9431817a6729611a81b4e"},
 ]
 fixtures = [
-    {file = "fixtures-4.0.0-py3-none-any.whl", hash = "sha256:c579191f96a088b16095eb60e21d3eb6334f006a93e248f4decdcb6bfef238d8"},
-    {file = "fixtures-4.0.0.tar.gz", hash = "sha256:81ac3a8a627bfa5fce577adf9c60ec7b347896c78d8e0ceccaf94f3a53d39163"},
+    {file = "fixtures-4.0.1.tar.gz", hash = "sha256:d2758826400d095b79666cf93a32a84f50ff8cd179831927efb48cd1e3ca7466"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
