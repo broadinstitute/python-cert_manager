@@ -2,10 +2,7 @@
 """Define the cert_manager.person.Person class."""
 
 import logging
-try:
-    from urllib import quote
-except Exception:
-    from urllib.parse import quote
+from urllib.parse import quote
 
 from ._endpoint import Endpoint
 

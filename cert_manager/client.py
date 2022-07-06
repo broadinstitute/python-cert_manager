@@ -13,7 +13,7 @@ from ._helpers import traffic_log
 LOGGER = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client:  # pylint: disable=too-many-instance-attributes
     """Serve as a Base class for calls to the Sectigo Cert Manager APIs."""
 
     DOWNLOAD_TYPES = [

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Define the cert_manager.report.Report unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -13,7 +14,9 @@ from cert_manager.report import Report
 from .lib.testbase import ClientFixture
 
 
-class TestReport(TestCase):  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
+# pylint: disable=too-many-instance-attributes
+class TestReport(TestCase):
     """Serve as a Base class for all tests of the Domain class."""
 
     def setUp(self):  # pylint: disable=invalid-name

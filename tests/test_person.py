@@ -3,12 +3,9 @@
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=no-member
 
-from testtools import TestCase
-try:
-    from urllib import quote, unquote
-except Exception:
-    from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote
 
+from testtools import TestCase
 from requests.exceptions import HTTPError
 import responses
 
