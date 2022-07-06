@@ -11,6 +11,7 @@ from cert_manager import __version__
 
 # pylint:disable=too-few-public-methods
 # pylint:disable=attribute-defined-outside-init
+# pylint: disable=too-many-instance-attributes
 class ClientFixture(fixtures.Fixture):
     """Build a fixture for a default cert_manager.client.Client object."""
 

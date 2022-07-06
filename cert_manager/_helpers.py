@@ -4,10 +4,6 @@
 from functools import wraps
 import logging
 import re
-try:
-    from urllib import unquote  # pylint: disable=unused-import
-except Exception:
-    from urllib.parse import unquote  # pylint: disable=unused-import
 
 from requests.exceptions import HTTPError
 

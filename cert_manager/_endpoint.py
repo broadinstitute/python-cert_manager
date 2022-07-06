@@ -6,7 +6,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
-class Endpoint(object):
+class Endpoint:
     """Act as a superclass for all Sectigo Cert Manager APIs endpoints."""
 
     def __init__(self, client, endpoint, api_version="v1"):
