@@ -23,7 +23,7 @@ green = ">=2.12.0"
 mock = ">=2.0.0"
 pydocstyle = "<7"
 # 2.5.0 breaks pylama 8.3.8
-pyflakes = "< 2.5.0"
+pyflakes = "<2.6.0"
 pylama = "*"
 pylint = "*"
 pyyaml = "==6.0"
