@@ -165,12 +165,9 @@ class TestRenew(TestSSL):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
+
 class TestCount(TestSSL):
     """Test the count method."""
-
-    def setUp(self):
-        """Initialize the class."""
-        super().setUp()
 
     @responses.activate
     def test_defaults(self):
@@ -179,7 +176,7 @@ class TestCount(TestSSL):
         test_url = f"{self.api_url}"
         count = 10
         responses.add(responses.HEAD, test_url, headers={'X-Total-Count': str(count)}, status=200)
-        responses.add(responses.HEAD, test_url, headers={'X-Total-Count': str(count*2)}, status=200)
+        responses.add(responses.HEAD, test_url, headers={'X-Total-Count': str(count * 2)}, status=200)
 
         ssl = SSL(client=self.client)
         result = ssl.count()
@@ -191,5 +188,4 @@ class TestCount(TestSSL):
         result = ssl.count(status='Applied')
 
         # Verify all the query information
-        self.assertEqual(result, count*2)
-
+        self.assertEqual(result, count * 2)

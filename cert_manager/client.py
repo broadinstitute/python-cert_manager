@@ -130,7 +130,7 @@ class Client:  # pylint: disable=too-many-instance-attributes
                     del self.__session.headers[head]
 
     @traffic_log(traffic_logger=LOGGER)
-    def head(self, url,headers=None, params=None):
+    def head(self, url, headers=None, params=None):
         """Submit a HEAD request to the provided URL.
 
         :param str url: A URL to query
