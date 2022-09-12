@@ -4,4 +4,4 @@
 __title__ = "cert_manager"
 __description__ = "Python interface to the Sectigo Certificate Manager REST API"
 __url__ = "https://github.com/broadinstitute/python-cert_manager"
-__version__ = "2.2.0"
+__version__ = "2.3.0"

@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.3.0](https://github.com/broadinstitute/python-cert_manager/tree/2.3.0) (2022-09-12)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.2.0...2.3.0)
+
+**Implemented enhancements:**
+
+- Ssl count [\#128](https://github.com/broadinstitute/python-cert_manager/pull/128) ([MoIn4096](https://github.com/MoIn4096))
+- Add renew method to SMIME [\#104](https://github.com/broadinstitute/python-cert_manager/pull/104) ([coreone](https://github.com/coreone))
+- Added the Report module to support the Sectigo /report endpoint [\#95](https://github.com/broadinstitute/python-cert_manager/pull/95) ([NateWerner](https://github.com/NateWerner))
+- Add support for domains endpoint [\#93](https://github.com/broadinstitute/python-cert_manager/pull/93) ([FISHMANPET](https://github.com/FISHMANPET))
+
+**Fixed bugs:**
+
+- Fix certificate SANs [\#94](https://github.com/broadinstitute/python-cert_manager/pull/94) ([coreone](https://github.com/coreone))
+
+**Closed issues:**
+
+- SAN not being included in the cert [\#89](https://github.com/broadinstitute/python-cert_manager/issues/89)
+- Getting error 400 with sample from README [\#28](https://github.com/broadinstitute/python-cert_manager/issues/28)
+
 ## [2.2.0](https://github.com/broadinstitute/python-cert_manager/tree/2.2.0) (2022-03-01)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.1.0...2.2.0)
