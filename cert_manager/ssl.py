@@ -54,3 +54,9 @@ class SSL(Certificates):
         result = self._client.post(url, data="")
 
         return result.json()
+
+    def count(self, **kwargs) -> int:
+        """Retrieve the number of certifictes."""
+        result = self._client.head(self._api_url, params=kwargs)
+
+        return int(result.headers['X-Total-Count'])

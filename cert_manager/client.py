@@ -130,6 +130,21 @@ class Client:  # pylint: disable=too-many-instance-attributes
                     del self.__session.headers[head]
 
     @traffic_log(traffic_logger=LOGGER)
+    def head(self, url, headers=None, params=None):
+        """Submit a HEAD request to the provided URL.
+
+        :param str url: A URL to query
+        :param dict headers: A dictionary with any extra headers to add to the request
+        :param dict params: A dictionary with any parameters to add to the request URL
+        :return obj: A requests.Response object received as a response
+        """
+        result = self.__session.head(url, headers=headers, params=params)
+        # Raise an exception if the return code is in an error range
+        result.raise_for_status()
+
+        return result
+
+    @traffic_log(traffic_logger=LOGGER)
     def get(self, url, headers=None, params=None):
         """Submit a GET request to the provided URL.
 

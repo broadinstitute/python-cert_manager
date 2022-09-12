@@ -164,3 +164,28 @@ class TestRenew(TestSSL):
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
+
+
+class TestCount(TestSSL):
+    """Test the count method."""
+
+    @responses.activate
+    def test_defaults(self):
+        """The function should return all certificate records."""
+        # Setup the mocked response
+        test_url = f"{self.api_url}"
+        count = 10
+        responses.add(responses.HEAD, test_url, headers={'X-Total-Count': str(count)}, status=200)
+        responses.add(responses.HEAD, test_url, headers={'X-Total-Count': str(count * 2)}, status=200)
+
+        ssl = SSL(client=self.client)
+        result = ssl.count()
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(result, count)
+
+        result = ssl.count(status='Applied')
+
+        # Verify all the query information
+        self.assertEqual(result, count * 2)
