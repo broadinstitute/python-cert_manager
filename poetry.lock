@@ -318,7 +318,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mock"
-version = "4.0.3"
+version = "5.0.0"
 description = "Rolling backport of unittest.mock for all Pythons"
 category = "dev"
 optional = false
@@ -327,7 +327,7 @@ python-versions = ">=3.6"
 [package.extras]
 build = ["blurb", "twine", "wheel"]
 docs = ["sphinx"]
-test = ["pytest (<5.4)", "pytest-cov"]
+test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "more-itertools"
@@ -1139,8 +1139,8 @@ mccabe = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 mock = [
-    {file = "mock-4.0.3-py3-none-any.whl", hash = "sha256:122fcb64ee37cfad5b3f48d7a7d51875d7031aaf3d8be7c42e2bee25044eee62"},
-    {file = "mock-4.0.3.tar.gz", hash = "sha256:7d3fbbde18228f4ff2f1f119a45cdffa458b4c0dee32eb4d2bb2f82554bac7bc"},
+    {file = "mock-5.0.0-py3-none-any.whl", hash = "sha256:335ef0bf9bcd27505c0c1720d4eac2783f18d07d6f45ac49542b57885a1996dd"},
+    {file = "mock-5.0.0.tar.gz", hash = "sha256:fd552787228eb2ab8352f270470fa93c9ad8b9cbc565c5558ee3faed8edb3853"},
 ]
 more-itertools = [
     {file = "more-itertools-8.14.0.tar.gz", hash = "sha256:c09443cd3d5438b8dafccd867a6bc1cb0894389e90cb53d227456b0b0bccb750"},
