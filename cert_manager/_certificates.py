@@ -4,7 +4,7 @@
 import logging
 from requests.exceptions import HTTPError
 
-from ._helpers import Pending
+from ._helpers import CustomFieldsError, Pending
 from ._endpoint import Endpoint
 
 LOGGER = logging.getLogger(__name__)
@@ -91,23 +91,23 @@ class Certificates(Endpoint):
         for custom_field in custom_fields:
             if not isinstance(custom_field, dict):
                 msg = "Values in the custom_fields list must be dictionaries, not {}"
-                raise Exception(msg.format(type(custom_field)))
+                raise CustomFieldsError(msg.format(type(custom_field)))
             if not ('name' in custom_field and 'value' in custom_field):
-                raise Exception(
+                raise CustomFieldsError(
                     "Dictionaries in the custom_fields list must contain both a 'name' key and 'value' key"
                 )
             if custom_field.get('name') not in custom_field_names:
                 msg = "Custom field {} not defined for your account. defined custom fields are {}"
-                raise Exception(msg.format(custom_field.get('name'), custom_field_names))
+                raise CustomFieldsError(msg.format(custom_field.get('name'), custom_field_names))
         mandatory_fields = [f['name'] for f in self.custom_fields if f['mandatory'] is True]
         for field_name in mandatory_fields:
             # for each mandatory field, there should be exactly one dict in the custom_fields list
             # whose name matches that mandatory field name
             matching_fields = [f for f in custom_fields if f['name'] == field_name]
             if len(matching_fields) < 1:
-                raise Exception(f"Missing mandatory custom field {field_name}")
+                raise CustomFieldsError(f"Missing mandatory custom field {field_name}")
             if len(matching_fields) > 1:
-                raise Exception(f"Too many custom field objects with name {field_name}")
+                raise CustomFieldsError(f"Too many custom field objects with name {field_name}")
 
     def collect(self, cert_id, cert_format):
         """Retrieve an existing certificate from the API.
@@ -119,7 +119,7 @@ class Certificates(Endpoint):
         :return str: the string representing the certificate in the requested format
         """
         if cert_format not in self.valid_formats:
-            raise Exception(f"Invalid cert format {cert_format} provided")
+            raise ValueError(f"Invalid cert format {cert_format} provided")
 
         url = self._url(f"/collect/{cert_id}/{cert_format}")
 
@@ -156,7 +156,7 @@ class Certificates(Endpoint):
 
         # Make sure a valid certificate type name was provided
         if cert_type_name not in self.types:
-            raise Exception(f"Incorrect certificate type specified: '{cert_type_name}'")
+            raise ValueError(f"Incorrect certificate type specified: '{cert_type_name}'")
 
         type_id = self.types[cert_type_name]["id"]
         terms = self.types[cert_type_name]["terms"]
@@ -166,7 +166,7 @@ class Certificates(Endpoint):
             # You have to do the list/map/str thing because join can only operate on
             # a list of strings, and this will be a list of numbers
             trm = ", ".join(list(map(str, terms)))
-            raise Exception(f"Incorrect term specified: {term}.  Valid terms are {trm}.")
+            raise ValueError(f"Incorrect term specified: {term}.  Valid terms are {trm}.")
 
         self._validate_custom_fields(custom_fields)
 
@@ -230,7 +230,7 @@ class Certificates(Endpoint):
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
         if (not reason) or (len(reason) > 511):
-            raise Exception("Sectigo limit: reason must be > 0 character and < 512 characters")
+            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
 
         data = {"reason": reason}
 
