@@ -157,3 +157,7 @@ class Pending(Exception):
 class Revoked(Exception):
     """Serve as a generic Exception indicating a certificate has been revoked"""
     CODE = -192
+
+
+class CustomFieldsError(Exception):
+    """Exception when custom fields do not have correct data."""

@@ -69,7 +69,7 @@ class TestInit(TestClient):
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
             self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], headdata)
+            self.assertEqual(client._Client__session.headers[head], headdata)
 
         # Because password was used and cert_auth was False, a password header should exist
         self.assertTrue("password" in client._Client__session.headers)
@@ -95,7 +95,7 @@ class TestInit(TestClient):
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
             self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], headdata)
+            self.assertEqual(client._Client__session.headers[head], headdata)
 
         # If cert_auth is True, make sure a password header does not exist
         self.assertFalse("password" in client._Client__session.headers)
@@ -119,7 +119,7 @@ class TestInit(TestClient):
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
             self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], headdata)
+            self.assertEqual(client._Client__session.headers[head], headdata)
 
         # If cert_auth is True, make sure a password header does not exist
         self.assertFalse("password" in client._Client__session.headers)
@@ -216,7 +216,7 @@ class TestAddHeaders(TestClient):
         # Make sure the original headers are still in the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
             self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], headdata)
+            self.assertEqual(self.client._Client__session.headers[head], headdata)
 
     def test_replace(self):
         """The already existing header should be modified."""
@@ -234,7 +234,7 @@ class TestAddHeaders(TestClient):
         # Make sure the original headers are still in the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
             self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.cfixt.headers[head], headdata)
+            self.assertEqual(self.client._Client__session.headers[head], headdata)
 
     def test_not_dictionary(self):
         """It should raise an exception when not passed a dictionary."""
@@ -259,7 +259,7 @@ class TestRemoveHeaders(TestClient):
         for head, headdata in self.cfixt.headers.items():
             if head not in headers:
                 self.assertTrue(head in self.client._Client__session.headers)
-                self.assertEqual(self.cfixt.headers[head], headdata)
+                self.assertEqual(self.client._Client__session.headers[head], headdata)
 
     def test_dictionary(self):
         """The headers should be removed correctly if passed a dictionary."""
@@ -275,7 +275,7 @@ class TestRemoveHeaders(TestClient):
         for head, headdata in self.cfixt.headers.items():
             if head not in headers:
                 self.assertTrue(head in self.client._Client__session.headers)
-                self.assertEqual(self.cfixt.headers[head], headdata)
+                self.assertEqual(self.client._Client__session.headers[head], headdata)
 
 
 class TestGet(TestClient):
