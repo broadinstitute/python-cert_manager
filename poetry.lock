@@ -348,18 +348,6 @@ files = [
 ]
 
 [[package]]
-name = "extras"
-version = "1.0.0"
-description = "Useful extra bits for Python - things that shold be in the standard library"
-category = "dev"
-optional = false
-python-versions = "*"
-files = [
-    {file = "extras-1.0.0-py2.py3-none-any.whl", hash = "sha256:f689f08df47e2decf76aa6208c081306e7bd472630eb1ec8a875c67de2366e87"},
-    {file = "extras-1.0.0.tar.gz", hash = "sha256:132e36de10b9c91d5d4cc620160a476e0468a88f16c9431817a6729611a81b4e"},
-]
-
-[[package]]
 name = "fixtures"
 version = "4.0.1"
 description = "Fixtures, reusable state for writing clean tests and more."
@@ -1102,23 +1090,23 @@ files = [
 
 [[package]]
 name = "testtools"
-version = "2.5.0"
+version = "2.6.0"
 description = "Extensions to the Python standard library unit testing framework"
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 files = [
-    {file = "testtools-2.5.0-py3-none-any.whl", hash = "sha256:798525999f053e4df4e352c0c198baeb9f5079f34bad5bd57a44e97a54fa0330"},
-    {file = "testtools-2.5.0.tar.gz", hash = "sha256:57c13433d94f9ffde3be6534177d10fb0c1507cc499319128958ca91a65cb23f"},
+    {file = "testtools-2.6.0-py3-none-any.whl", hash = "sha256:cae7b2c2f459e448e0bb22c017fa1e7b4ba534b6e623d9f7ec0e0312aac8f7e8"},
+    {file = "testtools-2.6.0.tar.gz", hash = "sha256:28b65e14c0f2d3ecbbfb5f55c9dcde5e4faa80ac16a37a823909a1fe3cbcb30a"},
 ]
 
 [package.dependencies]
-extras = ">=1.0.0"
-fixtures = ">=1.3.0"
+fixtures = ">=2.0"
 pbr = ">=0.11"
 
 [package.extras]
 test = ["testresources", "testscenarios"]
+twisted = ["Twisted"]
 
 [[package]]
 name = "toml"
