@@ -1,7 +1,7 @@
 ---
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -28,11 +28,11 @@ repos:
           - -b main
       - id: trailing-whitespace
   - repo: https://github.com/broadinstitute/mirrors-pylama.git
-    rev: v1.0.1
+    rev: v1.0.2
     hooks:
       - id: pylama
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.28.0
+    rev: v1.31.0
     hooks:
       - id: yamllint
         args:
