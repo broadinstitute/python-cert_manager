@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 COPY poetry.lock pyproject.toml README.md /working/
 
