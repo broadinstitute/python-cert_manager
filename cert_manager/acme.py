@@ -21,7 +21,9 @@ class ACMEAccount(Endpoint):
         "name": "name",
         "acme_server": "acmeServer",
         "cert_validation_type": "certValidationType",
-        "status": "status"
+        "status": "status",
+        "size": "size",
+        "position": "position",
     }
 
     def __init__(self, client, api_version="v1"):
