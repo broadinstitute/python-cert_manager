@@ -383,13 +383,14 @@ files = [
 
 [[package]]
 name = "fixtures"
-version = "4.0.1"
+version = "4.1.0"
 description = "Fixtures, reusable state for writing clean tests and more."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "fixtures-4.0.1.tar.gz", hash = "sha256:d2758826400d095b79666cf93a32a84f50ff8cd179831927efb48cd1e3ca7466"},
+    {file = "fixtures-4.1.0-py3-none-any.whl", hash = "sha256:a43a55da406c37651aa86dd1ba6c3983a09d36d60fe5f72242872c8a4eeeb710"},
+    {file = "fixtures-4.1.0.tar.gz", hash = "sha256:82b1c5e69f615526ef6c067188a1e6c6067df7f88332509c99f8b8fdbb9776f3"},
 ]
 
 [package.dependencies]
