@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.3.1](https://github.com/broadinstitute/python-cert_manager/tree/2.3.1) (2023-06-05)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.3.0...2.3.1)
+
+**Implemented enhancements:**
+
+- Release 2.3.1 [\#181](https://github.com/broadinstitute/python-cert_manager/pull/181) ([coreone](https://github.com/coreone))
+- Fix linting and unit test bugs [\#156](https://github.com/broadinstitute/python-cert_manager/pull/156) ([coreone](https://github.com/coreone))
+
+**Fixed bugs:**
+
+- Fix pagination for ACMEAccount.find\(\) [\#173](https://github.com/broadinstitute/python-cert_manager/pull/173) ([jzmp](https://github.com/jzmp))
+
+**Closed issues:**
+
+- New release to support pagination [\#178](https://github.com/broadinstitute/python-cert_manager/issues/178)
+- Version Bump needed [\#105](https://github.com/broadinstitute/python-cert_manager/issues/105)
+
 ## [2.3.0](https://github.com/broadinstitute/python-cert_manager/tree/2.3.0) (2022-09-12)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.2.0...2.3.0)
