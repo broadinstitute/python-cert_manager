@@ -169,7 +169,10 @@ class ACMEAccount(Endpoint):
                 for domain in domains
             ]
         }
-        url = self._url(f"/{acme_id}/domains")
+        if self.api_version == "v1":
+            url = self._url(f"/{acme_id}/domains")
+        else:
+            url = self._url(f"/{acme_id}/domain")
         result = self._client.post(url, data=data)
 
         return result.json()
