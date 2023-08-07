@@ -52,8 +52,9 @@ class SSL(Certificates):
         """
         url = self._url(f"/renewById/{cert_id}")
         result = self._client.post(url, data="")
-
-        return result.json()
+        if result.text:
+            return result.json()
+        return {}
 
     def count(self, **kwargs) -> int:
         """Retrieve the number of certifictes."""

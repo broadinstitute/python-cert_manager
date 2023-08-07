@@ -142,7 +142,7 @@ class TestRenew(TestSSL):
     def test_success(self):
         """It should return JSON if a 200-level status code is returned with data."""
         # Setup the mocked responses
-        responses.add(responses.POST, self.test_url, json={}, status=204)
+        responses.add(responses.POST, self.test_url, status=204)
 
         # Call the function
         resp = self.certobj.renew(cert_id=self.test_id)
