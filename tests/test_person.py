@@ -139,7 +139,7 @@ class TestGet(TestPerson):
         responses.add(responses.GET, test_url, json=test_result, status=404)
 
         person = Person(client=self.client)
-        self.assertRaises(HTTPError, person.get, id=test_id)
+        self.assertRaises(HTTPError, person.get, person_id=test_id)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -197,15 +197,14 @@ class TestUpdate(TestPerson):
         responses.add(responses.PUT, test_url, status=200)
 
         person = Person(client=self.client)
-        data = person.update(
-            id=test_id,
+        person.update(
+            person_id=test_id,
             validation_type="HIGH",
         )
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, test_url)
-        self.assertEqual(data, None)
 
 
 class TestDelete(TestPerson):
@@ -219,11 +218,10 @@ class TestDelete(TestPerson):
         responses.add(responses.DELETE, test_url, status=200)
 
         person = Person(client=self.client)
-        data = person.delete(
-            id=test_id,
+        person.delete(
+            person_id=test_id,
         )
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, test_url)
-        self.assertEqual(data, None)

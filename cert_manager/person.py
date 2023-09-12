@@ -50,13 +50,13 @@ class Person(Endpoint):
 
         return result.json()
 
-    def get(self, id):
+    def get(self, person_id):
         """Returns the details of a person
 
-        :param int id: The person's ID
+        :param int person_id: The person's ID
         :return dict: A dictionary of the person's details
         """
-        url = self._url(str(id))
+        url = self._url(str(person_id))
         result = self._client.get(url)
         return result.json()
 
@@ -104,7 +104,7 @@ class Person(Endpoint):
     def update(self, **kwargs) -> None:
         """Update a person
 
-        :param string id: The person's id
+        :param string person_id: The person's id
         :param string first_name: The person's first name
         :param string middleName: The person's middle name
         :param string last_name: The person's last name
@@ -118,7 +118,7 @@ class Person(Endpoint):
         :param string upn: The person's UPN (User Principal Name)
         """
         # Retrieve all the arguments
-        id = kwargs.get("id")
+        person_id = kwargs.get("person_id")
         email = kwargs.get("email")
         phone = kwargs.get("phone")
         secondary_emails = kwargs.get("secondary_emails", None)
@@ -136,12 +136,12 @@ class Person(Endpoint):
             "validationType": validation_type, "organizationId": org_id, "phone": phone,
             "commonName": common_name, "secondaryEmails": secondary_emails, "eppn": eppn, "upn": upn,
         }
-        self._client.put(self._url(str(id)), data=data)
+        self._client.put(self._url(str(person_id)), data=data)
 
     def delete(self, **kwargs):
         """Delete a person
 
-        :param string id: The person's id
+        :param string person_id: The person's id
         """
-        id = kwargs.get("id")
-        self._client.delete(self._url(str(id)))
+        person_id = kwargs.get("person_id")
+        self._client.delete(self._url(str(person_id)))
