@@ -8,35 +8,6 @@ name: 'deploy'
 
 jobs:
   pypi_deploy:
-
-    runs-on: 'ubuntu-latest'
-
-    steps:
-      - name: 'Checkout repo'
-        uses: 'actions/checkout@v4'
-
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: 'Set up Python 3.11'
-        uses: actions/setup-python@v4
-        with:
-          cache: 'poetry'
-          python-version: '3.11'
-
-      - name: 'Configure Poetry'
-        run: poetry config virtualenvs.in-project true
-
-      - name: 'Install dependencies'
-        run: 'poetry install'
-
-      - name: 'Setup PyPi credential'
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: 'poetry config pypi-token.pypi "$PYPI_TOKEN"'
-
-      - name: 'Package build'
-        run: 'poetry build'
-
-      - name: 'Publish package to PyPi'
-        run: 'poetry publish'
+    uses: broadinstitute/shared-workflows/.github/workflows/poetry-deploy.yml@v1.0.0
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
