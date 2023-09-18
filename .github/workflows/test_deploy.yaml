@@ -5,40 +5,12 @@ name: 'test_deploy'
   push:
     branches:
       - 'main'
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
-  pypi_deploy:
-
-    runs-on: 'ubuntu-latest'
-
-    steps:
-      - name: 'Checkout repo'
-        uses: 'actions/checkout@v4'
-
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: 'Set up Python 3.11'
-        uses: actions/setup-python@v4
-        with:
-          cache: 'poetry'
-          python-version: '3.11'
-
-      - name: 'Configure Poetry'
-        run: poetry config virtualenvs.in-project true
-
-      - name: 'Install dependencies'
-        run: 'poetry install'
-
-      - name: 'Setup PyPi credential'
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TEST_TOKEN }}
-        run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry config pypi-token.testpypi "$PYPI_TOKEN"
-
-      - name: 'Package build'
-        run: 'poetry build'
-
-      - name: 'Publish package to PyPi'
-        run: 'poetry publish --dry-run -r testpypi'
+  pypi_test_deploy:
+    uses: broadinstitute/shared-workflows/.github/workflows/poetry-test-deploy.yml@v1.0.0
+    secrets:
+      pypi_test_token: ${{ secrets.PYPI_TEST_TOKEN }}

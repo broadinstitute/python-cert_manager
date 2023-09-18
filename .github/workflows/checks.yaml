@@ -11,66 +11,8 @@ name: 'checks'
 
 jobs:
   linting:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - name: 'Checkout repo'
-        uses: 'actions/checkout@v4'
-
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: 'Set up Python 3.11'
-        uses: actions/setup-python@v4
-        with:
-          cache: 'poetry'
-          python-version: '3.11'
-
-      - name: 'Configure Poetry'
-        run: poetry config virtualenvs.in-project true
-
-      - name: 'Install dependencies'
-        run: 'poetry install'
-
-      - name: 'Lint with yamllint'
-        run: 'poetry run yamllint . -s'
-
-      - name: 'Lint with pylama'
-        run: "poetry run pylama -v --skip '.venv/*'"
-
+    uses: broadinstitute/shared-workflows/.github/workflows/python-linting.yml@v1.0.0
   unit-tests:
-    runs-on: 'ubuntu-latest'
-    strategy:
-      matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-    steps:
-      - name: 'Checkout repo'
-        uses: 'actions/checkout@v4'
-
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: 'actions/setup-python@v4'
-        with:
-          cache: 'poetry'
-          python-version: ${{ matrix.python-version }}
-
-      - name: 'Configure Poetry'
-        run: poetry config virtualenvs.in-project true
-
-      - name: 'Check pyproject.toml'
-        run: 'poetry check'
-
-      - name: 'Install dependencies'
-        run: 'poetry install'
-
-      - name: 'Test with green'
-        # test with one test for now
-        run: |
-          poetry run green tests
-          poetry run coverage xml
-
-      - name: 'Run a test module build and install'
-        run: |
-          poetry build
-          pip install dist/cert_manager-*.tar.gz
+    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-tests.yml@v1.0.0
+    with:
+      python_package_name: cert_manager
