@@ -11,8 +11,8 @@ name: 'checks'
 
 jobs:
   linting:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-linting.yml@v1.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-linting.yml@v1.2.1
   unit-tests:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-tests.yml@v1.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-tests.yml@v1.2.1
     with:
       python_package_name: cert_manager
