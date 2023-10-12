@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.ssl.SSL unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
 # pylint: disable=invalid-name
 
-from testtools import TestCase
-
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
+from testtools import TestCase
 
 from cert_manager.ssl import SSL
 
@@ -62,14 +60,14 @@ class TestGet(TestSSL):
     """Test the class get method."""
 
     def test_defaults(self):
-        """The function should raise an exception when no cert_id is passed."""
+        """Raise an exception when no cert_id is passed."""
         # Setup the mocked response
         ssl = SSL(client=self.client)
         self.assertRaises(TypeError, ssl.get)
 
     @responses.activate
     def test_cert(self):
-        """The function should return the record for the cert_id passed."""
+        """Return the record for the cert_id passed."""
         # Setup the mocked response
         cert_id = "1234567"
         test_url = f"{self.api_url}/{cert_id}"
@@ -87,7 +85,7 @@ class TestGet(TestSSL):
 
     @responses.activate
     def test_no_cert(self):
-        """The function should raise an exception when the cert_id doesn't exist."""
+        """Raise an exception when the cert_id doesn't exist."""
         # Setup the mocked response
         cert_id = "1234567"
         test_url = f"{self.api_url}/{cert_id}"
@@ -104,7 +102,7 @@ class TestList(TestSSL):
 
     @responses.activate
     def test_defaults(self):
-        """The function should return all certificate records."""
+        """Return all certificate records."""
         # Setup the mocked response
         test_url = f"{self.api_url}?size=200&position=0"
         test_result = [
@@ -140,7 +138,7 @@ class TestRenew(TestSSL):
 
     @responses.activate
     def test_success(self):
-        """It should return JSON if a 200-level status code is returned with data."""
+        """Return JSON if a 200-level status code is returned with data."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, status=204)
 
@@ -154,7 +152,7 @@ class TestRenew(TestSSL):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
@@ -171,7 +169,7 @@ class TestCount(TestSSL):
 
     @responses.activate
     def test_defaults(self):
-        """The function should return all certificate records."""
+        """Return all certificate records."""
         # Setup the mocked response
         test_url = f"{self.api_url}"
         count = 10

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.organization.Organization unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -8,8 +7,8 @@
 # https://stackoverflow.com/questions/9323749/python-check-if-one-dictionary-is-a-subset-of-another-larger-dictionary
 #
 
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
 from testtools import TestCase
 
 from cert_manager.organization import Organization
@@ -62,7 +61,7 @@ class TestInit(TestOrganization):
 
     @responses.activate
     def test_param(self):
-        """The URL should change if api_version is passed as a parameter."""
+        """Change the URL if api_version is passed as a parameter."""
         # Set a new version
         version = "v3"
         api_url = f"{self.cfixt.base_url}/organization/{version}"
@@ -79,12 +78,12 @@ class TestInit(TestOrganization):
         self.assertEqual(org._Organization__orgs, self.valid_response)
 
     def test_need_client(self):
-        """The class should raise an exception without a client parameter."""
+        """Raise an exception if called without a client parameter."""
         self.assertRaises(TypeError, Organization)
 
     @responses.activate
     def test_bad_http(self):
-        """The class should raise an HTTPError exception if organizations cannot be retrieved from the API."""
+        """Raise an HTTPError exception if organizations cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=404)
 
@@ -100,7 +99,7 @@ class TestAll(TestOrganization):
 
     @responses.activate
     def test_cached(self):
-        """The function should return all the data, but should not query the API twice."""
+        """Return all the data, but should not query the API twice."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -115,7 +114,7 @@ class TestAll(TestOrganization):
 
     @responses.activate
     def test_forced(self):
-        """The function should return all the data, but should query the API twice."""
+        """Return all the data, but should query the API twice."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -135,7 +134,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_org(self):
-        """The function should return all the data about the specified organization name."""
+        """Return all the data about the specified organization name."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -150,7 +149,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_dept(self):
-        """The function should return all the data about the specified department name."""
+        """Return all the data about the specified department name."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -165,7 +164,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_org_and_dept(self):
-        """The function should return department data for department under a specific org."""
+        """Return department data for department under a specific org."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -180,7 +179,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_ne_org_and_dept(self):
-        """The function should return an empty list if the org name doesn't exist but the department does."""
+        """Return an empty list if the org name doesn't exist but the department does."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -195,7 +194,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_ne_org(self):
-        """The function should return an empty list if the organization name doesn't exist."""
+        """Return an empty list if the organization name doesn't exist."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -210,7 +209,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_ne_dept(self):
-        """The function should return an empty list if the department name doesn't exist."""
+        """Return an empty list if the department name doesn't exist."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -225,7 +224,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_no_params(self):
-        """The function should return the entire list of orgs if no parameters are passed."""
+        """Return the entire list of orgs if no parameters are passed."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -240,7 +239,7 @@ class TestFind(TestOrganization):
 
     @responses.activate
     def test_no_org_depts(self):
-        """The function should not error out if the departments field doesn't appear in any orgs."""
+        """Do not return an error if the departments field doesn't appear in any orgs."""
         org_data = [
             {"id": 1234, "name": "Some Organization", "certTypes": []},
             {"id": 4321, "name": "Another Organization", "certTypes": []},

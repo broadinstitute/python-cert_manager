@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.ssl.SMIME unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
 # pylint: disable=invalid-name
 
 import json
+
 import responses
 from requests import HTTPError
 from testtools import TestCase
 
+from cert_manager._helpers import PendingError, RevokedError
 from cert_manager.smime import SMIME
-from cert_manager._helpers import Pending, Revoked
 
 from .lib.testbase import ClientFixture
 from .test_certificates import TestCertificates
@@ -65,7 +65,7 @@ class TestList(TestSMIME):
 
     @responses.activate
     def test_defaults(self):
-        """The function should return all client certificate records"""
+        """Return all client certificate records."""
         # Setup the mocked response
         test_url = f"{self.api_url}?size=200&position=0"
         test_result = [
@@ -105,13 +105,13 @@ class TestListByEmail(TestSMIME):
 
     @responses.activate
     def test_defaults(self):
-        """The function should raise an exception when no email is passed"""
+        """Raise an exception when no email is passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.list_by_email)
 
     @responses.activate
     def test_success(self):
-        """The function should return the list of certificates of an email"""
+        """Return the list of certificates of an email."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json=self.test_result, status=200)
 
@@ -128,7 +128,7 @@ class TestListByEmail(TestSMIME):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={}, status=404)
 
@@ -184,13 +184,13 @@ class TestEnroll(TestSMIME):
         self.test_result = json.dumps({"orderNumber": 123456, "backendCertId": "123456"})
 
     def test_defaults(self):
-        """The function should raise an exception when no params are passed"""
+        """Raise an exception when no params are passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.enroll)
 
     @responses.activate
     def test_success(self):
-        """It should return a JSON if a 200-level status code is returned with data."""
+        """Return a JSON if a 200-level status code is returned with data."""
         # Setup the mocked response
         # We need to mock the /types and /customFields URLs as well
         # since SMIME.types and SMIME.custom_fields are called from enroll
@@ -215,7 +215,7 @@ class TestEnroll(TestSMIME):
 
     @responses.activate
     def test_bad_cert_type_name(self):
-        """It should raise an Exception if the cert_type_name was not found."""
+        """Raise an Exception if the cert_type_name was not found."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -238,7 +238,7 @@ class TestEnroll(TestSMIME):
 
     @responses.activate
     def test_bad_term(self):
-        """It should raise an Exception if the term was not valid."""
+        """Raise an Exception if the term was not valid."""
         # Setup the mocked responses
         # since Certificates.types and Certificate.custom_fields are called from enroll
         responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
@@ -259,7 +259,7 @@ class TestEnroll(TestSMIME):
 
     @responses.activate
     def test_mandatory_custom_fields_success(self):
-        """It should return a 200-level status code if a mandatory custom field is included."""
+        """Return a 200-level status code if a mandatory custom field is included."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -297,13 +297,13 @@ class TestCollect(TestSMIME):
         self.test_cert = TestCertificates.fake_cert()
 
     def test_defaults(self):
-        """The function should raise an exception when no certificate id is passed"""
+        """Raise an exception when no certificate id is passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.collect)
 
     @responses.activate
     def test_success(self):
-        """It should return a certificate if a 200-level status code is returned with data."""
+        """Return a certificate if a 200-level status code is returned with data."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, body=self.test_cert, status=200)
 
@@ -317,20 +317,20 @@ class TestCollect(TestSMIME):
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
     def test_no_cert_id(self):
-        """The function should raise a ValueError exception if no cert_id is passed"""
+        """Raise a ValueError exception if no cert_id is passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(ValueError, smime.collect, None)
 
     @responses.activate
     def test_pending(self):
-        """It should raise a Pending exception if an Http error with the pending code in the body is returned."""
+        """Raise a PendingError exception if an Http error with the pending code in the body is returned."""
         # Setup the mocked response
-        body = json.dumps({"code": Pending.CODE, "description": "Certificate is not collectable."})
+        body = json.dumps({"code": PendingError.CODE, "description": "Certificate is not collectable."})
         responses.add(responses.GET, self.test_url, body=body, status=400)
 
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
-        self.assertRaises(Pending, smime.collect, self.test_id)
+        self.assertRaises(PendingError, smime.collect, self.test_id)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -338,14 +338,14 @@ class TestCollect(TestSMIME):
 
     @responses.activate
     def test_revoked(self):
-        """It should raise a Revoked exception if an Http error with the pending code in the body is returned."""
+        """Raise a RevokedError exception if an Http error with the pending code in the body is returned."""
         # Setup the mocked response
-        body = json.dumps({"code": Revoked.CODE, "description": "The Certificate has been revoked!"})
+        body = json.dumps({"code": RevokedError.CODE, "description": "The Certificate has been revoked!"})
         responses.add(responses.GET, self.test_url, body=body, status=400)
 
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
-        self.assertRaises(Revoked, smime.collect, self.test_id)
+        self.assertRaises(RevokedError, smime.collect, self.test_id)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -353,7 +353,7 @@ class TestCollect(TestSMIME):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={}, status=400)
 
@@ -383,7 +383,7 @@ class TestRenew(TestSMIME):
         self.test_serial_data = {'orderNumber': 987654321, 'backendCertId': '987654321'}
 
     def test_defaults(self):
-        """Should raise an exception when no params are passed"""
+        """Should raise an exception when no params are passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.renew)
 
@@ -441,13 +441,13 @@ class TestReplace(TestSMIME):
         self.test_csr = TestCertificates.fake_csr()
 
     def test_defaults(self):
-        """The function should raise an exception when no params are passed"""
+        """Raise an exception when no params are passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.replace)
 
     @responses.activate
     def test_success(self):
-        """It should return nothing if a 200-level status code is returned"""
+        """Return nothing if a 200-level status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, body='', status=204)
 
@@ -473,13 +473,13 @@ class TestRevoke(TestSMIME):
         self.test_url = f"{self.api_url}/revoke/order/{self.test_cert_id}"
 
     def test_defaults(self):
-        """The function should raise an exception when no params are passed"""
+        """Raise an exception when no params are passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.revoke)
 
     @responses.activate
     def test_success(self):
-        """It should return nothing if a 200-level status code is returned"""
+        """Return nothing if a 200-level status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, body='', status=204)
 
@@ -494,19 +494,19 @@ class TestRevoke(TestSMIME):
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
     def test_no_cert_id(self):
-        """The function should raise a ValueError exception if no cert_id is passed"""
+        """Raise a ValueError exception if no cert_id is passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(ValueError, smime.revoke, None)
 
     def test_no_reason(self):
-        """It should raise a ValueError exception if the reason is left empty."""
+        """Raise a ValueError exception if the reason is left empty."""
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
         self.assertRaises(ValueError, smime.revoke, self.test_cert_id)
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
@@ -530,13 +530,13 @@ class TestRevokeByEmail(TestSMIME):
         self.test_url = f"{self.api_url}/revoke"
 
     def test_defaults(self):
-        """The function should raise an exception when no params are passed"""
+        """Raise an exception when no params are passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(Exception, smime.revoke_by_email)
 
     @responses.activate
     def test_success(self):
-        """It should return nothing if a 200-level status code is returned"""
+        """Return nothing if a 200-level status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, body='', status=204)
 
@@ -551,19 +551,19 @@ class TestRevokeByEmail(TestSMIME):
         self.assertEqual(responses.calls[0].request.url, self.test_url)
 
     def test_no_email(self):
-        """The function should raise a ValueError exception if no email is passed"""
+        """Raise a ValueError exception if no email is passed."""
         smime = SMIME(client=self.client)
         self.assertRaises(ValueError, smime.revoke_by_email, "")
 
     def test_no_reason(self):
-        """It should raise a ValueError exception if the reason is left empty"""
+        """Raise a ValueError exception if the reason is left empty."""
         # Call the function, expecting an exception
         smime = SMIME(client=self.client)
         self.assertRaises(ValueError, smime.revoke_by_email, self.test_email)
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 

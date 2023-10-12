@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.certificates.ssl.SSL class."""
 
 import logging

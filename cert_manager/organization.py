@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.organization.Organization class."""
 
 import logging

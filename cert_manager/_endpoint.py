@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager._endpoint.Endpoint base class."""
 
 import logging
@@ -19,6 +18,8 @@ class Endpoint:
         self._client = client
         self._api_version = api_version
         self._api_url = self.create_api_url(client.base_url, endpoint, self._api_version)
+        self._expected_code = 201
+        self._capture_err_code = 400
 
     @property
     def api_version(self):

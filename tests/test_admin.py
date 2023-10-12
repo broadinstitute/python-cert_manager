@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.admin.Admin unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -6,10 +5,9 @@
 
 import json
 
+import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
-
-import responses
 
 from cert_manager.admin import Admin, AdminCreationResponseError
 
@@ -79,7 +77,7 @@ class TestInit(TestAdmin):
 
     @responses.activate
     def test_param(self):
-        """The URL should change if api_version is passed as a parameter."""
+        """Change the URL if api_version is passed as a parameter."""
         # Set a new version
         version = "v3"
         api_url = f"{self.cfixt.base_url}/admin/{version}"
@@ -96,12 +94,12 @@ class TestInit(TestAdmin):
         self.assertEqual(admin._Admin__admins, self.valid_response)
 
     def test_need_client(self):
-        """The class should raise an exception without a client parameter."""
+        """Raise an exception if called without a client parameter."""
         self.assertRaises(TypeError, Admin)
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if admin accounts cannot be retrieved from the API."""
+        """Raise an HTTPError exception if admin accounts cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
 
@@ -117,7 +115,7 @@ class TestAll(TestAdmin):
 
     @responses.activate
     def test_cached(self):
-        """The function should return all the data, but should not query the API twice."""
+        """Return all the data, but should not query the API twice."""
         # Setup the mocked response, refrain from matching the query string
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -134,7 +132,7 @@ class TestAll(TestAdmin):
 
     @responses.activate
     def test_forced(self):
-        """The function should return all the data, but should query the API twice."""
+        """Return all the data, but should query the API twice."""
         # Setup the mocked response, refrain from matching the query string
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -156,8 +154,7 @@ class TestGet(TestAdmin):
 
     @responses.activate
     def test_need_admin_id(self):
-        """The function should raise an exception without an admin_id parameter."""
-
+        """Raise an exception without an admin_id parameter."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         admin = Admin(client=self.client)
@@ -165,8 +162,7 @@ class TestGet(TestAdmin):
 
     @responses.activate
     def test_admin_id(self):
-        """The function should return data about the specified Admin ID."""
-
+        """Return data about the specified Admin ID."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -185,8 +181,7 @@ class TestGet(TestAdmin):
 
     @responses.activate
     def test_ne_admin_id(self):
-        """The function should raise an HTTPError exception if the specified Admin ID does not exist."""
-
+        """Raise an HTTPError exception if the specified Admin ID does not exist."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -205,8 +200,7 @@ class TestGetIdps(TestAdmin):
 
     @responses.activate
     def test_get(self):
-        """The function should return all IDPs."""
-
+        """Return all IDPs."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -229,8 +223,7 @@ class TestGetIdps(TestAdmin):
 
     @responses.activate
     def test_get_http_failure(self):
-        """The function should raise an HTTPError exception if IDPs cannot be retrieved from the API."""
-
+        """Raise an HTTPError exception if IDPs cannot be retrieved from the API."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -248,11 +241,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -263,11 +252,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_success(self):
-        """
-        The function should return the created admin ID,
-        as well as add all parameters to the request body
-        """
-
+        """Return the created admin ID, as well as add all parameters to the request body."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -291,11 +276,10 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_success_optional_params(self):
-        """
-        The function should return the created admin ID when additional params are specified,
-        as well add the non-required parameters to the request body
-        """
+        """Return the created admin ID when additional params are specified.
 
+        Also, add the non-required parameters to the request body.
+        """
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -321,11 +305,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_failure_http_error(self):
-        """
-        The function should return an error code and description if the Admin
-        creation failed.
-        """
-
+        """Return an error code and description if the Admin creation failed."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -346,12 +326,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_failure_http_status_unexpected(self):
-        """
-        The function should return an error code and description if the Admin
-        creation failed with AdminCreationResponseError
-        (unexpected HTTP status code).
-        """
-
+        """Raise an exception if the Admin creation fails with unexpected http code."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -372,12 +347,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_failure_missing_location_header(self):
-        """
-        The function should return an error code and description if the Admin
-        creation failed with AdminCreationResponseError
-        (no Location header in response).
-        """
-
+        """Raise an exception if the Admin creation fails due to no Location header in response."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -397,12 +367,7 @@ class TestCreate(TestAdmin):
 
     @responses.activate
     def test_create_failure_admin_id_not_found(self):
-        """
-        The function should return an error code and description if the Admin
-        creation failed with AdminCreationResponseError
-        (Admin ID not found in response).
-        """
-
+        """Raise an exception if the Admin creation fails because Admin ID not found in response."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
         # Setup the mocked response
@@ -426,11 +391,7 @@ class TestDelete(TestAdmin):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -440,8 +401,7 @@ class TestDelete(TestAdmin):
 
     @responses.activate
     def test_delete_success(self):
-        """The function should return True if the deletion succeeded."""
-
+        """Return True if the deletion succeeded."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -458,11 +418,7 @@ class TestDelete(TestAdmin):
 
     @responses.activate
     def test_delete_failure_http_error(self):
-        """
-        The function should raise an HTTPError exception if the deletion
-        failed.
-        """
-
+        """Raise an HTTPError exception if the deletion failed."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -482,11 +438,7 @@ class TestUpdate(TestAdmin):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -496,8 +448,7 @@ class TestUpdate(TestAdmin):
 
     @responses.activate
     def test_update_success(self):
-        """The function should return True if the update succeeded."""
-
+        """Return True if the update succeeded."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -514,8 +465,7 @@ class TestUpdate(TestAdmin):
 
     @responses.activate
     def test_update_body_success(self):
-        """Additional **kwargs should be added to request body"""
-
+        """Additional **kwargs should be added to request body."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -538,11 +488,7 @@ class TestUpdate(TestAdmin):
 
     @responses.activate
     def test_update_failure_http_error(self):
-        """
-        The function should return an error code and description if the Admin
-        creation failed.
-        """
-
+        """Return an error code and description if the Admin creation failed."""
         # Setup the mocked response when class is initialized
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 

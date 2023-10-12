@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager._certificate.Certificates base class."""
 
 import logging
+
 from requests.exceptions import HTTPError
 
-from ._helpers import CustomFieldsError, Pending
 from ._endpoint import Endpoint
+from ._helpers import CustomFieldsError, PendingError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,6 +41,7 @@ class Certificates(Endpoint):
         # Set to None initially.  Will be filled in by methods later.
         self.__cert_types = None
         self.__custom_fields = None
+        self.__reason_maxlen = 512
 
     @property
     def types(self):
@@ -81,8 +82,7 @@ class Certificates(Endpoint):
         return self.__custom_fields
 
     def _validate_custom_fields(self, custom_fields):
-        """Check the structure and contents of a list of dicts representing custom fields
-        Raise exceptions if validation fails
+        """Check the structure and contents of a list of custom fields dicts. Raise exceptions if validation fails.
 
         :raises Exception: if any of the validation steps fail
         """
@@ -112,7 +112,7 @@ class Certificates(Endpoint):
     def collect(self, cert_id, cert_format):
         """Retrieve an existing certificate from the API.
 
-        This method will raise a Pending exception if the certificate is still in a pending state.
+        This method will raise a PendingError exception if the certificate is still in a pending state.
 
         :param int cert_id: The certificate ID
         :param str cert_format: The format in which to retreive the certificate. Allowed values: *self.valid_formats*
@@ -126,7 +126,7 @@ class Certificates(Endpoint):
         try:
             result = self._client.get(url)
         except HTTPError as exc:
-            raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
+            raise PendingError(f"certificate {cert_id} still in 'pending' state") from exc
 
         # The certificate is ready for collection
         encoding = result.encoding or "ascii"
@@ -230,8 +230,8 @@ class Certificates(Endpoint):
         url = self._url(f"/revoke/{cert_id}")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if (not reason) or (len(reason) > 511):
-            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
+        if not reason or len(reason) >= self.__reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
 
         data = {"reason": reason}
 

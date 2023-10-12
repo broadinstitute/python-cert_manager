@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.domain.Domain class."""
 
-import re
 import logging
+import re
+
 from requests.exceptions import HTTPError
 
 from ._endpoint import Endpoint
@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DomainCreationResponseError(Exception):
-    """An error (other than HTTPError) occurred while processing Domain Creation API response"""
+    """An error (other than HTTPError) occurred while processing Domain Creation API response."""
 
 
 class Domain(Endpoint):
@@ -56,7 +56,8 @@ class Domain(Endpoint):
 
     def count(self, **kwargs):
         """Return a count of domains matching the given parameters from Sectigo.
-        If no parameters are given, the count will be of all domains
+
+        If no parameters are given, the count will be of all domains.
 
         :return dict: Count of domains matching the given parameters
         """
@@ -66,7 +67,7 @@ class Domain(Endpoint):
         return result.json()
 
     def create(self, name, org_id, cert_types, **kwargs):
-        """Create a domain
+        """Create a domain.
 
         :param str name: Name of domain to create
         :param int org_id: Organization Id to delegate the newly created domain to
@@ -91,13 +92,13 @@ class Domain(Endpoint):
             result = self._client.post(self._api_url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == self._capture_err_code:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
 
         # for status >= 400, HTTPError is raised
-        if result.status_code != 201:
+        if result.status_code != self._expected_code:
             raise DomainCreationResponseError(f"Unexpected HTTP status {result.status_code}")
         try:
             loc = result.headers["Location"]
@@ -201,7 +202,7 @@ class Domain(Endpoint):
         return result.ok
 
     def approve_delegation(self, domain_id, org_id):
-        """Approve a requested delegation
+        """Approve a requested delegation.
 
         :param int domain_id: The ID of the domain to approve
         :param int org_id: The ID of the organization requesting the delegation
@@ -217,7 +218,7 @@ class Domain(Endpoint):
         return result.ok
 
     def reject_delegation(self, domain_id, org_id):
-        """Reject a requested delegation
+        """Reject a requested delegation.
 
         :param int domain_id: The ID of the domain to approve
         :param int org_id: The ID of the organization requesting the delegation

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.report.Report unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -6,18 +5,18 @@
 
 import json
 
+import responses
 from testtools import TestCase
 
-import responses
-
 from cert_manager.report import Report
+
 from .lib.testbase import ClientFixture
 
 
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-instance-attributes
 class TestReport(TestCase):
-    """Serve as a Base class for all tests of the Domain class."""
+    """Serve as a Base class for all tests of the Report class."""
 
     def setUp(self):  # pylint: disable=invalid-name
         """Initialize the class."""
@@ -169,7 +168,7 @@ class TestInit(TestReport):
 
     @responses.activate
     def test_param(self):
-        """The URL should change if api_version is passed as a parameter."""
+        """Change the URL if api_version is passed as a parameter."""
         # Set a new version
         version = "v3"
         api_url = f"{self.cfixt.base_url}/report/{version}/activity"
@@ -186,7 +185,7 @@ class TestInit(TestReport):
         self.assertEqual(data, self.valid_activity_report_response)
 
     def test_need_client(self):
-        """The class should raise an exception without a client parameter."""
+        """Raise an exception if called without a client parameter."""
         self.assertRaises(TypeError, Report)
 
 
@@ -195,17 +194,13 @@ class TestGet(TestReport):
 
     @responses.activate
     def test_need_report_name(self):
-        """The function should raise an exception without an report_name parameter."""
-
+        """Raise an exception without an report_name parameter."""
         report = Report(client=self.client)
         self.assertRaises(TypeError, report.get)
 
     @responses.activate
     def test_bad_http(self):
-        """
-        The function should raise an HTTPError exception,
-            if domains cannot be retrieved from the API.
-        """
+        """Raise an HTTPError exception, if reports cannot be retrieved from the API."""
         # Setup the mocked response
         api_url = f"{self.api_url}/ssl-cert"
 
@@ -223,8 +218,7 @@ class TestGet(TestReport):
 
     @responses.activate
     def test_report_parm_ssl_cert(self):
-        """The function should return data for the chosen report."""
-
+        """Return data for the chosen report."""
         api_url = f"{self.api_url}/ssl-certificates"
 
         # Setup the mocked response
@@ -240,8 +234,7 @@ class TestGet(TestReport):
 
     @responses.activate
     def test_report_parm_ssl_cert_filter(self):
-        """The function should return data for chosen report with organization filter."""
-
+        """Return data for chosen report with organization filter."""
         api_url = f"{self.api_url}/ssl-certificates"
         organization_array = ['51', '52']
         filter_data = {"organizationIds": organization_array}
@@ -270,8 +263,7 @@ class TestGetSSLCert(TestReport):
 
     @responses.activate
     def test_report_ssl_cert(self):
-        """The function should return data for the SSL Cert report."""
-
+        """Return data for the SSL Cert report."""
         api_url = f"{self.api_url}/ssl-certificates"
 
         # Setup the mocked response
@@ -286,8 +278,7 @@ class TestGetSSLCert(TestReport):
 
     @responses.activate
     def test_report_ssl_cert_filter(self):
-        """The function should return data for the SSL Cert report."""
-
+        """Return data for the SSL Cert report."""
         api_url = f"{self.api_url}/ssl-certificates"
         organization_array = ['51', '52']
         filter_data = {"organizationIds": organization_array}
@@ -315,8 +306,7 @@ class TestGetActivity(TestReport):
 
     @responses.activate
     def test_report_activity(self):
-        """The function should return data for the Activity report."""
-
+        """Return data for the Activity report."""
         api_url = f"{self.api_url}/activity"
 
         # Setup the mocked response
@@ -331,8 +321,7 @@ class TestGetActivity(TestReport):
 
     @responses.activate
     def test_report_activity_filter(self):
-        """The function should return data for the Activity report with search filter."""
-
+        """Return data for the Activity report with search filter."""
         api_url = f"{self.api_url}/activity"
         filter_data = {"from": "2022-03-07T00:00:00.000Z", "to": "2022-03-16T00:00:00.000Z"}
 
@@ -359,8 +348,7 @@ class TestGetDomains(TestReport):
 
     @responses.activate
     def test_report_domains(self):
-        """The function should return data for the Domains report."""
-
+        """Return data for the Domains report."""
         api_url = f"{self.api_url}/domains"
 
         # Setup the mocked response
@@ -379,8 +367,7 @@ class TestGetClientCert(TestReport):
 
     @responses.activate
     def test_report_client_certs_filter(self):
-        """The function should return data for the Client Certs report with search filter."""
-
+        """Return data for the Client Certs report with search filter."""
         api_url = f"{self.api_url}/client-certificates"
         filter_data = {
             "from": "2022-03-07T00:00:00.000Z",
@@ -412,8 +399,7 @@ class TestGetDeviceCert(TestReport):
 
     @responses.activate
     def test_report_device_certs_filter(self):
-        """The function should return data for the Device Certs report with search filter."""
-
+        """Return data for the Device Certs report with search filter."""
         api_url = f"{self.api_url}/device-certificates"
         filter_data = {"certificateStatus": 2}
 

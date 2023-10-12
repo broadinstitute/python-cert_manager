@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.person.Person unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=no-member
@@ -6,9 +5,9 @@
 import json
 from urllib.parse import quote, unquote
 
-from testtools import TestCase
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
+from testtools import TestCase
 
 from cert_manager.person import Person
 
@@ -43,11 +42,11 @@ class TestInit(TestPerson):
 
 
 class TestList(TestPerson):
-    """Test the list method"""
+    """Test the list method."""
 
     @responses.activate
     def test_list(self):
-        """The function should return all persons"""
+        """Return all persons."""
         # Setup the mocked response
         test_url = f"{self.api_url}?size=200&position=0"
         test_result = [
@@ -73,7 +72,7 @@ class TestFind(TestPerson):
 
     @responses.activate
     def test_email(self):
-        """The function should return the Person ID corresponding to the email passed."""
+        """Return the Person ID corresponding to the email passed."""
         # Setup the mocked response
         test_email = "test@example.com"
         quoted_email = quote(test_email)
@@ -92,7 +91,7 @@ class TestFind(TestPerson):
 
     @responses.activate
     def test_not_found(self):
-        """The function should raise an HTTPError exception if a person by that email is not found."""
+        """Raise an HTTPError exception if a person by that email is not found."""
         # Setup the mocked response
         test_email = "test@example.com"
         quoted_email = quote(test_email)
@@ -110,11 +109,11 @@ class TestFind(TestPerson):
 
 
 class TestGet(TestPerson):
-    """Test the get details method"""
+    """Test the get details method."""
 
     @responses.activate
     def test_id(self):
-        """The function should return the details of the Person"""
+        """Return the details of the Person."""
         # Setup the mocked response
         test_id = 1234
         test_url = f"{self.api_url}/{test_id}"
@@ -131,7 +130,7 @@ class TestGet(TestPerson):
 
     @responses.activate
     def test_not_found(self):
-        """The function should raise an HTTPError exception if a person with an ID is not found."""
+        """Raise an HTTPError exception if a person with an ID is not found."""
         # Setup the mocked response
         test_id = 1234
         test_url = f"{self.api_url}/{test_id}"
@@ -147,7 +146,7 @@ class TestGet(TestPerson):
 
 
 class TestCreate(TestPerson):
-    """Test the create method"""
+    """Test the create method."""
 
     def setUp(self):
         """Initialize the class."""
@@ -163,7 +162,7 @@ class TestCreate(TestPerson):
 
     @responses.activate
     def test_create_success(self):
-        """The function should return a JSON with the `personID` of the person created if a 201 response is given"""
+        """Return a JSON with the `personID` of the person created if a 201 response is given."""
         responses.add(
             responses.POST,
             self.test_url,
@@ -187,11 +186,11 @@ class TestCreate(TestPerson):
 
 
 class TestUpdate(TestPerson):
-    """Test the update method"""
+    """Test the update method."""
 
     @responses.activate
     def test_update_success(self):
-        """The function should return nothing when updating a person"""
+        """Return nothing when updating a person."""
         test_id = 1234
         test_url = f"{self.api_url}/{test_id}"
         responses.add(responses.PUT, test_url, status=200)
@@ -208,11 +207,11 @@ class TestUpdate(TestPerson):
 
 
 class TestDelete(TestPerson):
-    """Test the delete method"""
+    """Test the delete method."""
 
     @responses.activate
     def test_delete_success(self):
-        """The function should return nothing when deleting a person"""
+        """Return nothing when deleting a person."""
         test_id = 1234
         test_url = f"{self.api_url}/{test_id}"
         responses.add(responses.DELETE, test_url, status=200)
