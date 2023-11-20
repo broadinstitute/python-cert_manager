@@ -1157,22 +1157,21 @@ files = [
 
 [[package]]
 name = "testtools"
-version = "2.6.0"
+version = "2.7.1"
 description = "Extensions to the Python standard library unit testing framework"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "testtools-2.6.0-py3-none-any.whl", hash = "sha256:cae7b2c2f459e448e0bb22c017fa1e7b4ba534b6e623d9f7ec0e0312aac8f7e8"},
-    {file = "testtools-2.6.0.tar.gz", hash = "sha256:28b65e14c0f2d3ecbbfb5f55c9dcde5e4faa80ac16a37a823909a1fe3cbcb30a"},
+    {file = "testtools-2.7.1-py3-none-any.whl", hash = "sha256:56e118ce251544d436d9fbb5ba62f44aeb237aa8fcc3147372b484bbe5f48ef7"},
+    {file = "testtools-2.7.1.tar.gz", hash = "sha256:df6de96010e29ee21f637a147eabf30d50b25e3841dd1d68f93ee89ce77e366c"},
 ]
 
 [package.dependencies]
-fixtures = ">=2.0"
-pbr = ">=0.11"
+setuptools = {version = "*", markers = "python_version >= \"3.12\""}
 
 [package.extras]
 test = ["testresources", "testscenarios"]
-twisted = ["Twisted"]
+twisted = ["fixtures", "twisted"]
 
 [[package]]
 name = "toml"
