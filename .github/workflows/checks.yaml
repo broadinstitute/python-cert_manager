@@ -11,8 +11,8 @@ name: 'checks'
 
 jobs:
   linting:
-    uses: broadinstitute/shared-workflows/.github/workflows/poetry-linting.yml@v1.4.2
+    uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v2.0.0
   unit-tests:
-    uses: broadinstitute/shared-workflows/.github/workflows/poetry-unit-tests.yml@v1.4.2
+    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v2.0.0
     with:
       python_package_name: cert_manager

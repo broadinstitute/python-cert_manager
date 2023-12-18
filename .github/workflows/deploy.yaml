@@ -8,6 +8,6 @@ name: 'deploy'
 
 jobs:
   pypi_deploy:
-    uses: broadinstitute/shared-workflows/.github/workflows/poetry-deploy.yml@v1.4.2
+    uses: broadinstitute/shared-workflows/.github/workflows/python-deploy-to-pypi.yaml@v2.0.0
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
