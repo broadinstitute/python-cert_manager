@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """Define some basic classes and functions for use in unit tests."""
 
 import sys
 
 import fixtures
 
-from cert_manager.client import Client
 from cert_manager import __version__
+from cert_manager.client import Client
 
 
 # pylint:disable=too-few-public-methods
@@ -15,7 +14,7 @@ from cert_manager import __version__
 class ClientFixture(fixtures.Fixture):
     """Build a fixture for a default cert_manager.client.Client object."""
 
-    def _setUp(self):  # pylint: disable=invalid-name
+    def _setUp(self):  # noqa: N802
         """Setup the Client object and the values used to build the object."""
         # Setup default testing values
         self.base_url = "https://certs.example.com/api"

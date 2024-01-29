@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.acme.ACMEAccount class."""
 
-import re
 import logging
+import re
 
 from ._endpoint import Endpoint
 from ._helpers import paginate
@@ -11,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ACMEAccountCreationResponseError(Exception):
-    """An error (other than HTTPError) occurred while processing ACME Account Creation API response"""
+    """An error (other than HTTPError) occurred while processing ACME Account Creation API response."""
 
 
 class ACMEAccount(Endpoint):
@@ -36,7 +35,6 @@ class ACMEAccount(Endpoint):
         """
         super().__init__(client=client, endpoint="/acme", api_version=api_version)
         self._api_url = self._url("/account")
-
         self.__acme_accounts = None
 
     def all(self, org_id, force=False):
@@ -111,7 +109,7 @@ class ACMEAccount(Endpoint):
         result = self._client.post(self._api_url, data=data)
 
         # for status >= 400, HTTPError is raised
-        if result.status_code != 201:
+        if result.status_code != self._expected_code:
             raise ACMEAccountCreationResponseError(f"Unexpected HTTP status {result.status_code}")
         try:
             loc = result.headers["Location"]

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.acme.ACMEAccount unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -6,10 +5,9 @@
 
 from functools import wraps
 
+import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
-
-import responses
 
 from cert_manager.acme import ACMEAccount, ACMEAccountCreationResponseError
 
@@ -21,27 +19,29 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
 
     @property
     def api_url(self):
-        """Return the base ACME Account URL for the default API version"""
+        """Return the base ACME Account URL for the default API version."""
         return self.get_api_url()
 
     def get_api_url(self, api_version="v1"):
-        """Return the base ACME Account URL for a particular API version"""
+        """Return the base ACME Account URL for a particular API version."""
         return f"{self.cfixt.base_url}/acme/{api_version}/account"
 
     def get_acme_account_url(self, acme_id, **kwargs):
-        """Return the ACME Account URL for the specified acme_id"""
+        """Return the ACME Account URL for the specified acme_id."""
         return f"{self.get_api_url(**kwargs)}/{acme_id}"
 
     def get_valid_response_entry(self, acme_id):
-        """Return the first entry in valid_response with a matching acme_id"""
+        """Return the first entry in valid_response with a matching acme_id."""
         for entry in self.valid_response:
             if entry["id"] == acme_id:
                 return entry
         raise KeyError(f"id {acme_id} not found in valid_response")
 
     def get_acme_account_data(self, acme_id, domains=None):
-        """Return a matching entry from valid_response as ACME account data,
-        i.e. with SCM domains (empty by default)"""
+        """Return a matching entry from valid_response as ACME account data.
+
+        i.e. with SCM domains (empty by default).
+        """
         valid_response = self.get_valid_response_entry(acme_id).copy()
         valid_response.setdefault("domains", domains or [])
         return valid_response
@@ -126,9 +126,10 @@ class TestACMEAccount(TestCase):  # pylint: disable=too-few-public-methods
         self.error_response = {"description": "acme error"}
 
     def match_url_with_qs(self, url, extra_params=None, api_url=None):
-        """Check that a URL containing a query string matches
-        the base self.api_url and the query params contain self.base_params
-        and extra_params
+        """Check that a URL matches completely.
+
+        Check that a URL containing a query string matches the base self.api_url and the
+        query params contain self.base_params and extra_params.
 
         :param string url: The URL to check
         :param dict extra_params: The params the query string must contain, in addition to self.base_params
@@ -148,7 +149,7 @@ class TestInit(TestACMEAccount):
     """Test the class initializer."""
 
     def test_need_client(self):
-        """The class should raise an exception without a client parameter."""
+        """Raise an exception if called without a client parameter."""
         self.assertRaises(TypeError, ACMEAccount)
 
 
@@ -157,8 +158,7 @@ class TestAll(TestACMEAccount):
 
     @responses.activate
     def test_init_param(self):
-        """The URL should change if api_version is passed as a parameter to
-        class initialization."""
+        """Change the URL if api_version is passed as a parameter to class initialization."""
         # Set a new version
         version = "v3"
         api_url = self.get_api_url(api_version=version)
@@ -180,7 +180,7 @@ class TestAll(TestACMEAccount):
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if acme accounts cannot be retrieved from the API."""
+        """Raise an HTTPError exception if acme accounts cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response,
                       status=404, match_querystring=False)
@@ -194,7 +194,7 @@ class TestAll(TestACMEAccount):
 
     @responses.activate
     def test_cached(self):
-        """The function should return all the data, but should not query the API twice."""
+        """Return all the data, but should not query the API twice."""
         # Setup the mocked response, refrain from matching the query string
         responses.add(responses.GET, self.api_url, json=self.valid_response,
                       status=200, match_querystring=False)
@@ -213,7 +213,7 @@ class TestAll(TestACMEAccount):
 
     @responses.activate
     def test_forced(self):
-        """The function should return all the data, but should query the API twice."""
+        """Return all the data, but should query the API twice."""
         # Setup the mocked response, refrain from matching the query string
         responses.add(responses.GET, self.api_url, json=self.valid_response,
                       status=200, match_querystring=False)
@@ -232,7 +232,7 @@ class TestAll(TestACMEAccount):
         self.assertEqual(data, self.valid_response)
 
     def test_need_org_id(self):
-        """The function should raise an exception without an org_id parameter."""
+        """Raise an exception without an org_id parameter."""
         acme = ACMEAccount(client=self.client)
         self.assertRaises(TypeError, acme.all)
 
@@ -247,7 +247,7 @@ def _test_find_test_factory(params=None):
 
     @responses.activate
     def generic_test(self):
-        """Generic test for .find request parameters/response fields"""
+        """Generic test for .find request parameters/response fields."""
         api_params[params_to_api["org_id"]] = str(self.org_id)
         valid_response = [
             entry for entry in self.valid_response
@@ -277,46 +277,38 @@ class TestFind(TestACMEAccount):
     """Test the .find method."""
 
     test_name = _test_find_test_factory({"name": "api_account1"})
-    test_name.__doc__ = """The function should return all the data about the
-    matched acme account name(s)."""
+    test_name.__doc__ = """Return all the data about the matched acme account name(s)."""
 
     test_acme_server = _test_find_test_factory(
         {"acme_server": "https://acme.sectigo.com/v2/OV"})
-    test_acme_server.__doc__ = """The function should return all the data about
-    the matched acme account server(s)."""
+    test_acme_server.__doc__ = """Return all the data about the matched acme account server(s)."""
 
     test_cert_validation_type = _test_find_test_factory(
         {"cert_validation_type": "EV"})
-    test_cert_validation_type.__doc__ = """The function should return all the
-    data about the matched acme account validation type(s)."""
+    test_cert_validation_type.__doc__ = """Return all the data about the matched acme account validation type(s)."""
 
     test_cert_status = _test_find_test_factory({"status": "Valid"})
-    test_cert_status.__doc__ = """The function should return all the data about
-    the matched acme account status(es)."""
+    test_cert_status.__doc__ = """Return all the data about the matched acme account status(es)."""
 
     test_ne_server_and_cert_validation_type = _test_find_test_factory({
         "acme_server": "https://acme.sectigo.com/v2/OV",
         "cert_validation_type": "EV"
     })
-    test_ne_server_and_cert_validation_type.__doc__ = """The function should
-    return an empty list if the acme account server and vaildation type do not
-    match."""
+    test_ne_server_and_cert_validation_type.__doc__ = """Return an empty list if the acme account server and vaildation
+    type do not match."""
 
     test_ne_name = _test_find_test_factory({"name": "no such account"})
-    test_ne_name.__doc__ = """The function should return an empty list if the
-    acme account name does not match."""
+    test_ne_name.__doc__ = """Return an empty list if the acme account name does not match."""
 
     test_ne_server = _test_find_test_factory(
         {"acme_server": "https://acme.sectigo.com/v2/XYZ"})
-    test_ne_server.__doc__ = """The function should return an empty list if the
-    acme account server does not match."""
+    test_ne_server.__doc__ = """Return an empty list if the acme account server does not match."""
 
     test_no_params = _test_find_test_factory()
-    test_no_params.__doc__ = """The function should return the entire list of
-    acme accounts if no parameters are passed."""
+    test_no_params.__doc__ = """Return the entire list of acme accounts if no parameters are passed."""
 
     def test_need_org_id(self):
-        """The function should raise an exception without an org_id parameter."""
+        """Raise an exception without an org_id parameter."""
         acme = ACMEAccount(client=self.client)
         # We need to wrap this all crazy because it now returns an iterator
         result = acme.find()  # pylint:disable=no-value-for-parameter
@@ -327,13 +319,13 @@ class TestGet(TestACMEAccount):
     """Test the .get method."""
 
     def test_need_acme_id(self):
-        """The function should raise an exception without an acme_id parameter."""
+        """Raise an exception without an acme_id parameter."""
         acme = ACMEAccount(client=self.client)
         self.assertRaises(TypeError, acme.get)
 
     @responses.activate
     def test_acme_id(self):
-        """The function should return all the data about the specified ACME ID."""
+        """Return all the data about the specified ACME ID."""
         acme_id = 1234
         api_url = self.get_acme_account_url(acme_id)
         valid_response = self.get_acme_account_data(acme_id)
@@ -350,7 +342,7 @@ class TestGet(TestACMEAccount):
 
     @responses.activate
     def test_ne_acme_id(self):
-        """The function should raise an HTTPError exception if the specified ACME ID does not exist."""
+        """Raise an HTTPError exception if the specified ACME ID does not exist."""
         acme_id = 2345
         api_url = self.get_acme_account_url(acme_id)
 
@@ -363,6 +355,7 @@ class TestGet(TestACMEAccount):
 
 
 def _test_create_test_factory(acme_id=1234, header="location", **kwargs):
+    """Act as a wrapper to inject headers and parameters."""
     params = ["name", "acmeServer", "organizationId", "evDetails"]
 
     def wrapper(func):
@@ -392,11 +385,7 @@ class TestCreate(TestACMEAccount):
     """Test the .create method."""
 
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         acme = ACMEAccount(client=self.client)
         # missing name, acme_server, org_id
         self.assertRaises(TypeError, acme.create)
@@ -408,8 +397,7 @@ class TestCreate(TestACMEAccount):
     @responses.activate
     @_test_create_test_factory()
     def test_create_success(self, acme_id, response_headers, args, request_params):
-        """The function should return the created ACME ID."""
-
+        """Return the created ACME ID."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, headers=response_headers,
                       match=[responses.json_params_matcher(request_params)],
@@ -423,11 +411,7 @@ class TestCreate(TestACMEAccount):
     @responses.activate
     @_test_create_test_factory()
     def test_create_failure_http_error(self, _, __, args, request_params):
-        """
-        The function should return an error code and description if the ACME
-        Account creation failed.
-        """
-
+        """Raise an exception if the ACME Account creation fails with an http error."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       match=[responses.json_params_matcher(request_params)],
@@ -441,12 +425,7 @@ class TestCreate(TestACMEAccount):
     @_test_create_test_factory()
     def test_create_failure_http_status_unexpected(self, _, __, args,
                                                    request_params):
-        """
-        The function should return an error code and description if the ACME
-        Account creation failed with ACMEAccountCreationResponseError
-        (unexpected HTTP status code).
-        """
-
+        """Raise an exception if the ACME Account creation fails with unexpected http code."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       match=[responses.json_params_matcher(request_params)],
@@ -461,12 +440,7 @@ class TestCreate(TestACMEAccount):
     @_test_create_test_factory(header="NotYourHeader")
     def test_create_failure_missing_location_header(self, _, response_headers,
                                                     args, request_params):
-        """
-        The function should return an error code and description if the ACME
-        Account creation failed with ACMEAccountCreationResponseError
-        (no Location header in response).
-        """
-
+        """Raise an exception if the ACME Account creation fails due to no Location header in response."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       headers=response_headers,
@@ -482,12 +456,7 @@ class TestCreate(TestACMEAccount):
     @_test_create_test_factory(location="not_an_ACME_account_URL")
     def test_create_failure_acme_id_not_found(self, _, response_headers, args,
                                               request_params):
-        """
-        The function should return an error code and description if the ACME
-        Account creation failed with ACMEAccountCreationResponseError
-        (ACME ID not found in response).
-        """
-
+        """Raise an exception if the ACME Account creation fails because ACME ID not found in response."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       headers=response_headers,
@@ -518,11 +487,7 @@ class TestUpdate(TestACMEAccount):
     """Test the .update method."""
 
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         acme = ACMEAccount(client=self.client)
         # missing acme_id, name
         self.assertRaises(TypeError, acme.create)
@@ -532,8 +497,7 @@ class TestUpdate(TestACMEAccount):
     @responses.activate
     @_test_update_delete_test_factory
     def test_update_success(self, acme_id, new_name):
-        """The function should return True if the update succeeded."""
-
+        """Return True if the update succeeded."""
         api_url = self.get_acme_account_url(acme_id)
 
         # Setup the mocked response
@@ -547,10 +511,7 @@ class TestUpdate(TestACMEAccount):
     @responses.activate
     @_test_update_delete_test_factory
     def test_update_failure_http_error(self, acme_id, new_name):
-        """
-        The function should raise an HTTPError exception if the update failed.
-        """
-
+        """Raise an HTTPError exception if the update failed."""
         api_url = self.get_acme_account_url(acme_id)
 
         # Setup the mocked response
@@ -565,11 +526,7 @@ class TestDelete(TestACMEAccount):
     """Test the .delete method."""
 
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         acme = ACMEAccount(client=self.client)
         # missing acme_id
         self.assertRaises(TypeError, acme.delete)
@@ -577,8 +534,7 @@ class TestDelete(TestACMEAccount):
     @responses.activate
     @_test_update_delete_test_factory
     def test_delete_success(self, acme_id):
-        """The function should return True if the deletion succeeded."""
-
+        """Return True if the deletion succeeded."""
         api_url = self.get_acme_account_url(acme_id)
 
         # Setup the mocked response
@@ -592,11 +548,7 @@ class TestDelete(TestACMEAccount):
     @responses.activate
     @_test_update_delete_test_factory
     def test_delete_failure_http_error(self, acme_id):
-        """
-        The function should raise an HTTPError exception if the deletion
-        failed.
-        """
-
+        """Raise an HTTPError exception if the deletion failed."""
         api_url = self.get_acme_account_url(acme_id)
 
         # Setup the mocked response
@@ -608,6 +560,7 @@ class TestDelete(TestACMEAccount):
 
 
 def _test_add_remove_domains_test_factory(func):
+    """Act as a wrapper to inject domains."""
     acme_id = 1234
 
     @wraps(func)
@@ -633,11 +586,7 @@ class TestAddDomains(TestACMEAccount):
     """Test the .add_domains method."""
 
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters or domains argument is not a list
-        """
-
+        """Raise an exception when called without required parameters or domains argument is not a list."""
         acme = ACMEAccount(client=self.client)
         # missing acme_id, domains
         self.assertRaises(TypeError, acme.add_domains)
@@ -649,11 +598,7 @@ class TestAddDomains(TestACMEAccount):
     @responses.activate
     @_test_add_remove_domains_test_factory
     def test_add_domains_success(self, acme_id, api_url, req_domains, resp):
-        """
-        The function should return a dictionary containing a list of domains
-        not added.
-        """
-
+        """Return a dictionary containing a list of domains not added."""
         # Setup the mocked response
         responses.add(responses.POST, api_url, json=resp, status=200)
 
@@ -666,11 +611,7 @@ class TestAddDomains(TestACMEAccount):
     @_test_add_remove_domains_test_factory
     def test_add_domains_failure_http_error(self, acme_id, api_url,
                                             req_domains, _):
-        """
-        The function should raise an HTTPError exception if the domain addition
-        failed.
-        """
-
+        """Raise an HTTPError exception if the domain addition failed."""
         # Setup the mocked response
         responses.add(responses.POST, api_url, status=400)
 
@@ -683,11 +624,7 @@ class TestRemoveDomains(TestACMEAccount):
     """Test the .remove_domains method."""
 
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters or domains argument is not a list
-        """
-
+        """Raise an exception when called without required parameters or domains argument is not a list."""
         acme = ACMEAccount(client=self.client)
         # missing acme_id, domains
         self.assertRaises(TypeError, acme.remove_domains)
@@ -699,11 +636,7 @@ class TestRemoveDomains(TestACMEAccount):
     @responses.activate
     @_test_add_remove_domains_test_factory
     def test_remove_domains_success(self, acme_id, api_url, req_domains, resp):
-        """
-        The function should return a dictionary containing a list of domains
-        not removed.
-        """
-
+        """Return a dictionary containing a list of domains not removed."""
         # Setup the mocked response
         responses.add(responses.DELETE, api_url, json=resp, status=200)
 
@@ -716,11 +649,7 @@ class TestRemoveDomains(TestACMEAccount):
     @_test_add_remove_domains_test_factory
     def test_remove_domains_failure_http_error(self, acme_id, api_url,
                                                req_domains, _):
-        """
-        The function should raise an HTTPError exception if the domain removal
-        failed.
-        """
-
+        """Raise an HTTPError exception if the domain removal failed."""
         # Setup the mocked response
         responses.add(responses.DELETE, api_url, status=400)
 

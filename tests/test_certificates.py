@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager._certificates.Certificates unit tests."""
 # responses is too tricky for pylint, so ignore the false-positive errors generated.
 # pylint: disable=no-member
 
 import json
 
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
 from testtools import TestCase
 
 from cert_manager._certificates import Certificates
-from cert_manager._helpers import Pending
+from cert_manager._helpers import PendingError
 
 from .lib.testbase import ClientFixture
 
@@ -38,7 +37,7 @@ class TestCertificates(TestCase):
 
     @staticmethod
     def fake_csr():
-        """Build a fake certificate signing request to use with tests"""
+        """Build a fake certificate signing request to use with tests."""
         data = "-----BEGIN CERTIFICATE REQUEST-----\n"
         for row in range(1, 18):
             char = chr(row + 64)
@@ -49,11 +48,12 @@ class TestCertificates(TestCase):
 
     @staticmethod
     def fake_cert():
-        """Build a fake certificate to use with tests"""
+        """Build a fake certificate to use with tests."""
+        numrows = 27
         data = "-----BEGIN CERTIFICATE-----\n"
         for row in range(1, 33):
             char = chr(row + 64)
-            if row > 26:
+            if row >= numrows:
                 char = chr(row + 70)
             data += f"{char * 64}\n"
         data += "-----END CERTIFICATE-----\n"
@@ -129,7 +129,7 @@ class TestTypes(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return data correctly if a 200-level status code is returned with data."""
+        """Return data correctly if a 200-level status code is returned with data."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json=self.types_data, status=200)
 
@@ -159,7 +159,7 @@ class TestTypes(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={"description": "some error"}, status=404)
 
@@ -186,7 +186,7 @@ class TestCustomFields(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return data correctly if a 200-level status code is returned with data."""
+        """Return data correctly if a 200-level status code is returned with data."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json=self.cf_data, status=200)
 
@@ -200,7 +200,7 @@ class TestCustomFields(TestCertificates):
 
     @responses.activate
     def test_empty(self):
-        """It should return an empty list if no custom fields were found."""
+        """Return an empty list if no custom fields were found."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json=[], status=200)
 
@@ -214,7 +214,7 @@ class TestCustomFields(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, json={"description": "some error"}, status=404)
 
@@ -241,7 +241,7 @@ class TestCollect(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return a certificate if a 200-level status code is returned with data."""
+        """Return a certificate if a 200-level status code is returned with data."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, body=self.test_cert, status=200)
 
@@ -255,12 +255,12 @@ class TestCollect(TestCertificates):
 
     @responses.activate
     def test_pending(self):
-        """It should raise a Pending exception if an error status code is returned."""
+        """Raise a PendingError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.GET, self.test_url, body="", status=404)
 
         # Call the function, expecting an exception
-        self.assertRaises(Pending, self.certobj.collect, self.test_id, self.test_type)
+        self.assertRaises(PendingError, self.certobj.collect, self.test_id, self.test_type)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
@@ -268,27 +268,27 @@ class TestCollect(TestCertificates):
 
     @responses.activate
     def test_no_params(self):
-        """It should raise an Exception if no parameters are used."""
+        """Raise an Exception if no parameters are used."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.collect)
 
     def test_no_type(self):
-        """It should raise an Exception if no cert_format is provided."""
+        """Raise an Exception if no cert_format is provided."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.collect, self.test_id)
 
     def test_no_id(self):
-        """It should raise an Exception if no cert_id is provided."""
+        """Raise an Exception if no cert_id is provided."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.collect, cert_format=self.test_type)
 
     def test_blank_params(self):
-        """It should raise an Exception if both parameters are blank."""
+        """Raise an Exception if both parameters are blank."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.collect, cert_id=None, cert_format=None)
 
     def test_bad_type(self):
-        """It should raise an Exception if the cert_format is not recognized."""
+        """Raise an Exception if the cert_format is not recognized."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.collect, cert_id=self.test_id, cert_format="x509OC")
 
@@ -331,7 +331,7 @@ class TestEnroll(TestCertificates):
 
     @staticmethod
     def fake_csr():
-        """Build a fake certificate signing request to use with tests"""
+        """Build a fake certificate signing request to use with tests."""
         data = "-----BEGIN CERTIFICATE REQUEST-----\n"
         for row in range(1, 18):
             char = chr(row + 64)
@@ -342,7 +342,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return JSON if a 200-level status code is returned with data."""
+        """Return JSON if a 200-level status code is returned with data."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -373,7 +373,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_san_list(self):
-        """It should correctly handle a list of SANs."""
+        """Handle a list of SANs correctly."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -407,7 +407,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_bad_cert_name(self):
-        """It should raise an Exception if the cert_type_name was not found."""
+        """Raise an Exception if the cert_type_name was not found."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -427,7 +427,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_bad_term(self):
-        """It should raise an Exception if the term was not valid."""
+        """Raise an Exception if the term was not valid."""
         # Setup the mocked responses
         # since Certificates.types and Certificate.custom_fields are called from enroll
         responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
@@ -446,7 +446,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_mandatory_custom_fields_success(self):
-        """It should return a 200-level status code if a mandatory custom field is included."""
+        """Return a 200-level status code if a mandatory custom field is included."""
         # Setup the mocked responses
         # We need to mock the /types and /customFields URLs as well
         # since Certificates.types and Certificate.custom_fields are called from enroll
@@ -479,7 +479,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_mandatory_custom_fields_missing(self):
-        """It should raise an Exception if mandatory custom fields are missing """
+        """Raise an Exception if mandatory custom fields are missing."""
         # Setup the mocked responses
         test_cf_missing_mandatory_field = [{"name": "testName2", "value": "testValue"}]
 
@@ -503,7 +503,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_custom_fields_duplicate_keys(self):
-        """It should raise an Exception if mandatory custom fields are missing """
+        """Raise an Exception if mandatory custom fields are missing."""
         # Setup the mocked responses
         test_cf_duplicate_fields = [
             {"name": "testName", "value": "testValue"},
@@ -530,7 +530,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_custom_fields_invalid(self):
-        """It should raise an Exception if elements of the custom_fields list are anything other than dicts """
+        """Raise an Exception if elements of the custom_fields list are anything other than dicts."""
         # Setup the mocked responses
         test_cf_invalid = ["I'm not a dict, I'm a string!"]
 
@@ -554,7 +554,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_custom_fields_keys_missing(self):
-        """It should raise an Exception if a dict in the custom fields list is missing keys """
+        """Raise an Exception if a dict in the custom fields list is missing keys."""
         # Setup the mocked responses
         test_cf_missing_keys = [{"name": "testName", "missingValue": True}]
 
@@ -577,7 +577,7 @@ class TestEnroll(TestCertificates):
 
     @responses.activate
     def test_custom_fields_key_invalid(self):
-        """It should raise an Exception if a supplied custom field name doesn't exist """
+        """Raise an Exception if a supplied custom field name doesn't exist."""
         # Setup the mocked responses
         test_cf_invalid_name = [{"name": "someOtherName", "value": "testValue"}]
 
@@ -611,7 +611,7 @@ class TestRevoke(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return an empty dict if a 204 No Content response is returned."""
+        """Return an empty dict if a 204 No Content response is returned."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, body='', status=204)
 
@@ -628,13 +628,13 @@ class TestRevoke(TestCertificates):
 
     @responses.activate
     def test_no_reason(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Call the function, expecting an exception
         self.assertRaises(Exception, self.certobj.revoke, self.test_id)
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         responses.add(responses.POST, self.test_url, json={}, status=404)
 
@@ -666,7 +666,7 @@ class TestReplace(TestCertificates):
 
     @responses.activate
     def test_success(self):
-        """It should return an empty dict if a 204 No Content response is returned."""
+        """Return an empty dict if a 204 No Content response is returned."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, body='', status=200)
 
@@ -687,7 +687,7 @@ class TestReplace(TestCertificates):
 
     @responses.activate
     def test_san_string(self):
-        """It should correctly handle a list of SANs."""
+        """Handle a list of SANs correctly."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, body='', status=200)
 
@@ -710,7 +710,7 @@ class TestReplace(TestCertificates):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked responses
         responses.add(responses.POST, self.test_url, json={}, status=404)
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cert_manager"
-version = "2.3.1"
+version = "2.4.0"
 description = "Python interface to the Sectigo Certificate Manager REST API"
 license = "BSD-3-Clause"
 authors = ["Andrew Teixeira <teixeira@broadinstitute.org>"]
@@ -21,9 +21,6 @@ fixtures = "*"
 green = ">=2.12.0"
 mock = ">=2.0.0"
 pydocstyle = "<7"
-# 2.5.0 breaks pylama 8.3.8
-pyflakes = "< 2.5.0"
-pylama = "*"
 pylint = "*"
 pyyaml = "==6.0.1"
 responses = "*"
@@ -31,3 +28,19 @@ testtools = "*"
 twine = "*"
 wheel = "*"
 yamllint = "*"
+
+[tool.ruff]
+fixable = ["ALL"]
+line-length = 120
+select = [
+  "D",   # pydocstyle
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "I",   # isort
+  "N",   # pep8-naming
+  "PL",  # Pylint
+  "UP",  # pyupgrade
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"

@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.admin.Admin class."""
 
-import re
 import logging
+import re
+
 from requests.exceptions import HTTPError
 
 from ._endpoint import Endpoint
@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AdminCreationResponseError(Exception):
-    """An error (other than HTTPError) occurred while processing Admin Creation API response"""
+    """An error (other than HTTPError) occurred while processing Admin Creation API response."""
 
 
 class Admin(Endpoint):
@@ -44,9 +44,8 @@ class Admin(Endpoint):
 
         return self.__admins
 
-    def create(self, login, email, forename, surname,  # pylint: disable=too-many-arguments
-               password, credentials, **kwargs):
-        """Create a new administrator
+    def create(self, login, email, forename, surname, password, credentials, **kwargs):  # noqa: PLR0913
+        """Create a new administrator.
 
         :param str login: Login name of admin to create
         :param str email: Email of admin to create
@@ -71,6 +70,7 @@ class Admin(Endpoint):
             "password": password,
             "credentials": credentials,
         }
+
         for key, value in kwargs.items():
             data[key] = value
 
@@ -78,13 +78,13 @@ class Admin(Endpoint):
             result = self._client.post(self._api_url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == self._capture_err_code:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
 
         # for status >= 400, HTTPError is raised
-        if result.status_code != 201:
+        if result.status_code != self._expected_code:
             raise AdminCreationResponseError(f"Unexpected HTTP status {result.status_code}")
         try:
             loc = result.headers["Location"]
@@ -115,7 +115,7 @@ class Admin(Endpoint):
         return result.json()
 
     def get_idps(self):
-        """Return a list of IDPs
+        """Return a list of IDPs.
 
         :return list: A list of dictionaries representing the IDPs
         """
@@ -153,7 +153,7 @@ class Admin(Endpoint):
             result = self._client.put(url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == self._capture_err_code:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc

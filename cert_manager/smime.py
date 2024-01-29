@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.certificates.smime.SMIME class."""
 import logging
+
 from requests.exceptions import HTTPError
+
 from ._certificates import Certificates
-from ._helpers import Pending, Revoked
-from ._helpers import paginate, version_hack
+from ._helpers import PendingError, RevokedError, paginate, version_hack
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class SMIME(Certificates):
         :param string api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/smime", api_version=api_version)
+        self.__reason_maxlen = 512
 
     @paginate
     def list(self, **kwargs):
@@ -38,7 +39,7 @@ class SMIME(Certificates):
 
     @version_hack(service="smime", version="v2")
     def list_by_email(self, **kwargs):
-        """Return a list of all client certificates for a person with given email
+        """Return a list of all client certificates for a person with given email.
 
         :param str email: Person email
         :return iter: An iterator object is returned to cycle through the certificates
@@ -118,7 +119,7 @@ class SMIME(Certificates):
     def collect(self, cert_id):
         """Retrieve an existing client certificate from the API.
 
-        This method will raise a Pending exception if the certificate is still in a pending state.
+        This method will raise a PendingError exception if the certificate is still in a pending state.
 
         :param int cert_id: The Certificate ID given on enroll success
         :return str: the string representing the certificate in the requested format
@@ -131,10 +132,10 @@ class SMIME(Certificates):
             result = self._client.get(url)
         except HTTPError as exc:
             err_code = exc.response.json().get("code")
-            if err_code == Revoked.CODE:
-                raise Revoked(f"certificate {cert_id} in 'revoked' state") from exc
-            if err_code == Pending.CODE:
-                raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
+            if err_code == RevokedError.CODE:
+                raise RevokedError(f"certificate {cert_id} in 'revoked' state") from exc
+            if err_code == PendingError.CODE:
+                raise PendingError(f"certificate {cert_id} still in 'pending' state") from exc
             raise exc
 
         # The certificate is ready for collection
@@ -194,14 +195,14 @@ class SMIME(Certificates):
             raise ValueError("Argument 'cert_id' can't be None")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if (not reason) or (len(reason) > 511):
-            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
+        if not reason or len(reason) >= self.__reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
 
         data = {"reason": reason}
         self._client.post(url, data=data)
 
     def revoke_by_email(self, email, reason=""):
-        """Revoke all client certificate related to an email
+        """Revoke all client certificate related to an email.
 
         :param str email: The person email address
         :param str reason: The Reason for revocation.
@@ -213,8 +214,8 @@ class SMIME(Certificates):
             raise ValueError("Argument 'email' can't be empty or None")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if (not reason) or (len(reason) > 511):
-            raise ValueError("Sectigo limit: reason must be > 0 character and < 512 characters")
+        if not reason or len(reason) >= self.__reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
 
         data = {"email": email, "reason": reason}
         self._client.post(url, data=data)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager._endpoint.Endpoint unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -127,7 +126,7 @@ class TestUrl(TestEndpoint):
         self.assertEqual(end._url(suffix), url)
 
     def test_multiple_args(self):
-        """Return the full API URL when multiple arguments are passed"""
+        """Return the full API URL when multiple arguments are passed."""
         end = Endpoint(client=self.client, endpoint=self.ep_path)
 
         suffix1 = "help"

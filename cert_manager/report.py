@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.report.Report class."""
 
 import logging
+
 from requests.exceptions import HTTPError
 
 from ._endpoint import Endpoint
@@ -46,7 +46,7 @@ class Report(Endpoint):
             result = self._client.post(url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == self._capture_err_code:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
@@ -67,7 +67,6 @@ class Report(Endpoint):
 
         return dict: The report data
         """
-
         report_url = "ssl-certificates"
 
         result = self.get(report_url, **kwargs)
@@ -87,7 +86,6 @@ class Report(Endpoint):
 
         return dict: The report data
         """
-
         report_url = "client-certificates"
 
         return self.get(report_url, **kwargs)
@@ -105,7 +103,6 @@ class Report(Endpoint):
 
         return dict: The report data
         """
-
         report_url = "device-certificates"
 
         return self.get(report_url, **kwargs)

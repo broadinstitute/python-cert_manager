@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.domain.Domain unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -6,10 +5,9 @@
 
 import json
 
+import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
-
-import responses
 
 from cert_manager.domain import Domain, DomainCreationResponseError
 
@@ -50,7 +48,7 @@ class TestInit(TestDomain):
 
     @responses.activate
     def test_param(self):
-        """The URL should change if api_version is passed as a parameter."""
+        """Change the URL if api_version is passed as a parameter."""
         # Set a new version
         version = "v3"
         api_url = f"{self.cfixt.base_url}/domain/{version}"
@@ -68,7 +66,7 @@ class TestInit(TestDomain):
         self.assertEqual(data, self.valid_response)
 
     def test_need_client(self):
-        """The class should raise an exception without a client parameter."""
+        """Raise an exception when called without a client parameter."""
         self.assertRaises(TypeError, Domain)
 
 
@@ -77,7 +75,7 @@ class TestAll(TestDomain):
 
     @responses.activate
     def test_cached(self):
-        """The function should return all the data, but should not query the API twice."""
+        """Return all the data, but it should not query the API twice."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -95,7 +93,7 @@ class TestAll(TestDomain):
 
     @responses.activate
     def test_forced(self):
-        """The function should return all the data, but should query the API twice."""
+        """Return all the data, but it should query the API twice."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -114,7 +112,7 @@ class TestAll(TestDomain):
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if domains cannot be retrieved from the API."""
+        """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
 
@@ -131,7 +129,7 @@ class TestFind(TestDomain):
 
     @responses.activate
     def test_no_params(self):
-        """Without parameters, the method will return all domains"""
+        """Return all domains when called without parameters."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
@@ -142,7 +140,7 @@ class TestFind(TestDomain):
 
     @responses.activate
     def test_params(self):
-        """Parameters will be passed to API"""
+        """Parameters will be passed to API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.valid_response[0], status=200)
 
@@ -157,7 +155,7 @@ class TestFind(TestDomain):
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if domains cannot be retrieved from the API."""
+        """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
 
@@ -174,7 +172,7 @@ class TestCount(TestDomain):
 
     @responses.activate
     def test_no_params(self):
-        """Without parameters, the method will count all domains"""
+        """Return the count of all domains when called without parameters."""
         # Setup the mocked response
         count = {"count": len(self.valid_response)}
         api_url = f"{self.api_url}/count"
@@ -188,7 +186,7 @@ class TestCount(TestDomain):
 
     @responses.activate
     def test_params(self):
-        """Parameters will be passed to API"""
+        """Parameters will be passed to API."""
         # Setup the mocked response
         count = {"count": len(self.valid_response[0])}
         api_url = f"{self.api_url}/count"
@@ -203,7 +201,7 @@ class TestCount(TestDomain):
 
     @responses.activate
     def test_bad_http(self):
-        """The function should raise an HTTPError exception if counts cannot be retrieved from the API."""
+        """Raise an HTTPError exception if counts cannot be retrieved from the API."""
         # Setup the mocked response
         api_url = f"{self.api_url}/count"
         responses.add(responses.GET, api_url, json=self.error_response, status=400)
@@ -221,15 +219,13 @@ class TestGet(TestDomain):
 
     @responses.activate
     def test_need_domain_id(self):
-        """The function should raise an exception without an domain_id parameter."""
-
+        """Raise an exception without an domain_id parameter."""
         domain = Domain(client=self.client)
         self.assertRaises(TypeError, domain.get)
 
     @responses.activate
     def test_domain_id(self):
-        """The function should return data about the specified Domain ID."""
-
+        """Return data about the specified Domain ID."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}"
 
@@ -245,8 +241,7 @@ class TestGet(TestDomain):
 
     @responses.activate
     def test_ne_domain_id(self):
-        """The function should raise an HTTPError exception if the specified Domain ID does not exist."""
-
+        """Raise an HTTPError exception if the specified Domain ID does not exist."""
         domain_id = 2345
         api_url = f"{self.api_url}/{str(domain_id)}"
 
@@ -262,11 +257,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # Not going to check every permutation of missing parameters,
         # but verify that something is required
@@ -274,11 +265,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_success(self):
-        """
-        The function should return the created domain ID,
-        as well as add all parameters to the request body
-        """
-
+        """Return the created domain ID, as well as add all parameters to the request body."""
         # Setup the mocked response
         domain_id = 1234
         org_id = 4321
@@ -298,11 +285,10 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_success_optional_params(self):
-        """
-        The function should return the created domain ID when additional params are specified,
-        as well add the non-required parameters to the request body
-        """
+        """Return the created domain ID when additional params are specified.
 
+        Also, add the non-required parameters to the request body.
+        """
         # Setup the mocked response
         domain_id = 1234
         location = f"{self.api_url}/{str(domain_id)}"
@@ -321,11 +307,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_failure_http_error(self):
-        """
-        The function should return an error code and description if the Domain
-        creation failed.
-        """
-
+        """Return an error code and description if the Domain creation failed."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       status=400)
@@ -341,12 +323,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_failure_http_status_unexpected(self):
-        """
-        The function should return an error code and description if the Domain
-        creation failed with DomainCreationResponseError
-        (unexpected HTTP status code).
-        """
-
+        """Raise an exception if the Domain creation fails with unexpected http code."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       status=200)
@@ -362,12 +339,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_failure_missing_location_header(self):
-        """
-        The function should return an error code and description if the Domain
-        creation failed with DomainCreationResponseError
-        (no Location header in response).
-        """
-
+        """Raise an exception if the Domain creation fails due to no Location header in response."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, status=201)
 
@@ -382,12 +354,7 @@ class TestCreate(TestDomain):
 
     @responses.activate
     def test_create_failure_domain_id_not_found(self):
-        """
-        The function should return an error code and description if the Domain
-        creation failed with DomainCreationResponseError
-        (Domain ID not found in response).
-        """
-
+        """Raise an exception if the Domain creation fails because Domain ID not found in response."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, headers={"Location": "not a url"}, status=201)
 
@@ -406,19 +373,14 @@ class TestDelete(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.delete)
 
     @responses.activate
     def test_delete_success(self):
-        """The function should return True if the deletion succeeded."""
-
+        """Return True if the deletion succeeded."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}"
 
@@ -432,11 +394,7 @@ class TestDelete(TestDomain):
 
     @responses.activate
     def test_delete_failure_http_error(self):
-        """
-        The function should raise an HTTPError exception if the deletion
-        failed.
-        """
-
+        """Raise an HTTPError exception if the deletion failed."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}"
 
@@ -453,19 +411,14 @@ class TestActivate(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.activate)
 
     @responses.activate
     def test_activate_success(self):
-        """The function should return True if the activation succeeded."""
-
+        """Return True if the activation succeeded."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}/activate"
 
@@ -479,11 +432,7 @@ class TestActivate(TestDomain):
 
     @responses.activate
     def test_activate_failure_http_error(self):
-        """
-        The function should raise an HTTPError exception if the deletion
-        failed.
-        """
-
+        """Raise an HTTPError exception if the deletion failed."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}/activate"
 
@@ -500,19 +449,14 @@ class TestSuspend(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.suspend)
 
     @responses.activate
     def test_suspend_success(self):
-        """The function should return True if the suspension succeeded."""
-
+        """Return True if the suspension succeeded."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}/suspend"
 
@@ -526,11 +470,7 @@ class TestSuspend(TestDomain):
 
     @responses.activate
     def test_suspend_failure_http_error(self):
-        """
-        The function should raise an HTTPError exception if the suspension
-        failed.
-        """
-
+        """Raise an HTTPError exception if the suspension failed."""
         domain_id = 1234
         api_url = f"{self.api_url}/{str(domain_id)}/suspend"
 
@@ -547,19 +487,14 @@ class TestDelegate(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.delegate)
 
     @responses.activate
     def test_delegate_success(self):
-        """The function should return True if the delegation succeeded."""
-
+        """Return True if the delegation succeeded."""
         domain_id = 1234
         org_id = 4321
         types = ["SSL"]
@@ -580,8 +515,7 @@ class TestDelegate(TestDomain):
 
     @responses.activate
     def test_delegate_failure_http_error(self):
-        """The function should raise an HTTPError exception if the delegation failed."""
-
+        """Raise an HTTPError exception if the delegation failed."""
         domain_id = 1234
         org_id = 4321
         types = ["SSL"]
@@ -600,19 +534,14 @@ class TestRemoveDelegation(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.remove_delegation)
 
     @responses.activate
     def test_remove_delegation_success(self):
-        """The function should return True if the delegation removal succeeded."""
-
+        """Return True if the delegation removal succeeded."""
         domain_id = 1234
         org_id = 4321
         types = ["SSL"]
@@ -633,8 +562,7 @@ class TestRemoveDelegation(TestDomain):
 
     @responses.activate
     def test_remove_delegation_failure_http_error(self):
-        """The function should raise an HTTPError exception if the delegation removal failed."""
-
+        """Raise an HTTPError exception if the delegation removal failed."""
         domain_id = 1234
         org_id = 4321
         types = ["SSL"]
@@ -653,19 +581,14 @@ class TestApproveDelegation(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.approve_delegation)
 
     @responses.activate
     def test_approve_delegation_success(self):
-        """The function should return True if the approval succeeded."""
-
+        """Return True if the approval succeeded."""
         domain_id = 1234
         org_id = 4321
         api_url = f"{self.api_url}/{str(domain_id)}/delegation/approve"
@@ -684,8 +607,7 @@ class TestApproveDelegation(TestDomain):
 
     @responses.activate
     def test_approval_failure_http_error(self):
-        """The function should raise an HTTPError exception if the approval failed."""
-
+        """Raise an HTTPError exception if the approval failed."""
         domain_id = 1234
         org_id = 4321
         api_url = f"{self.api_url}/{str(domain_id)}/delegation/approve"
@@ -703,19 +625,14 @@ class TestRejectDelegation(TestDomain):
 
     @responses.activate
     def test_need_params(self):
-        """
-        The function should raise an exception when called without required
-        parameters.
-        """
-
+        """Raise an exception when called without required parameters."""
         domain = Domain(client=self.client)
         # missing domain_id
         self.assertRaises(TypeError, domain.reject_delegation)
 
     @responses.activate
     def test_reject_delegation_success(self):
-        """The function should return True if the rejection succeeded."""
-
+        """Return True if the rejection succeeded."""
         domain_id = 1234
         org_id = 4321
         api_url = f"{self.api_url}/{str(domain_id)}/delegation/reject"
@@ -734,8 +651,7 @@ class TestRejectDelegation(TestDomain):
 
     @responses.activate
     def test_reject_failure_http_error(self):
-        """The function should raise an HTTPError exception if the rejection failed."""
-
+        """Raise an HTTPError exception if the rejection failed."""
         domain_id = 1234
         org_id = 4321
         api_url = f"{self.api_url}/{str(domain_id)}/delegation/reject"

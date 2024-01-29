@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """Define helper functions used by classes in this module."""
 
-from functools import wraps
 import logging
 import re
+from functools import wraps
 
 from requests.exceptions import HTTPError
 
@@ -36,23 +35,18 @@ def traffic_log(traffic_logger=None):
 
             # Check if the URL or headers exist in the parameters
             # Note: *self* will be the first argument, so actual arguments start after that.
-            url = kwargs.get("url", "")
-            if not url:
-                if len(args) > 1:
-                    url = args[1]
-            headers = kwargs.get("headers", "")
-            if not headers:
-                if len(args) > 2:
-                    headers = args[2]
-            data = kwargs.get("data", "")
-            if not data:
-                if len(args) > 3:
-                    data = args[3]
+            params = ["url", "headers", "data"]
+            values = {}
+            for index, param in enumerate(params, start=1):
+                values[param] = kwargs.get(param, "")
+                if not values[param]:
+                    if len(args) > index:
+                        values[param] = args[index]
 
             # Print out before messages with URL and header data
-            traffic_logger.debug(f"Performing a {func_name} on url: {url}")
-            traffic_logger.debug(f"Extra request headers: {headers}")
-            traffic_logger.debug(f"Data: {data}")
+            traffic_logger.debug(f"Performing a {func_name} on url: {values['url']}")
+            traffic_logger.debug(f"Extra request headers: {values['headers']}")
+            traffic_logger.debug(f"Data: {values['data']}")
 
             # Run the wrapped function
             try:
@@ -149,13 +143,13 @@ def paginate(func):
     return decorator
 
 
-class Pending(Exception):
+class PendingError(Exception):
     """Serve as a generic Exception indicating a certificate is in a pending state."""
     CODE = -183
 
 
-class Revoked(Exception):
-    """Serve as a generic Exception indicating a certificate has been revoked"""
+class RevokedError(Exception):
+    """Serve as a generic Exception indicating a certificate has been revoked."""
     CODE = -192
 
 

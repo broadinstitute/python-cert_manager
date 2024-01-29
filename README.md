@@ -94,7 +94,7 @@ while(True):
         cert_pem = ssl.collect(cert_id=result["sslId"], cert_format="x509CO")
         print(cert_pem)
         break
-    except Pending:
+    except PendingError:
         print("Certificate is still pending...sleeping for 60s")
         sleep(60)
         continue

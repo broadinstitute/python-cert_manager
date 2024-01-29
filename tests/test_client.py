@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.client.Client unit tests."""
 # Don't warn about things that happen as that is part of unit testing
 # pylint: disable=protected-access
@@ -9,12 +8,11 @@
 #
 
 import sys
+from unittest import mock
 
-import mock
-from testtools import TestCase
-
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
+from testtools import TestCase
 
 from cert_manager.client import Client
 
@@ -34,8 +32,7 @@ class TestClient(TestCase):  # pylint: disable=too-few-public-methods
         self.client = self.cfixt.client
 
     def tearDown(self):  # pylint: disable=invalid-name
-        """Test tear down method"""
-
+        """Test tear down method."""
         super().tearDown()
 
         mock.patch.stopall()
@@ -55,7 +52,7 @@ class TestInit(TestClient):
     """Test the class initializer."""
 
     def test_defaults(self):
-        """Parameters should be set correctly inside the class using defaults."""
+        """Set parameters correctly inside the class using defaults."""
         client = Client(login_uri=self.cfixt.login_uri, username=self.cfixt.username, password=self.cfixt.password)
 
         # Use the hackity object mangling when dealing with double-underscore values in an object
@@ -76,7 +73,7 @@ class TestInit(TestClient):
         self.assertEqual(self.cfixt.password, client._Client__session.headers["password"])
 
     def test_params(self):
-        """Parameters should be set correctly inside the class using all parameters."""
+        """Set parameters correctly inside the class using all parameters."""
         client = Client(
             base_url=self.cfixt.base_url, login_uri=self.cfixt.login_uri, username=self.cfixt.username,
             password=self.cfixt.password, cert_auth=True, user_crt_file=self.cfixt.user_crt_file,
@@ -101,7 +98,7 @@ class TestInit(TestClient):
         self.assertFalse("password" in client._Client__session.headers)
 
     def test_no_pass_with_certs(self):
-        """Parameters should be set correctly inside the class certificate auth without a password."""
+        """Set parameters correctly inside the class certificate auth without a password."""
         client = Client(
             base_url=self.cfixt.base_url, login_uri=self.cfixt.login_uri, username=self.cfixt.username, cert_auth=True,
             user_crt_file=self.cfixt.user_crt_file, user_key_file=self.cfixt.user_key_file,
@@ -125,7 +122,7 @@ class TestInit(TestClient):
         self.assertFalse("password" in client._Client__session.headers)
 
     def test_versioning(self):
-        """The user-agent header should change if the version number changes."""
+        """Change the user-agent header if the version number changes."""
         test_version = "10.9.8"
         ver_info = list(map(str, sys.version_info))
         pyver = ".".join(ver_info[:3])
@@ -141,36 +138,36 @@ class TestInit(TestClient):
         self.assertEqual(client._Client__session.headers["User-Agent"], user_agent)
 
     def test_need_crt(self):
-        """Class should raise an exception without a cert file if cert_auth=True."""
+        """Raise an exception without a cert file if cert_auth=True."""
         self.assertRaises(KeyError, Client, base_url=self.cfixt.base_url, login_uri=self.cfixt.login_uri,
                           username=self.cfixt.username, cert_auth=True, user_key_file=self.cfixt.user_key_file)
 
     def test_need_key(self):
-        """Class should raise an exception without a key file if cert_auth=True."""
+        """Raise an exception without a key file if cert_auth=True."""
         self.assertRaises(KeyError, Client, base_url=self.cfixt.base_url, login_uri=self.cfixt.login_uri,
                           username=self.cfixt.username, cert_auth=True, user_crt_file=self.cfixt.user_crt_file)
 
     def test_need_login_uri(self):
-        """Class should raise an exception without a login_uri."""
+        """Raise an exception without a login_uri."""
         self.assertRaises(KeyError, Client, username=self.cfixt.username, password=self.cfixt.password)
 
     def test_need_username(self):
-        """Class should raise an exception without a username."""
+        """Raise an exception without a username."""
         self.assertRaises(KeyError, Client, login_uri=self.cfixt.login_uri, password=self.cfixt.password)
 
     def test_need_password(self):
-        """Class should raise an exception without a password."""
+        """Raise an exception without a password."""
         self.assertRaises(KeyError, Client, login_uri=self.cfixt.login_uri, username=self.cfixt.username)
 
     def test_need_public_key(self):
-        """Class should raise an exception without a public key if cert_auth is enabled."""
+        """Raise an exception without a public key if cert_auth is enabled."""
         self.assertRaises(
             KeyError, Client, login_uri=self.cfixt.login_uri, username=self.cfixt.username,
             password=self.cfixt.password, cert_auth=True, user_key_file=self.cfixt.user_key_file,
         )
 
     def test_need_private_key(self):
-        """Class should raise an exception without a private key if cert_auth is enabled."""
+        """Raise an exception without a private key if cert_auth is enabled."""
         self.assertRaises(
             KeyError, Client, login_uri=self.cfixt.login_uri, username=self.cfixt.username,
             password=self.cfixt.password, cert_auth=True, user_crt_file=self.cfixt.user_crt_file,
@@ -237,7 +234,7 @@ class TestAddHeaders(TestClient):
             self.assertEqual(self.client._Client__session.headers[head], headdata)
 
     def test_not_dictionary(self):
-        """It should raise an exception when not passed a dictionary."""
+        """Raise an exception when not passed a dictionary."""
         headers = ["User-Agent", "test123"]
         self.assertRaises(ValueError, self.client.add_headers, headers)
 
@@ -246,7 +243,7 @@ class TestRemoveHeaders(TestClient):
     """Test the remove_headers method."""
 
     def test_remove(self):
-        """The headers should be removed correctly if passed a list."""
+        """Remove headers correctly if passed a list."""
         headers = ["Accept", "customerUri"]
 
         self.client.remove_headers(headers)
@@ -262,7 +259,7 @@ class TestRemoveHeaders(TestClient):
                 self.assertEqual(self.client._Client__session.headers[head], headdata)
 
     def test_dictionary(self):
-        """The headers should be removed correctly if passed a dictionary."""
+        """Remove headers correctly if passed a dictionary."""
         headers = {"Accept": "test123"}
 
         self.client.remove_headers(headers)
@@ -291,7 +288,7 @@ class TestGet(TestClient):
 
     @responses.activate
     def test_success(self):
-        """It should return data correctly if a 200-level status code is returned with data."""
+        """Return data correctly if a 200-level status code is returned with data."""
         # Setup the mocked response
         json_data = {"some": "data"}
         responses.add(responses.GET, self.test_url, json=json_data, status=200)
@@ -306,7 +303,7 @@ class TestGet(TestClient):
 
     @responses.activate
     def test_headers(self):
-        """It should add passed headers."""
+        """Add passed headers."""
         # Setup the mocked response
         json_data = {"some": "data"}
         responses.add(responses.GET, self.test_url, json=json_data, status=200)
@@ -326,7 +323,7 @@ class TestGet(TestClient):
 
     @responses.activate
     def test_params(self):
-        """It should add passed parameters."""
+        """Add passed parameters."""
         # Setup the mocked response
         json_data = {"some": "data"}
         responses.add(responses.GET, self.test_url, json=json_data, status=200,
@@ -350,7 +347,7 @@ class TestGet(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         json_data = {"description": "some error"}
         responses.add(responses.GET, self.test_url, json=json_data, status=404)
@@ -376,7 +373,7 @@ class TestPost(TestClient):
 
     @responses.activate
     def test_success(self):
-        """It should return data correctly if a 200-level status code is returned with data."""
+        """Return data correctly if a 200-level status code is returned with data."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -392,7 +389,7 @@ class TestPost(TestClient):
 
     @responses.activate
     def test_headers(self):
-        """It should add passed headers."""
+        """Add passed headers."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -413,7 +410,7 @@ class TestPost(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -440,7 +437,7 @@ class TestPut(TestClient):
 
     @responses.activate
     def test_success(self):
-        """It should return data correctly if a 200-level status code is returned with data."""
+        """Return data correctly if a 200-level status code is returned with data."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -456,7 +453,7 @@ class TestPut(TestClient):
 
     @responses.activate
     def test_headers(self):
-        """It should add passed headers."""
+        """Add passed headers."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -477,7 +474,7 @@ class TestPut(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if an error status code is returned."""
+        """Raise an HTTPError exception if an error status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         output_data = {"output": "data"}
@@ -504,7 +501,7 @@ class TestDelete(TestClient):
 
     @responses.activate
     def test_success(self):
-        """It should complete correctly if a 200-level status code is returned."""
+        """Return successful if a 200-level status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=204)
@@ -518,7 +515,7 @@ class TestDelete(TestClient):
 
     @responses.activate
     def test_headers(self):
-        """It should add passed headers."""
+        """Add passed headers."""
         # Setup the mocked response
         input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=204)
@@ -537,7 +534,7 @@ class TestDelete(TestClient):
 
     @responses.activate
     def test_failure(self):
-        """It should raise an HTTPError exception if a non-200 status code is returned."""
+        """Raise an HTTPError exception if a non-200 status code is returned."""
         # Setup the mocked response
         input_data = {"input": "data"}
         responses.add(responses.DELETE, self.test_url, status=404)

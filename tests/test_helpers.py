@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager._helpers.traffic_log wrapper function unit tests."""
 # Because pylint can't figure out how requests does some magic things
 # pylint: disable=no-member
 
 import json
 import logging
-import sys
 import types
-
-import mock
-from testtools import TestCase
+from unittest import mock
 
 import requests
 import responses
+from testtools import TestCase
 
 from cert_manager._helpers import paginate, traffic_log
 
@@ -20,7 +17,7 @@ from cert_manager._helpers import paginate, traffic_log
 class TestPaginate(TestCase):
     """Tests for the cert_manager._helpers.paginate wrapper function."""
 
-    def setUp(self):  # pylint: disable=invalid-name
+    def setUp(self):  # noqa: N802
         """Initialize the class."""
         # Call the inherited setUp method
         super().setUp()
@@ -63,7 +60,7 @@ class TestPaginate(TestCase):
         return []
 
     def test_correct(self):
-        """The inner function should be called with the correct parameters."""
+        """Call the inner function with the correct parameters."""
         data = []
 
         # Call the test function
@@ -77,7 +74,7 @@ class TestPaginate(TestCase):
         self.assertEqual(data, self.test_data)
 
     def test_paging(self):
-        """The inner function should be called with the correct parameters the correct number of times."""
+        """Call the inner function with the correct parameters the correct number of times."""
         data = []
 
         # Call the test function
@@ -113,10 +110,7 @@ class TestTrafficLog(TestCase):
         # Reset the mock on every run since it lives at the root of the class
         self.mock_logger.reset_mock()
 
-        # This is special because of the difference in strings between Python 2 and 3
         self.res_headers = "{'Content-Type': 'application/json'}"
-        if sys.version_info[0] < 3:
-            self.res_headers = "{u'Content-Type': u'application/json'}"
 
     @responses.activate
     @traffic_log(traffic_logger=mock_logger)
@@ -196,7 +190,7 @@ class TestTrafficLog(TestCase):
         self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_inner_exception(self):
-        """An exception should be raised by the wrapper if an exception is raised by the wrapped function."""
+        """Raise an exception if an exception is raised by the wrapped function."""
         err_msg = "this is an error"
         self.exc = Exception(err_msg)
 
@@ -204,7 +198,7 @@ class TestTrafficLog(TestCase):
         self.assertRaisesRegex(Exception, err_msg, self.wrapped_function, url=self.test_url)
 
     def test_inner_http_error(self):
-        """An exception should be raised by wrapper if an HTTPError is raised by the wrapped function."""
+        """Raise an exception if an HTTPError is raised by the wrapped function."""
         err_msg = "404 Client Error: Not Found for url: http://example.com/api"
 
         # Make sure the proper exception is raised
@@ -214,7 +208,7 @@ class TestTrafficLog(TestCase):
         self.mock_logger.debug.assert_any_call(f"Text result: {json.dumps(self.test_json_resp)}")
 
     def test_bad_param_exception(self):
-        """An exception should be raised by wrapper if no logging instance is provided."""
+        """Raise an exception if no logging instance is provided."""
         err_msg = "traffic_log: No logging.Logger instance provided"
 
         # Make sure the proper exception is raised

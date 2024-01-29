@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.person.Person class."""
 
 import logging
@@ -23,7 +22,7 @@ class Person(Endpoint):
 
     @paginate
     def list(self, **kwargs):
-        """Return a list of people in sectigo
+        """Return a list of people in sectigo.
 
          The 'size' and 'position' parameters passed as arguments to this function will be used
         by the pagination wrapper to page through results.  All other filtering parameters can be
@@ -51,7 +50,7 @@ class Person(Endpoint):
         return result.json()
 
     def get(self, person_id):
-        """Returns the details of a person
+        """Returns the details of a person.
 
         :param int person_id: The person's ID
         :return dict: A dictionary of the person's details
@@ -61,7 +60,7 @@ class Person(Endpoint):
         return result.json()
 
     def create(self, **kwargs) -> dict:
-        """Create a person
+        """Create a person.
 
         :param string first_name: The person's first name
         :param string middleName: The person's middle name
@@ -102,7 +101,7 @@ class Person(Endpoint):
         return {"personId": created_id}
 
     def update(self, **kwargs) -> None:
-        """Update a person
+        """Update a person.
 
         :param string person_id: The person's id
         :param string first_name: The person's first name
@@ -139,7 +138,7 @@ class Person(Endpoint):
         self._client.put(self._url(str(person_id)), data=data)
 
     def delete(self, **kwargs):
-        """Delete a person
+        """Delete a person.
 
         :param string person_id: The person's id
         """
