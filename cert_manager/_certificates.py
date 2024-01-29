@@ -129,7 +129,8 @@ class Certificates(Endpoint):
             raise Pending(f"certificate {cert_id} still in 'pending' state") from exc
 
         # The certificate is ready for collection
-        return result.content.decode(result.encoding)
+        encoding = result.encoding or "ascii"
+        return result.content.decode(encoding)
 
     def enroll(self, **kwargs):
         """Enroll a certificate request with Sectigo to generate a certificate.

@@ -138,7 +138,8 @@ class SMIME(Certificates):
             raise exc
 
         # The certificate is ready for collection
-        return result.content.decode(result.encoding)
+        encoding = result.encoding or "ascii"
+        return result.content.decode(encoding)
 
     @version_hack(service="smime", version="v2")
     def replace(self, **kwargs):
