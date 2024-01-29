@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.4.0](https://github.com/broadinstitute/python-cert_manager/tree/2.4.0) (2024-01-29)
+
+[Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.3.1...2.4.0)
+
+**Implemented enhancements:**
+
+- feat: migrate Python linting to Ruff [\#201](https://github.com/broadinstitute/python-cert_manager/pull/201) ([coreone](https://github.com/coreone))
+- Implementation of the Person API [\#194](https://github.com/broadinstitute/python-cert_manager/pull/194) ([joachimBurket](https://github.com/joachimBurket))
+
+**Fixed bugs:**
+
+- fix: default encoding to ascii if not set [\#212](https://github.com/broadinstitute/python-cert_manager/pull/212) ([coreone](https://github.com/coreone))
+
 ## [2.3.1](https://github.com/broadinstitute/python-cert_manager/tree/2.3.1) (2023-06-05)
 
 [Full Changelog](https://github.com/broadinstitute/python-cert_manager/compare/2.3.0...2.3.1)
