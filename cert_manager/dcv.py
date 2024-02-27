@@ -3,7 +3,7 @@
 
 from requests.exceptions import HTTPError
 
-from cert_manager._endpoint import Endpoint
+from ._endpoint import Endpoint
 
 
 class DomainControlValidation(Endpoint):
@@ -33,7 +33,7 @@ class DomainControlValidation(Endpoint):
 
         return result.json()
 
-    def get_validation_status(self, domain=str):
+    def get_validation_status(self, domain: str):
         """Get the DCV statuses of a domain.
 
         :param dict kwargs the following search keys are supported:
