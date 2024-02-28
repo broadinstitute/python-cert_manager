@@ -340,10 +340,8 @@ class TestGet(TestClient):
         self.assertEqual(resp.json(), json_data)
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(url_plain, self.test_url)
-        self.assertDictContainsSubset(
-            params,
-            dict(responses.parse_qsl(query_string))
-        )
+        query_params = dict(responses.parse_qsl(query_string))
+        self.assertEqual(query_params, params | query_params)
 
     @responses.activate
     def test_failure(self):
