@@ -5,6 +5,8 @@
 # pylint: disable=no-member
 
 import json
+from http import HTTPStatus
+
 import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
@@ -48,7 +50,7 @@ class TestInit(TestDcv):
             responses.GET,
             api_url,
             body=empty_response,
-            status=200,
+            status=HTTPStatus.OK,
         )
 
         dcv = DomainControlValidation(client=self.client, api_version=version)
@@ -105,7 +107,9 @@ class TestSearch(TestDcv):
     def test_search(self):
         """Return all the data, but it should query the API twice."""
         # Setup the mocked response
-        responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
+        responses.add(
+            responses.GET, self.api_url, json=self.valid_response, status=HTTPStatus.OK
+        )
 
         dcv = DomainControlValidation(client=self.client)
         data = dcv.search(**self.params)
@@ -122,7 +126,12 @@ class TestSearch(TestDcv):
     def test_bad_http(self):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
-        responses.add(responses.GET, self.api_url, json=self.error_response, status=400)
+        responses.add(
+            responses.GET,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
+        )
 
         domain = DomainControlValidation(client=self.client)
         self.assertRaises(HTTPError, domain.search, **self.params)
@@ -154,7 +163,7 @@ class TestGetValidationStatus(TestDcv):
         """Return all the data, but it should query the API twice."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.valid_response, status=200
+            responses.POST, self.api_url, json=self.valid_response, status=HTTPStatus.OK
         )
 
         dcv = DomainControlValidation(client=self.client)
@@ -176,7 +185,10 @@ class TestGetValidationStatus(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=400
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
         )
 
         domain = DomainControlValidation(client=self.client)
@@ -191,7 +203,10 @@ class TestGetValidationStatus(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=500
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 
         domain = DomainControlValidation(client=self.client)
@@ -223,7 +238,7 @@ class TestStartValidationCname(TestDcv):
         """Return all the data, but it should query the API twice."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.valid_response, status=200
+            responses.POST, self.api_url, json=self.valid_response, status=HTTPStatus.OK
         )
 
         dcv = DomainControlValidation(client=self.client)
@@ -245,7 +260,10 @@ class TestStartValidationCname(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=400
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
         )
 
         domain = DomainControlValidation(client=self.client)
@@ -260,7 +278,10 @@ class TestStartValidationCname(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=500
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 
         domain = DomainControlValidation(client=self.client)
@@ -293,7 +314,7 @@ class TestSubmitValidationCname(TestDcv):
         """Return all the data, but it should query the API twice."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.valid_response, status=200
+            responses.POST, self.api_url, json=self.valid_response, status=HTTPStatus.OK
         )
 
         dcv = DomainControlValidation(client=self.client)
@@ -315,7 +336,10 @@ class TestSubmitValidationCname(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=400
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
         )
 
         domain = DomainControlValidation(client=self.client)
@@ -330,7 +354,10 @@ class TestSubmitValidationCname(TestDcv):
         """Raise an exception if domains cannot be retrieved from the API."""
         # Setup the mocked response
         responses.add(
-            responses.POST, self.api_url, json=self.error_response, status=500
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.INTERNAL_SERVER_ERROR,
         )
 
         domain = DomainControlValidation(client=self.client)

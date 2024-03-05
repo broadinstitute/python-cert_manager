@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
 """Define the cert_manager.dcv.DomainControlValidation class."""
+
+from http import HTTPStatus
 
 from requests.exceptions import HTTPError
 
@@ -51,7 +52,7 @@ class DomainControlValidation(Endpoint):
             result = self._client.post(url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == HTTPStatus.BAD_REQUEST:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
@@ -77,7 +78,7 @@ class DomainControlValidation(Endpoint):
             result = self._client.post(url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == HTTPStatus.BAD_REQUEST:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
@@ -104,7 +105,7 @@ class DomainControlValidation(Endpoint):
             result = self._client.post(url, data=data)
         except HTTPError as exc:
             status_code = exc.response.status_code
-            if status_code == 400:
+            if status_code == HTTPStatus.BAD_REQUEST:
                 err_response = exc.response.json()
                 raise ValueError(err_response["description"]) from exc
             raise exc
