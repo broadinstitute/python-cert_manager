@@ -29,6 +29,8 @@ class DomainControlValidation(Endpoint):
 
         :return list: a list of DCV statuses
         """
+        self._change_api_version("v1")
+
         url = self._url("validation")
         result = self._client.get(url, params=kwargs)
 
@@ -45,6 +47,7 @@ class DomainControlValidation(Endpoint):
 
         :return list: the DCV status for the domain
         """
+        self._change_api_version("v2")
         url = self._url("validation", "status")
         data = {"domain": domain}
 
@@ -71,6 +74,8 @@ class DomainControlValidation(Endpoint):
             host: Where the validation will expect the CNAME to live on the server
             point: Where the CNAME should point to
         """
+        self._change_api_version("v1")
+
         url = self._url("validation", "start", "domain", "cname")
         data = {"domain": domain}
 
@@ -98,6 +103,8 @@ class DomainControlValidation(Endpoint):
             orderStatus: The status of the validation request
             message: An optional message to help with debugging
         """
+        self._change_api_version("v1")
+
         url = self._url("validation", "submit", "domain", "cname")
         data = {"domain": domain}
 
