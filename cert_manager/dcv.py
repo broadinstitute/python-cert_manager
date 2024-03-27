@@ -43,6 +43,7 @@ class DomainControlValidation(Endpoint):
             position, size, domain, org, department, dcvStatus, orderStatus, expiresIn
 
         See
+        Latest API documentation (23.12): https://www.sectigo.com/knowledge-base/detail/Sectigo-Certificate-Manager-SCM-REST-API/kA01N000000XDkE
         https://www.sectigo.com/uploads/audio/Certificate-Manager-20.1-Rest-API.html#resources-dcv-status
 
         :return list: the DCV status for the domain
@@ -90,8 +91,59 @@ class DomainControlValidation(Endpoint):
 
         return result.json()
 
+    def start_validation_email(self, domain: str):
+        """Start Domain Control Validation using Email method.
+
+        :param string domain: The domain to validate
+        :return response: List of valid email addresses
+        """
+        self._change_api_version("v1")
+        url = self._url("validation", "start", "domain", "email")
+        data = {"domain": domain}
+
+        try:
+            result = self._client.post(url, data=data)
+        except HTTPError as exc:
+            status_code = exc.response.status_code
+            if status_code == HTTPStatus.BAD_REQUEST:
+                err_response = exc.response.json()
+                raise ValueError(err_response["description"]) from exc
+            raise exc
+
+        return result.json()
+
     def submit_validation_cname(self, domain: str):
         """Finish Domain Control Validation using the CNAME method.
+
+        See
+        https://www.sectigo.com/uploads/audio/Certificate-Manager-20.1-Rest-API.html#resources-dcv-submit-cname
+
+        :param string domain: The domain to validate
+        :param string email: validation email sent to
+
+        :return response: a dictionary containing
+            status: The status of the validation
+            orderStatus: The status of the validation request
+            message: An optional message to help with debugging
+        """
+        self._change_api_version("v1")
+
+        url = self._url("validation", "submit", "domain", "cname")
+        data = {"domain": domain}
+
+        try:
+            result = self._client.post(url, data=data)
+        except HTTPError as exc:
+            status_code = exc.response.status_code
+            if status_code == HTTPStatus.BAD_REQUEST:
+                err_response = exc.response.json()
+                raise ValueError(err_response["description"]) from exc
+            raise exc
+
+        return result.json()
+
+    def submit_validation_email(self, domain: str, email: str):
+        """Finish Domain Control Validation using the email method.
 
         See
         https://www.sectigo.com/uploads/audio/Certificate-Manager-20.1-Rest-API.html#resources-dcv-submit-cname
@@ -105,8 +157,9 @@ class DomainControlValidation(Endpoint):
         """
         self._change_api_version("v1")
 
-        url = self._url("validation", "submit", "domain", "cname")
-        data = {"domain": domain}
+        url = self._url("validation", "submit", "domain", "email")
+        data = {"domain": domain,
+                "email": email}
 
         try:
             result = self._client.post(url, data=data)
