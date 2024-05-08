@@ -17,6 +17,7 @@ class Endpoint:
         """
         self._client = client
         self._api_version = api_version
+        self._endpoint = endpoint
         self._api_url = self.create_api_url(client.base_url, endpoint, self._api_version)
         self._expected_code = 201
         self._capture_err_code = 400
@@ -64,3 +65,13 @@ class Endpoint:
         LOGGER.debug("URL created: %s", url)
 
         return url
+
+    def _change_api_version(self, api_version):
+        """Change API version
+
+        :param str api_version: API version switch to
+        """
+        if (self._api_version == api_version):
+            return
+        self._api_version = api_version
+        self._api_url = self.create_api_url(self._client.base_url, self._endpoint, self._api_version)
