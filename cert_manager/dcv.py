@@ -85,6 +85,27 @@ class DomainControlValidation(Endpoint):
 
         return result.json()
 
+    def start_validation_email(self, domain: str):
+        """Start Domain Control Validation using Email method.
+
+        :param string domain: The domain to validate
+        :return response: List of valid email addresses
+        """
+
+        url = self._url("validation", "start", "domain", "email")
+        data = {"domain": domain}
+
+        try:
+            result = self._client.post(url, data=data)
+        except HTTPError as exc:
+            status_code = exc.response.status_code
+            if status_code == HTTPStatus.BAD_REQUEST:
+                err_response = exc.response.json()
+                raise ValueError(err_response["description"]) from exc
+            raise exc
+
+        return result.json()
+
     def submit_validation_cname(self, domain: str):
         """Finish Domain Control Validation using the CNAME method.
 
@@ -100,6 +121,33 @@ class DomainControlValidation(Endpoint):
         """
         url = self._url("validation", "submit", "domain", "cname")
         data = {"domain": domain}
+
+        try:
+            result = self._client.post(url, data=data)
+        except HTTPError as exc:
+            status_code = exc.response.status_code
+            if status_code == HTTPStatus.BAD_REQUEST:
+                err_response = exc.response.json()
+                raise ValueError(err_response["description"]) from exc
+            raise exc
+
+        return result.json()
+
+    def submit_validation_email(self, domain: str, email: str):
+        """Finish Domain Control Validation using the email method.
+
+        :param string domain: The domain to validate
+        :param string email: validation email sent to
+
+        :return response: a dictionary containing
+            status: The status of the validation
+            orderStatus: The status of the validation request
+            message: An optional message to help with debugging
+        """
+
+        url = self._url("validation", "submit", "domain", "email")
+        data = {"domain": domain,
+                "email": email}
 
         try:
             result = self._client.post(url, data=data)
