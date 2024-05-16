@@ -144,7 +144,6 @@ class DomainControlValidation(Endpoint):
             orderStatus: The status of the validation request
             message: An optional message to help with debugging
         """
-
         url = self._url("validation", "submit", "domain", "email")
         data = {"domain": domain,
                 "email": email}
