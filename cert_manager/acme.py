@@ -182,13 +182,13 @@ class ACMEAccount(Endpoint):
         """
         #self._change_api_version("v2")
         self.__acc_domains = []
-        result = self.find_domains(acme_id)
+        result = self.__find_domains(acme_id)
         for dom in result:
             self.__acc_domains.append(dom)
         return self.__acc_domains
 
     @paginate
-    def find_domains(self, acme_id, **kwargs):
+    def __find_domains(self, acme_id, **kwargs):
 
         params = {
           self._find_params_to_api[param]: kwargs.get(param)
