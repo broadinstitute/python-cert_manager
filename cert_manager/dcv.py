@@ -5,6 +5,7 @@ from http import HTTPStatus
 from requests.exceptions import HTTPError
 
 from ._endpoint import Endpoint
+from ._helpers import paginate
 
 
 class DomainControlValidation(Endpoint):
@@ -17,7 +18,24 @@ class DomainControlValidation(Endpoint):
         :param string api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/dcv", api_version=api_version)
+        self.__dcv_domains = None
 
+    def all(self, force=False):
+        """Return list of all domain control validations.
+        :param bool force: If set to True, force refreshing the data from the API
+        """
+
+        if (self.__dcv_domains) and (not force):
+            return self.__dcv_domains
+
+        self.__dcv_domains = []
+        result = self.search()
+        for dom in result:
+            self.__dcv_domains.append(dom)
+
+        return self.__dcv_domains
+
+    @paginate
     def search(self, **kwargs):
         """Search the DCV statuses of domains.
 
