@@ -354,7 +354,7 @@ class TestGet(TestACMEAccount):
         self.assertRaises(HTTPError, acme.get, acme_id)
 
 
-class TestGet_Domains(TestACMEAccount):
+class Get_Domains(TestACMEAccount):
     """Test the .get_domains method."""
 
     @responses.activate
