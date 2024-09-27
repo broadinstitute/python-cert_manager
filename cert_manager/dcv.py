@@ -23,7 +23,6 @@ class DomainControlValidation(Endpoint):
         """Return list of all domain control validations.
         :param bool force: If set to True, force refreshing the data from the API
         """
-
         if (self.__dcv_domains) and (not force):
             return self.__dcv_domains
 
