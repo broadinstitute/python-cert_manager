@@ -29,13 +29,17 @@ class DomainControlValidation(Endpoint):
             return self.__dcv_domains
 
         self.__dcv_domains = []
-        result = self.search()
+        result = self.__search()
         for dom in result:
             self.__dcv_domains.append(dom)
 
         return self.__dcv_domains
 
     @paginate
+    def __search(self, **kwargs):
+        """Paginated wrapper for search"""
+        return search(**kwargs)
+
     def search(self, **kwargs):
         """Search the DCV statuses of domains.
 
