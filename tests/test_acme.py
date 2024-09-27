@@ -354,6 +354,32 @@ class TestGet(TestACMEAccount):
         self.assertRaises(HTTPError, acme.get, acme_id)
 
 
+class TestGet_Domains(TestACMEAccount):
+    """Test the .get_domains method."""
+
+    @responses.activate
+    def test_acme_id(self):
+        """Return all domains from the specified ACME ID."""
+        acme_id = 1234
+        api_url = self.get_acme_account_url(acme_id) + "/domain?size=200&position=0"
+        valid_response = []
+
+        # Setup the mocked response
+        responses.add(responses.GET, api_url, json=valid_response, status=200)
+
+        acme = ACMEAccount(client=self.client)
+        data = acme.get_domains(acme_id)
+
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, api_url)
+        self.assertEqual(data, valid_response)
+
+
+    def test_need_acme_id(self):
+        """Raise an exception without an acme_id parameter."""
+        acme = ACMEAccount(client=self.client)
+        self.assertRaises(TypeError, acme.get_domains)
+
 def _test_create_test_factory(acme_id=1234, header="location", **kwargs):
     """Act as a wrapper to inject headers and parameters."""
     params = ["name", "acmeServer", "organizationId", "evDetails"]
