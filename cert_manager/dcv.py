@@ -10,7 +10,6 @@ from ._helpers import paginate
 
 class DomainControlValidation(Endpoint):
     """Query the Sectigo Cert Manager REST API for Domain Control Validation (DCV) data."""
-
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
