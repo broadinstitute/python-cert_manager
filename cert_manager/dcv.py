@@ -21,6 +21,7 @@ class DomainControlValidation(Endpoint):
 
     def all(self, force=False):
         """Return list of all domain control validations.
+
         :param bool force: If set to True, force refreshing the data from the API
         """
         if (self.__dcv_domains) and (not force):
@@ -51,7 +52,7 @@ class DomainControlValidation(Endpoint):
 
     @paginate
     def __search(self, **kwargs):
-        """Paginated wrapper for search"""
+        """Paginated wrapper for search."""
         return self.search(**kwargs)
 
     def get_validation_status(self, domain: str):

@@ -176,11 +176,10 @@ class ACMEAccount(Endpoint):
         return result.json()
 
     def get_domains (self, acme_id, **kwargs):
-        """List ACME account’s domains
+        """List ACME account’s domains.
 
         :param int acme_id: The ID of the acme account to list domains
         """
-        #self._change_api_version("v2")
         self.__acc_domains = []
         result = self.__find_domains(acme_id)
         for dom in result:
