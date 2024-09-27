@@ -113,7 +113,6 @@ class DomainControlValidation(Endpoint):
         :param string domain: The domain to validate
         :return response: List of valid email addresses
         """
-
         url = self._url("validation", "start", "domain", "email")
         data = {"domain": domain}
 
