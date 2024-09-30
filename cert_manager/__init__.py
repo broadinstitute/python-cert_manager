@@ -4,8 +4,8 @@ from ._helpers import PendingError
 from .acme import ACMEAccount
 from .admin import Admin
 from .client import Client
-from .domain import Domain
 from .dcv import DomainControlValidation
+from .domain import Domain
 from .organization import Organization
 from .person import Person
 from .report import Report
