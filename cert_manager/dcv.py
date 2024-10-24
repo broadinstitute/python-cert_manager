@@ -28,12 +28,13 @@ class DomainControlValidation(Endpoint):
             return self.__dcv_domains
 
         self.__dcv_domains = []
-        result = self.__search()
+        result = self.search()
         for dom in result:
             self.__dcv_domains.append(dom)
 
         return self.__dcv_domains
 
+    @paginate
     def search(self, **kwargs):
         """Search the DCV statuses of domains.
 
@@ -49,11 +50,6 @@ class DomainControlValidation(Endpoint):
         result = self._client.get(url, params=kwargs)
 
         return result.json()
-
-    @paginate
-    def __search(self, **kwargs):
-        """Paginated wrapper for search."""
-        return self.search(**kwargs)
 
     def get_validation_status(self, domain: str):
         """Get the DCV statuses of a domain.
