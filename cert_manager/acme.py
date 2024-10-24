@@ -175,26 +175,19 @@ class ACMEAccount(Endpoint):
 
         return result.json()
 
+    @paginate
     def get_domains (self, acme_id, **kwargs):
         """List ACME account’s domains.
 
         :param int acme_id: The ID of the acme account to list domains
         """
-        self.__acc_domains = []
-        result = self.__find_domains(acme_id)
-        for dom in result:
-            self.__acc_domains.append(dom)
-        return self.__acc_domains
-
-    @paginate
-    def __find_domains(self, acme_id, **kwargs):
-
         params = {
           self._find_params_to_api[param]: kwargs.get(param)
           for param in self._find_params_to_api  # pylint:disable=consider-using-dict-items
         }
         url = self._url(f"{acme_id}", "domain")
         result = self._client.get(url, params=params)
+
         return result.json()
 
     def remove_domains(self, acme_id, domains):
