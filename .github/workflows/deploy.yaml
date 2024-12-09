@@ -8,6 +8,6 @@ name: 'deploy'
 
 jobs:
   pypi_deploy:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-deploy-to-pypi.yaml@v2.4.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-deploy-to-pypi.yaml@v2.5.0
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
