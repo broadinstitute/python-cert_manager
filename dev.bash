@@ -5,7 +5,7 @@ declare -g CONTAINER_APP
 declare -g CONTAINER_IMAGE='cert_manager:dev'
 declare -g LABEL_PREFIX='org.broadinstitute.cert-manager'
 declare -g SCRIPT_DIR
-declare -ga TRACK_FILES=( Dockerfile poetry.lock pyproject.toml )
+declare -ga TRACK_FILES=( Containerfile poetry.lock pyproject.toml )
 declare -ga SUDO
 declare -ag TTY
 
