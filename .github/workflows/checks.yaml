@@ -12,6 +12,7 @@ jobs:
   linting:
     uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v2.4.0
     with:
+      ruff_version: '0.8.6'
       use_pylama: false
       use_ruff: true
   unit-tests:
