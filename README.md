@@ -111,10 +111,10 @@ Pull requests to add functionality and fix bugs are always welcome.  Please chec
 
 We try to have a high level of test coverage on the code.  Therefore, when adding anything to the repo, tests should be written to test a new feature or to test a bug fix so that there won't be a regression.  This library is setup to be pretty simple to build a working development environment using [Docker][4].  Therefore, it is suggested that you have [Docker][4] installed where you clone this repository to make development easier.
 
-To start a development environment, you should be able to just run the `dev.sh` script.  This script will use the `Dockerfile` in this repository to build a [Docker][4] container with all the dependencies for development installed using [Pipenv][3].
+To start a development environment, you should be able to just run the `dev.bash` script.  This script will use the `Containerfile` in this repository to build a [Docker][4] container with all the dependencies for development installed using [Poetry][3].
 
 ```sh
-./dev.sh
+./dev.bash
 ```
 
 The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/usr/src`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/usr/src` directory by simply typing `green` as [green][5] has been setup to with the correct parameters.
