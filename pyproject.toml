@@ -1,33 +1,35 @@
-[tool.poetry]
-name = "cert_manager"
-version = "2.4.0"
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+authors = [
+    { name = "Andrew Teixeira", email = "<teixeira@broadinstitute.org>"}
+]
 description = "Python interface to the Sectigo Certificate Manager REST API"
-license = "BSD-3-Clause"
-authors = ["Andrew Teixeira <teixeira@broadinstitute.org>"]
-readme = "README.md"
-repository = "https://github.com/broadinstitute/python-cert_manager.git"
+dynamic = [ "dependencies" ]
 homepage = "https://github.com/broadinstitute/python-cert_manager.git"
 keywords = ["sectigo", "comodo", "certificate"]
+license = "BSD-3-Clause"
+name = "cert_manager"
+readme = "README.md"
+repository = "https://github.com/broadinstitute/python-cert_manager.git"
+requires-python = ">=3.9,<4.0.0"
+version = "2.4.0"
 
 [tool.poetry.dependencies]
-python = "^3.7"  # Compatible python versions must be declared here
-requests = "*"
-toml = ">=0.9,<0.11"
+requests = "^2.32.3"
+toml = "^0.10.2"
 
-[tool.poetry.dev-dependencies]
-bump2version = "*"
-coverage = ">=4.4.2"
-fixtures = "*"
-green = ">=2.12.0"
-mock = ">=2.0.0"
-pydocstyle = "<7"
-pylint = "*"
-pyyaml = "==6.0.1"
-responses = "*"
-testtools = "*"
-twine = "*"
-wheel = "*"
-yamllint = "*"
+[tool.poetry.group.dev.dependencies]
+bump2version = "^1.0.1"
+coverage = "^7.6.10"
+fixtures = "^4.2.2"
+mock = "^5.1.0"
+responses = "^0.25.3"
+testtools = "^2.7.2"
+yamllint = "^1.35.1"
+pytest = "^8.3.4"
 
 [tool.ruff]
 fixable = ["ALL"]

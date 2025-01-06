@@ -7,6 +7,7 @@ from functools import wraps
 
 import responses
 from requests.exceptions import HTTPError
+from responses.matchers import json_params_matcher
 from testtools import TestCase
 
 from cert_manager.acme import ACMEAccount, ACMEAccountCreationResponseError
@@ -164,8 +165,8 @@ class TestAll(TestACMEAccount):
         api_url = self.get_api_url(api_version=version)
 
         # Setup the mocked response
-        responses.add(responses.GET, api_url, json=self.valid_response,
-                      status=200, match_querystring=False)
+        responses.matchers.query_string_matcher = False
+        responses.add(responses.GET, api_url, json=self.valid_response, status=200)
 
         acme = ACMEAccount(client=self.client, api_version=version)
         data = acme.all(self.org_id)
@@ -182,8 +183,8 @@ class TestAll(TestACMEAccount):
     def test_bad_http(self):
         """Raise an HTTPError exception if acme accounts cannot be retrieved from the API."""
         # Setup the mocked response
-        responses.add(responses.GET, self.api_url, json=self.error_response,
-                      status=404, match_querystring=False)
+        responses.matchers.query_string_matcher = False
+        responses.add(responses.GET, self.api_url, json=self.error_response, status=404)
 
         acme = ACMEAccount(client=self.client)
         self.assertRaises(HTTPError, acme.all, self.org_id)
@@ -196,8 +197,8 @@ class TestAll(TestACMEAccount):
     def test_cached(self):
         """Return all the data, but should not query the API twice."""
         # Setup the mocked response, refrain from matching the query string
-        responses.add(responses.GET, self.api_url, json=self.valid_response,
-                      status=200, match_querystring=False)
+        responses.matchers.query_string_matcher = False
+        responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
         acme = ACMEAccount(client=self.client)
         acme.all(self.org_id)
@@ -215,8 +216,8 @@ class TestAll(TestACMEAccount):
     def test_forced(self):
         """Return all the data, but should query the API twice."""
         # Setup the mocked response, refrain from matching the query string
-        responses.add(responses.GET, self.api_url, json=self.valid_response,
-                      status=200, match_querystring=False)
+        responses.matchers.query_string_matcher = False
+        responses.add(responses.GET, self.api_url, json=self.valid_response, status=200)
 
         acme = ACMEAccount(client=self.client)
         acme.all(self.org_id, force=True)
@@ -257,8 +258,9 @@ def _test_find_test_factory(params=None):
             )
         ]
         # Setup the mocked response
+        responses.matchers.query_string_matcher = False
         responses.add(
-            responses.GET, self.api_url, json=valid_response, status=200, match_querystring=False
+            responses.GET, self.api_url, json=valid_response, status=200,
         )
         acme = ACMEAccount(client=self.client)
         data = list(acme.find(self.org_id, **params))
@@ -400,7 +402,7 @@ class TestCreate(TestACMEAccount):
         """Return the created ACME ID."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, headers=response_headers,
-                      match=[responses.json_params_matcher(request_params)],
+                      match=[json_params_matcher(request_params)],
                       status=201)
 
         acme = ACMEAccount(client=self.client)
@@ -414,7 +416,7 @@ class TestCreate(TestACMEAccount):
         """Raise an exception if the ACME Account creation fails with an http error."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
-                      match=[responses.json_params_matcher(request_params)],
+                      match=[json_params_matcher(request_params)],
                       status=400)
 
         acme = ACMEAccount(client=self.client)
@@ -428,7 +430,7 @@ class TestCreate(TestACMEAccount):
         """Raise an exception if the ACME Account creation fails with unexpected http code."""
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
-                      match=[responses.json_params_matcher(request_params)],
+                      match=[json_params_matcher(request_params)],
                       status=200)  # unexpected status
 
         acme = ACMEAccount(client=self.client)
@@ -444,7 +446,7 @@ class TestCreate(TestACMEAccount):
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       headers=response_headers,
-                      match=[responses.json_params_matcher(request_params)],
+                      match=[json_params_matcher(request_params)],
                       status=201)
 
         acme = ACMEAccount(client=self.client)
@@ -460,7 +462,7 @@ class TestCreate(TestACMEAccount):
         # Setup the mocked response
         responses.add(responses.POST, self.api_url, json=self.error_response,
                       headers=response_headers,
-                      match=[responses.json_params_matcher(request_params)],
+                      match=[json_params_matcher(request_params)],
                       status=201)
 
         acme = ACMEAccount(client=self.client)

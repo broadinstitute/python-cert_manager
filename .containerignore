@@ -1,0 +1,8 @@
+.[a-z]*
+.venv/*
+*.sh
+*.xml
+CHANGELOG.md
+Dockerfile
+tests/*
+tmp/*
