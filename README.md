@@ -6,7 +6,7 @@ This library provides a [Python][1] interface to the [Sectigo][2] Certificate Ma
 
 ## Basics
 
-`cert_manager` runs on [Python][1] >= 3.7
+`cert_manager` runs on [Python][1] >= 3.9
 
 ## Features
 
