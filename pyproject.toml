@@ -14,7 +14,7 @@ license = "BSD-3-Clause"
 name = "cert_manager"
 readme = "README.md"
 repository = "https://github.com/broadinstitute/python-cert_manager.git"
-requires-python = ">=3.9,<3.12.1"
+requires-python = ">=3.9,<4.0.0"
 version = "2.4.0"
 
 [tool.poetry.dependencies]
@@ -25,11 +25,11 @@ toml = "^0.10.2"
 bump2version = "^1.0.1"
 coverage = "^7.6.10"
 fixtures = "^4.2.2"
-green = "^4.0.2"
 mock = "^5.1.0"
 responses = "^0.25.3"
 testtools = "^2.7.2"
 yamllint = "^1.35.1"
+pytest = "^8.3.4"
 
 [tool.ruff]
 fixable = ["ALL"]

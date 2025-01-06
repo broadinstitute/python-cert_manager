@@ -19,3 +19,5 @@ jobs:
     uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v2.4.0
     with:
       python_package_name: cert_manager
+      run_coverage: false
+      test_runner: pytest

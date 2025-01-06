@@ -326,8 +326,8 @@ class TestGet(TestClient):
         """Add passed parameters."""
         # Setup the mocked response
         json_data = {"some": "data"}
-        responses.add(responses.GET, self.test_url, json=json_data, status=200,
-                      match_querystring=False)
+        responses.matchers.query_string_matcher = False
+        responses.add(responses.GET, self.test_url, json=json_data, status=200)
 
         # Call the function with extra parameters
         params = {"key": "value"}

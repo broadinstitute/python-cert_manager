@@ -117,7 +117,7 @@ To start a development environment, you should be able to just run the `dev.bash
 ./dev.bash
 ```
 
-The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/working`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/working` directory by simply typing `green` as [green][5] has been setup to with the correct parameters.
+The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/working`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/working` directory by simply typing `pytest` as [pytest][5] has been setup to with the correct parameters.
 
 ## Changelog
 
@@ -164,5 +164,5 @@ git push --tags
 [2]: https://sectigo.com/ "Sectigo"
 [3]: https://python-poetry.org/ "Poetry"
 [4]: https://www.docker.com/ "Docker"
-[5]: https://github.com/CleanCut/green "green"
+[5]: https://docs.pytest.org/en/stable/ "pytest"
 [6]: https://pypi.org/project/bump2version/ "bump2version"
