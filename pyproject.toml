@@ -34,8 +34,10 @@ yamllint = "^1.35.1"
 pytest = "^8.3.4"
 
 [tool.ruff]
-fixable = ["ALL"]
 line-length = 120
+
+[tool.ruff.lint]
+fixable = ["ALL"]
 select = [
   "D",   # pydocstyle
   "E",   # pycodestyle
@@ -46,5 +48,5 @@ select = [
   "UP",  # pyupgrade
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
