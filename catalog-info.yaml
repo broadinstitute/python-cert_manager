@@ -5,7 +5,7 @@ metadata:
   name: python-cert_manager
   description: Python interface to the Sectigo Certificate Manager REST API
   tags:
-    - cert_manager
+    - cert-manager
     - certificate
     - python
     - sectigo
