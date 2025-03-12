@@ -1,0 +1,19 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: python-cert_manager
+  description: Python interface to the Sectigo Certificate Manager REST API
+  tags:
+    - cert_manager
+    - certificate
+    - python
+    - sectigo
+  annotations:
+    github.com/project-slug: broadinstitute/python-cert_manager
+    backstage.io/source-template: template:default/open-pr-with-catalog-entry
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: devnull

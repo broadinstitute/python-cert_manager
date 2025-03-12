@@ -1,0 +1,8 @@
+---
+site_name: 'python-cert_manager Documentation'
+
+nav:
+  - Home: README.md
+
+plugins:
+  - techdocs-core
