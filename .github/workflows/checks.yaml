@@ -8,15 +8,15 @@ name: 'checks'
 
 jobs:
   pre-commit:
-    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v2.7.1
+    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v3.0.0
   linting:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v2.7.1
+    uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v3.0.0
     with:
       ruff_version: '0.8.6'
       use_pylama: false
       use_ruff: true
   unit-tests:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v2.7.1
+    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v3.0.0
     with:
       python_package_name: cert_manager
       run_coverage: false
