@@ -20,7 +20,7 @@ homepage = "https://github.com/broadinstitute/python-cert_manager.git"
 repository = "https://github.com/broadinstitute/python-cert_manager.git"
 
 [tool.poetry.dependencies]
-requests = "^2.32.3"
+requests = "^2.32.4"
 toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
