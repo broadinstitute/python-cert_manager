@@ -175,6 +175,21 @@ class ACMEAccount(Endpoint):
 
         return result.json()
 
+    @paginate
+    def get_domains (self, acme_id, **kwargs):
+        """List ACME account’s domains.
+
+        :param int acme_id: The ID of the acme account to list domains
+        """
+        params = {
+          self._find_params_to_api[param]: kwargs.get(param)
+          for param in self._find_params_to_api  # pylint:disable=consider-using-dict-items
+        }
+        url = self._url(f"{acme_id}", "domain")
+        result = self._client.get(url, params=params)
+
+        return result.json()
+
     def remove_domains(self, acme_id, domains):
         """Remove domains from an acme account.
 
@@ -195,3 +210,19 @@ class ACMEAccount(Endpoint):
         result.raise_for_status()
 
         return result.json()
+
+    @paginate
+    def list_clients (self, acme_id, **kwargs):
+        """List ACME account’s clients.
+
+        :param int acme_id: The ID of the acme account to list domains
+        """
+        params = {
+          self._find_params_to_api[param]: kwargs.get(param)
+          for param in self._find_params_to_api  # pylint:disable=consider-using-dict-items
+        }
+        url = self._url(f"{acme_id}", "client")
+        result = self._client.get(url, params=params)
+
+        return result.json()
+
