@@ -21,7 +21,7 @@ jobs:
       use_pylama: false
       use_ruff: true
   pre-commit:
-    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v2.7.0
+    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v4.0.0
   unit-tests:
     uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v4.0.0
     with:
