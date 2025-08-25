@@ -13,17 +13,17 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: broadinstitute/shared-workflows/.github/workflows/conventional-commit.yaml@v5.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/conventional-commit.yaml@v5.0.1
   linting:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v5.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-lint.yaml@v5.0.1
     with:
       ruff_version: '0.8.6'
       use_pylama: false
       use_ruff: true
   pre-commit:
-    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v5.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/pre-commit.yaml@v5.0.1
   unit-tests:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v5.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v5.0.1
     with:
       python_package_name: cert_manager
       run_coverage: false

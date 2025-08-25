@@ -13,6 +13,6 @@ permissions:
 
 jobs:
   pypi_test_deploy:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-test-deploy-to-pypi.yaml@v5.0.0
+    uses: broadinstitute/shared-workflows/.github/workflows/python-test-deploy-to-pypi.yaml@v5.0.1
     secrets:
       pypi_test_token: ${{ secrets.PYPI_TEST_TOKEN }}
