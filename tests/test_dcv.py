@@ -72,6 +72,68 @@ class TestInit(TestDcv):
         self.assertRaises(TypeError, DomainControlValidation)
 
 
+class TestAll(TestDcv):
+    """Test the all method."""
+
+    def setUp(self):  # pylint: disable=invalid-name
+        """Initialize the class."""
+        # Call the inherited setUp method
+        super().setUp()
+        self.api_url = f"{self.cfixt.base_url}/dcv/v1/validation?size=200&position=0"
+        self.valid_response = [
+            {
+                "domain": "*.mydomain.org",
+                "dcvStatus": "VALIDATED",
+                "dcvOrderStatus": "NOT_INITIATED",
+                "dcvMethod": "CNAME",
+                "expirationDate": "2024-03-19",
+            },
+            {
+                "domain": "mydomain.org",
+                "dcvStatus": "VALIDATED",
+                "dcvOrderStatus": "NOT_INITIATED",
+                "dcvMethod": "CNAME",
+                "expirationDate": "2024-03-19",
+            },
+        ]
+
+    @responses.activate
+    def test_all(self):
+        """Return all the data, but it should query the API twice."""
+        # Setup the mocked response
+        responses.add(
+            responses.GET, self.api_url, json=self.valid_response, status=HTTPStatus.OK
+        )
+
+        dcv = DomainControlValidation(client=self.client)
+        data = dcv.all()
+
+        # Verify all the query information
+        # There should only be one call the first time "all" is called.
+        # Due to pagination, this is only guaranteed as long as the number of
+        # entries returned is less than the page size
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+        self.assertEqual(data, self.valid_response)
+
+    @responses.activate
+    def test_bad_http(self):
+        """Raise an exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(
+            responses.GET,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
+        )
+
+        domain = DomainControlValidation(client=self.client)
+        self.assertRaises(HTTPError, domain.all)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
 class TestSearch(TestDcv):
     """Test the .all method."""
 
@@ -292,6 +354,79 @@ class TestStartValidationCname(TestDcv):
         self.assertEqual(responses.calls[0].request.url, self.api_url)
 
 
+class TestStartValidationEmail(TestDcv):
+    """Test the .all method."""
+
+    def setUp(self):  # pylint: disable=invalid-name
+        """Initialize the class."""
+        # Call the inherited setUp method
+        super().setUp()
+        self.params = {
+            "domain": "ccmqa.com",
+        }
+        self.api_url = f"{self.cfixt.base_url}/dcv/v1/validation/start/domain/email"
+        self.valid_response = {
+            "emails":["admin@ccmqa.com","administrator@ccmqa.com","hostmaster@ccmqa.com","postmaster@ccmqa.com","webmaster@ccmqa.com","domain-admin@ccmqa.com"]
+        }
+
+    @responses.activate
+    def test_success(self):
+        """Return all the data, but it should query the API twice."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST, self.api_url, json=self.valid_response, status=HTTPStatus.OK
+        )
+
+        dcv = DomainControlValidation(client=self.client)
+        data = dcv.start_validation_email(**self.params)
+
+        # Verify all the query information
+        # There should only be one call the first time "all" is called.
+        # Due to pagination, this is only guaranteed as long as the number of
+        # entries returned is less than the page size
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+        self.assertEqual(
+            json.loads(responses.calls[0].request.body)["domain"], "ccmqa.com"
+        )
+        self.assertEqual(data, self.valid_response)
+
+    @responses.activate
+    def test_bad_req(self):
+        """Raise an exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
+        )
+
+        domain = DomainControlValidation(client=self.client)
+        self.assertRaises(ValueError, domain.start_validation_email, **self.params)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
+    @responses.activate
+    def test_server_error(self):
+        """Raise an exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+        )
+
+        domain = DomainControlValidation(client=self.client)
+        self.assertRaises(HTTPError, domain.start_validation_email, **self.params)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
 class TestSubmitValidationCname(TestDcv):
     """Test the .all method."""
 
@@ -362,6 +497,81 @@ class TestSubmitValidationCname(TestDcv):
 
         domain = DomainControlValidation(client=self.client)
         self.assertRaises(HTTPError, domain.submit_validation_cname, **self.params)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
+class TestSubmitValidationEmail(TestDcv):
+    """Test the .all method."""
+
+    def setUp(self):  # pylint: disable=invalid-name
+        """Initialize the class."""
+        # Call the inherited setUp method
+        super().setUp()
+        self.params = {
+            "domain": "mydomain.org",
+            "email": "administrator@mydomain.org"
+        }
+        self.api_url = f"{self.cfixt.base_url}/dcv/v1/validation/submit/domain/email"
+        self.valid_response = {
+                "status":"VALIDATED",
+                "orderStatus":"SUBMITTED",
+                "message":"Submitted successfully"}
+
+    @responses.activate
+    def test_success(self):
+        """Return all the data, but it should query the API twice."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST, self.api_url, json=self.valid_response, status=HTTPStatus.OK
+        )
+
+        dcv = DomainControlValidation(client=self.client)
+        data = dcv.submit_validation_email(**self.params)
+
+        # Verify all the query information
+        # There should only be one call the first time "all" is called.
+        # Due to pagination, this is only guaranteed as long as the number of
+        # entries returned is less than the page size
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+        self.assertEqual(
+            json.loads(responses.calls[0].request.body)["domain"], "mydomain.org"
+        )
+        self.assertEqual(data, self.valid_response)
+
+    @responses.activate
+    def test_bad_req(self):
+        """Raise an exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.BAD_REQUEST,
+        )
+
+        domain = DomainControlValidation(client=self.client)
+        self.assertRaises(ValueError, domain.submit_validation_email, **self.params)
+
+        # Verify all the query information
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(responses.calls[0].request.url, self.api_url)
+
+    @responses.activate
+    def test_server_error(self):
+        """Raise an exception if domains cannot be retrieved from the API."""
+        # Setup the mocked response
+        responses.add(
+            responses.POST,
+            self.api_url,
+            json=self.error_response,
+            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+        )
+
+        domain = DomainControlValidation(client=self.client)
+        self.assertRaises(HTTPError, domain.submit_validation_email, **self.params)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
