@@ -1,6 +1,8 @@
 # python-cert_manager
 
-This library provides a [Python][1] interface to the [Sectigo][2] Certificate Manager REST API.  python-cert_manager is open sourced under the [BSD 3-Clause license](LICENSE.txt).
+This library provides a [Python][1] interface to the [Sectigo][2] Certificate
+Manager REST API. python-cert_manager is open sourced under the
+[BSD 3-Clause license](LICENSE.txt).
 
 ![checks](https://github.com/broadinstitute/python-cert_manager/workflows/checks/badge.svg?branch=main)
 
@@ -10,37 +12,40 @@ This library provides a [Python][1] interface to the [Sectigo][2] Certificate Ma
 
 ## Features
 
-There are many API endpoints under Certificate Manager, and this library currently supports a subset of those endpoints.  The current list of written and tested endpoint classes includes:
+There are many API endpoints under Certificate Manager, and this library
+currently supports a subset of those endpoints. The current list of written and
+tested endpoint classes includes:
 
-* Organization (/organization)
-* Person (/person)
-* SSL (/ssl)
-* Client Administrator (/admin)
-* Domain (/domain)
-* Report (/report)
+- Organization (/organization)
+- Person (/person)
+- SSL (/ssl)
+- Client Administrator (/admin)
+- Domain (/domain)
+- Report (/report)
 
 Other endpoints we hope to add in the near future:
 
-* Code Signing Certificates (/csod)
-* Custom Fields (/customField)
-* Domain Control Validation (/dcv)
-* Device Certificates (/device)
-* Discovery (/discovery)
-* SMIME (/smime)
+- Code Signing Certificates (/csod)
+- Custom Fields (/customField)
+- Domain Control Validation (/dcv)
+- Device Certificates (/device)
+- Discovery (/discovery)
+- SMIME (/smime)
 
 ## Installing
 
 You can use pip to install cert_manager:
 
-```sh
+```Shell
 pip install cert_manager
 ```
 
 ## Examples
 
-This is a simple example that just shows initializing the `Client` object and using it to query the `Organization` and `SSL` endpoints:
+This is a simple example that just shows initializing the `Client` object and
+using it to query the `Organization` and `SSL` endpoints:
 
-```python
+```Python
 from cert_manager import Organization
 from cert_manager import Client
 from cert_manager import SSL
@@ -59,9 +64,10 @@ print(ssl.types)
 print(org.all())
 ```
 
-The most common process you would do, however, is enroll and then collect a certificate you want to order from the Certificate Manager:
+The most common process you would do, however, is enroll and then collect a
+certificate you want to order from the Certificate Manager:
 
-```python
+```Python
 from time import sleep
 
 from cert_manager import Organization
@@ -105,25 +111,43 @@ while(True):
 
 ## Contributing
 
-Pull requests to add functionality and fix bugs are always welcome.  Please check the CONTRIBUTING.md for specifics on contributions.
+Pull requests to add functionality and fix bugs are always welcome. Please check
+the CONTRIBUTING.md for specifics on contributions.
 
 ### Testing
 
-We try to have a high level of test coverage on the code.  Therefore, when adding anything to the repo, tests should be written to test a new feature or to test a bug fix so that there won't be a regression.  This library is setup to be pretty simple to build a working development environment using [Docker][4]. Therefore, it is suggested that you have [Docker][4] installed where you clone this repository to make development easier.
+We try to have a high level of test coverage on the code. Therefore, when adding
+anything to the repo, tests should be written to test a new feature or to test a
+bug fix so that there won't be a regression. This library is setup to be pretty
+simple to build a working development environment using [Docker][4]. Therefore,
+it is suggested that you have [Docker][4] installed where you clone this
+repository to make development easier.
 
-To start a development environment, you should be able to just run the `dev.bash` script.  This script will use the `Containerfile` in this repository to build a [Docker][4] container with all the dependencies for development installed using [Poetry][3].
+To start a development environment, you should be able to just run the
+`dev.bash` script. This script will use the `Containerfile` in this repository
+to build a [Docker][4] container with all the dependencies for development
+installed using [Poetry][3].
 
-```sh
+```Shell
 ./dev.bash
 ```
 
-The first time you run the script, it should build the [Docker][4] image and then drop you into the container's shell.  The directory where you cloned this repository should be volume mounted in to `/working`, which should also be the current working directory.  From there, you can make changes as you see fit.  Tests can be run from the `/working` directory by simply typing `pytest` as [pytest][5] has been setup to with the correct parameters.
+The first time you run the script, it should build the [Docker][4] image and
+then drop you into the container's shell. The directory where you cloned this
+repository should be volume mounted in to `/working`, which should also be the
+current working directory. From there, you can make changes as you see fit.
+Tests can be run from the `/working` directory by simply typing `pytest` as
+[pytest][5] has been setup to with the correct parameters.
 
 ## Changelog
 
-To generate the `CHANGELOG.md`, you will need [Docker][4] and a GitHub personal access token.  We currently use [github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator) for this purpose.  The following should generate the file using information from GitHub:
+To generate the `CHANGELOG.md`, you will need [Docker][4] and a GitHub personal
+access token. We currently use
+[github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator)
+for this purpose. The following should generate the file using information from
+GitHub:
 
-```sh
+```Shell
 docker run -it --rm \
     -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
     -v "$(pwd)":/working \
@@ -131,9 +155,10 @@ docker run -it --rm \
     ferrarimarco/github-changelog-generator --verbose
 ```
 
-To generate the log for an upcoming release that has not yet been tagged, you can run a command to include the upcoming release version.  For example, `2.0.0`:
+To generate the log for an upcoming release that has not yet been tagged, you
+can run a command to include the upcoming release version. For example, `2.0.0`:
 
-```sh
+```Shell
 docker run -it --rm \
     -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
     -v "$(pwd)":/working \
@@ -141,19 +166,27 @@ docker run -it --rm \
     ferrarimarco/github-changelog-generator --verbose --future-release 2.0.0 --unreleased
 ```
 
-As a note, this repository uses the default labels for formatting the `CHANGELOG.md`.  Label information can be found here: [Advanced-change-log-generation-examples](https://github.com/github-changelog-generator/github-changelog-generator/wiki/Advanced-change-log-generation-examples#section-options)
+As a note, this repository uses the default labels for formatting the
+`CHANGELOG.md`. Label information can be found here:
+[Advanced-change-log-generation-examples](https://github.com/github-changelog-generator/github-changelog-generator/wiki/Advanced-change-log-generation-examples#section-options)
 
 ## Releases
 
-Releases to the codebase are typically done using the [bump2version][6] tool.  This tool takes care of updating the version in all necessary files, updating its own configuration, and making a GitHub commit and tag.  We typically do version bumps as part of a PR, so you don't want to have [bump2version][6] tag the version at the same time it does the commit as commit hashes may change.  Therefore, to bump the version a patch level, one would run the command:
+Releases to the codebase are typically done using the [bump2version][6] tool.
+This tool takes care of updating the version in all necessary files, updating
+its own configuration, and making a GitHub commit and tag. We typically do
+version bumps as part of a PR, so you don't want to have [bump2version][6] tag
+the version at the same time it does the commit as commit hashes may change.
+Therefore, to bump the version a patch level, one would run the command:
 
-```sh
+```Shell
 bump2version --verbose --no-tag patch
 ```
 
-Once the PR is merged, you can then checkout the new `main` branch and tag it using the new version number that is now in `.bumpversion.cfg`:
+Once the PR is merged, you can then checkout the new `main` branch and tag it
+using the new version number that is now in `.bumpversion.cfg`:
 
-```sh
+```Shell
 git checkout main
 git pull --rebase
 git tag 1.0.0 -m 'Bump version: 0.1.0 → 1.0.0'
