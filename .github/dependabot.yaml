@@ -1,0 +1,21 @@
+---
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    groups:
+      actions:
+        patterns:
+          - "*"
+    schedule:
+      # Check for updates to GitHub Actions every month
+      interval: monthly
+  - package-ecosystem: pip
+    directory: /
+    groups:
+      pip:
+        patterns:
+          - "*"
+    schedule:
+      # Check for updates to GitHub Actions every month
+      interval: monthly

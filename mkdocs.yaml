@@ -1,5 +1,5 @@
 ---
-site_name: 'python-cert_manager Documentation'
+site_name: python-cert_manager Documentation
 
 nav:
   - Home: README.md
