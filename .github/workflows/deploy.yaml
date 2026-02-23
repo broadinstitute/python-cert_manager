@@ -10,6 +10,6 @@ permissions:
 
 jobs:
   pypi_deploy:
-    uses: broadinstitute/shared-workflows/.github/workflows/python-deploy-to-pypi.yaml@v5.0.1
+    uses: broadinstitute/shared-workflows/.github/workflows/python-deploy-to-pypi.yaml@v6.0.0
     secrets:
       pypi_token: ${{ secrets.PYPI_TOKEN }}
