@@ -32,59 +32,66 @@ class Certificates(Endpoint):
     def __init__(self, client, endpoint, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string endpoint: The URL of the API endpoint (ex. "/ssl")
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            endpoint: The URL of the API endpoint (ex. "/ssl")
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint=endpoint, api_version=api_version)
 
         # Set to None initially.  Will be filled in by methods later.
-        self.__cert_types = None
-        self.__custom_fields = None
-        self.__reason_maxlen = 512
+        self._cert_types = None
+        self._custom_fields = None
+        self._reason_maxlen = 512
 
     @property
     def types(self):
         """Retrieve all certificate types that are currently available.
 
-        :return list: A list of dictionaries of certificate types
+        Returns:
+            A list of dictionaries of certificate types
         """
         # Only go to the API if we haven't done the API call yet, or if someone
         # specifically wants to refresh the internal cache
-        if not self.__cert_types:
+        if not self._cert_types:
             url = self._url("/types")
             result = self._client.get(url)
 
             # Build a dictionary instead of a flat list of dictionaries
-            self.__cert_types = {}
+            self._cert_types = {}
             for res in result.json():
                 name = res["name"]
-                self.__cert_types[name] = {}
-                self.__cert_types[name]["id"] = res["id"]
-                self.__cert_types[name]["terms"] = res["terms"]
+                self._cert_types[name] = {}
+                self._cert_types[name]["id"] = res["id"]
+                self._cert_types[name]["terms"] = res["terms"]
 
-        return self.__cert_types
+        return self._cert_types
 
     @property
     def custom_fields(self):
         """Retrieve all custom fields defined for SSL certificates.
 
-        :return list: A list of dictionaries of custom fields
+        Returns:
+            A list of dictionaries of custom fields
         """
         # Only go to the API if we haven't done the API call yet, or if someone
         # specifically wants to refresh the internal cache
-        if not self.__custom_fields:
+        if not self._custom_fields:
             url = self._url("/customFields")
             result = self._client.get(url)
 
-            self.__custom_fields = result.json()
+            self._custom_fields = result.json()
 
-        return self.__custom_fields
+        return self._custom_fields
 
     def _validate_custom_fields(self, custom_fields):
         """Check the structure and contents of a list of custom fields dicts. Raise exceptions if validation fails.
 
-        :raises Exception: if any of the validation steps fail
+        Args:
+            custom_fields: A list of dictionaries representing custom fields
+
+        Raises:
+            CustomFieldsError: if any of the validation steps fail
         """
         # Make sure all custom fields are valid if present
         custom_field_names = [f['name'] for f in self.custom_fields]
@@ -114,9 +121,11 @@ class Certificates(Endpoint):
 
         This method will raise a PendingError exception if the certificate is still in a pending state.
 
-        :param int cert_id: The certificate ID
-        :param str cert_format: The format in which to retreive the certificate. Allowed values: *self.valid_formats*
-        :return str: the string representing the certificate in the requested format
+        Args:
+            cert_id: The certificate ID
+            cert_format: The format in which to retreive the certificate. Allowed values: *self.valid_formats*
+        Returns:
+            The string representing the certificate in the requested format
         """
         if cert_format not in self.valid_formats:
             raise ValueError(f"Invalid cert format {cert_format} provided")
@@ -135,16 +144,20 @@ class Certificates(Endpoint):
     def enroll(self, **kwargs):
         """Enroll a certificate request with Sectigo to generate a certificate.
 
-        :param string cert_type_name: The full cert type name
-            Note: the name must match names returned from the get_types() method
-        :param string csr: The Certificate Signing Request (CSR)
-        :param int term: The length, in days, for the certificate to be issued
-        :param int org_id: The ID of the organization in which to enroll the certificate
-        :param list subject_alt_names: A list of Subject Alternative Names
-        :param list external_requester: One or more e-mail addresses
-        :param list custom_fields: zero or more objects representing custom fields and their values
-            Note: each object must have a 'name' key and a 'value' key
-        :return dict: The certificate_id and the normal status messages for errors
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Required fields are:
+            cert_type_name: The full cert type name
+                Note: the name must match names returned from the get_types() method
+            csr: The Certificate Signing Request (CSR)
+            term: The length, in days, for the certificate to be issued
+            org_id: The ID of the organization in which to enroll the certificate
+            subject_alt_names: A list of Subject Alternative Names
+            external_requester: One or more e-mail addresses
+            custom_fields: zero or more objects representing custom fields and their values
+                Note: each object must have a 'name' key and a 'value' key
+        Returns:
+            The certificate_id and the normal status messages for errors
         """
         # Retrieve all the arguments
         cert_type_name = kwargs.get("cert_type_name")
@@ -191,13 +204,17 @@ class Certificates(Endpoint):
     def replace(self, **kwargs):
         """Replace a pre-existing certificate.
 
-        :param int cert_id: The certificate ID
-        :param string csr: The Certificate Signing Request (CSR)
-        :param string common_name: Certificate common name.
-        :param str reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
-        :param list subject_alt_names: A list of Subject Alternative Names.
-        :return: The result of the operation, "Successful" on success
-        :rtype: dict
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Required fields are:
+                cert_id: The certificate ID
+                csr: The Certificate Signing Request (CSR)
+                common_name: Certificate common name.
+                reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
+                subject_alt_names: A list of Subject Alternative Names.
+
+        Returns:
+            An empty dictionary on success
         """
         # Retrieve all the arguments
         cert_id = kwargs.get("cert_id")
@@ -222,16 +239,19 @@ class Certificates(Endpoint):
     def revoke(self, cert_id, reason=""):
         """Revoke the certificate specified by the certificate ID.
 
-        :param int cert_id: The certificate ID
-        :param str reason: The Reason for revocation.
-            Reason can be up to 512 characters and cannot be blank (i.e. empty string)
-        :return dict: The revocation result. "Successful" on success
+        Args:
+            cert_id: The certificate ID
+            reason: The Reason for revocation.
+                Reason can be up to 512 characters and cannot be blank (i.e. empty string)
+
+        Returns:
+            An empty dictionary on success
         """
         url = self._url(f"/revoke/{cert_id}")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if not reason or len(reason) >= self.__reason_maxlen:
-            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
+        if not reason or len(reason) >= self._reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self._reason_maxlen} characters")
 
         data = {"reason": reason}
 

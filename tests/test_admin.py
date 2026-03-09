@@ -73,7 +73,7 @@ class TestInit(TestAdmin):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.api_url)
 
-        self.assertEqual(admin._Admin__admins, self.valid_response)
+        self.assertEqual(admin._admins, self.valid_response)
 
     @responses.activate
     def test_param(self):
@@ -91,7 +91,7 @@ class TestInit(TestAdmin):
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, api_url)
 
-        self.assertEqual(admin._Admin__admins, self.valid_response)
+        self.assertEqual(admin._admins, self.valid_response)
 
     def test_need_client(self):
         """Raise an exception if called without a client parameter."""

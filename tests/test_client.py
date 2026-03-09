@@ -10,6 +10,7 @@
 import sys
 from unittest import mock
 
+import pytest
 import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
@@ -57,20 +58,20 @@ class TestInit(TestClient):
 
         # Use the hackity object mangling when dealing with double-underscore values in an object
         # This hard-coded test is to test that the default base_url is used when none is provided
-        self.assertEqual(client._Client__base_url, "https://cert-manager.com/api")
-        self.assertEqual(client._Client__login_uri, self.cfixt.login_uri)
-        self.assertEqual(client._Client__username, self.cfixt.username)
-        self.assertEqual(client._Client__password, self.cfixt.password)
-        self.assertEqual(client._Client__cert_auth, False)
+        self.assertEqual(client._base_url, "https://cert-manager.com/api")
+        self.assertEqual(client._login_uri, self.cfixt.login_uri)
+        self.assertEqual(client._username, self.cfixt.username)
+        self.assertEqual(client._password, self.cfixt.password)
+        self.assertEqual(client._cert_auth, False)
 
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
-            self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(client._Client__session.headers[head], headdata)
+            self.assertTrue(head in client._session.headers)
+            self.assertEqual(client._session.headers[head], headdata)
 
         # Because password was used and cert_auth was False, a password header should exist
-        self.assertTrue("password" in client._Client__session.headers)
-        self.assertEqual(self.cfixt.password, client._Client__session.headers["password"])
+        self.assertTrue("password" in client._session.headers)
+        self.assertEqual(self.cfixt.password, client._session.headers["password"])
 
     def test_params(self):
         """Set parameters correctly inside the class using all parameters."""
@@ -81,21 +82,21 @@ class TestInit(TestClient):
         )
 
         # Use the hackity object mangling when dealing with double-underscore values in an object
-        self.assertEqual(client._Client__base_url, self.cfixt.base_url)
-        self.assertEqual(client._Client__login_uri, self.cfixt.login_uri)
-        self.assertEqual(client._Client__username, self.cfixt.username)
-        self.assertEqual(client._Client__cert_auth, True)
-        self.assertEqual(client._Client__user_crt_file, self.cfixt.user_crt_file)
-        self.assertEqual(client._Client__user_key_file, self.cfixt.user_key_file)
-        self.assertEqual(client._Client__session.cert, (self.cfixt.user_crt_file, self.cfixt.user_key_file))
+        self.assertEqual(client._base_url, self.cfixt.base_url)
+        self.assertEqual(client._login_uri, self.cfixt.login_uri)
+        self.assertEqual(client._username, self.cfixt.username)
+        self.assertEqual(client._cert_auth, True)
+        self.assertEqual(client._user_crt_file, self.cfixt.user_crt_file)
+        self.assertEqual(client._user_key_file, self.cfixt.user_key_file)
+        self.assertEqual(client._session.cert, (self.cfixt.user_crt_file, self.cfixt.user_key_file))
 
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
-            self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(client._Client__session.headers[head], headdata)
+            self.assertTrue(head in client._session.headers)
+            self.assertEqual(client._session.headers[head], headdata)
 
         # If cert_auth is True, make sure a password header does not exist
-        self.assertFalse("password" in client._Client__session.headers)
+        self.assertFalse("password" in client._session.headers)
 
     def test_no_pass_with_certs(self):
         """Set parameters correctly inside the class certificate auth without a password."""
@@ -105,21 +106,21 @@ class TestInit(TestClient):
         )
 
         # Use the hackity object mangling when dealing with double-underscore values in an object
-        self.assertEqual(client._Client__base_url, self.cfixt.base_url)
-        self.assertEqual(client._Client__login_uri, self.cfixt.login_uri)
-        self.assertEqual(client._Client__username, self.cfixt.username)
-        self.assertEqual(client._Client__cert_auth, True)
-        self.assertEqual(client._Client__user_crt_file, self.cfixt.user_crt_file)
-        self.assertEqual(client._Client__user_key_file, self.cfixt.user_key_file)
-        self.assertEqual(client._Client__session.cert, (self.cfixt.user_crt_file, self.cfixt.user_key_file))
+        self.assertEqual(client._base_url, self.cfixt.base_url)
+        self.assertEqual(client._login_uri, self.cfixt.login_uri)
+        self.assertEqual(client._username, self.cfixt.username)
+        self.assertEqual(client._cert_auth, True)
+        self.assertEqual(client._user_crt_file, self.cfixt.user_crt_file)
+        self.assertEqual(client._user_key_file, self.cfixt.user_key_file)
+        self.assertEqual(client._session.cert, (self.cfixt.user_crt_file, self.cfixt.user_key_file))
 
         # Make sure all the headers make their way into the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
-            self.assertTrue(head in client._Client__session.headers)
-            self.assertEqual(client._Client__session.headers[head], headdata)
+            self.assertTrue(head in client._session.headers)
+            self.assertEqual(client._session.headers[head], headdata)
 
         # If cert_auth is True, make sure a password header does not exist
-        self.assertFalse("password" in client._Client__session.headers)
+        self.assertFalse("password" in client._session.headers)
 
     def test_versioning(self):
         """Change the user-agent header if the version number changes."""
@@ -135,7 +136,7 @@ class TestInit(TestClient):
 
         # Make sure the user-agent header is correct in the class and the internal requests.Session object
         self.assertEqual(client.headers["User-Agent"], user_agent)
-        self.assertEqual(client._Client__session.headers["User-Agent"], user_agent)
+        self.assertEqual(client._session.headers["User-Agent"], user_agent)
 
     def test_need_crt(self):
         """Raise an exception without a cert file if cert_auth=True."""
@@ -173,6 +174,75 @@ class TestInit(TestClient):
             password=self.cfixt.password, cert_auth=True, user_crt_file=self.cfixt.user_crt_file,
         )
 
+    def test_oauth2_defaults(self):
+        """Set OAuth2 defaults and add bearer token authorization header."""
+        token = "abc123"
+        client_id = "test_client_id"
+        client_secret = "test_client_secret"
+        post_response = mock.Mock()
+        post_response.json.return_value = {"access_token": token}
+
+        with mock.patch("cert_manager.client.requests.post", return_value=post_response) as post_mock:
+            client = Client(client_id=client_id, client_secret=client_secret)
+
+        self.assertEqual(client._base_url, "https://admin.enterprise.sectigo.com/api")
+        self.assertEqual(client._headers, {"Authorization": f"Bearer {token}"})
+        self.assertEqual(client._session.headers["Authorization"], f"Bearer {token}")
+
+        post_mock.assert_called_once_with(
+            "https://auth.sso.sectigo.com/auth/realms/apiclients/protocol/openid-connect/token",
+            data={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "client_credentials",
+            },
+            headers={"accept": "application/json", "content-type": "application/x-www-form-urlencoded"},
+        )
+
+    def test_oauth2_params(self):
+        """Use provided OAuth2 URLs for auth and API base URL."""
+        token = "xyz987"
+        client_id = "test_client_id"
+        client_secret = "test_client_secret"
+        auth_url = "https://auth.example.com/realms/custom/protocol/openid-connect/token"
+        base_url = "https://api.example.com/custom"
+        post_response = mock.Mock()
+        post_response.json.return_value = {"access_token": token}
+
+        with mock.patch("cert_manager.client.requests.post", return_value=post_response) as post_mock:
+            client = Client(
+                client_id=client_id,
+                client_secret=client_secret,
+                auth_url=auth_url,
+                base_url=base_url,
+            )
+
+        self.assertEqual(client._base_url, base_url)
+        self.assertEqual(client._session.headers["Authorization"], f"Bearer {token}")
+        self.assertFalse("password" in client._session.headers)
+        self.assertFalse("login" in client._session.headers)
+        self.assertFalse("customerUri" in client._session.headers)
+
+        post_mock.assert_called_once_with(
+            auth_url,
+            data={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "client_credentials",
+            },
+            headers={"accept": "application/json", "content-type": "application/x-www-form-urlencoded"},
+        )
+
+    def test_need_client_secret_for_oauth2(self):
+        """Raise an exception without client_secret when client_id is provided."""
+        with pytest.raises(KeyError):
+            Client(client_id="test_client_id")
+
+    def test_need_client_id_for_oauth2(self):
+        """Raise an exception without client_id when client_secret is provided."""
+        with pytest.raises(KeyError):
+            Client(client_secret="test_client_secret")
+
 
 class TestProperties(TestClient):
     """Test the property methods in the class."""
@@ -193,7 +263,7 @@ class TestProperties(TestClient):
 
     def test_session(self):
         """The session property should return the correct value."""
-        self.assertEqual(self.client._Client__session, self.client.session)
+        self.assertEqual(self.client._session, self.client.session)
 
 
 class TestAddHeaders(TestClient):
@@ -207,13 +277,13 @@ class TestAddHeaders(TestClient):
 
         # Make sure the new headers make their way into the internal requests.Session object
         for header, hval in headers.items():
-            self.assertTrue(header in self.client._Client__session.headers)
-            self.assertEqual(hval, self.client._Client__session.headers[header])
+            self.assertTrue(header in self.client._session.headers)
+            self.assertEqual(hval, self.client._session.headers[header])
 
         # Make sure the original headers are still in the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.client._Client__session.headers[head], headdata)
+            self.assertTrue(head in self.client._session.headers)
+            self.assertEqual(self.client._session.headers[head], headdata)
 
     def test_replace(self):
         """The already existing header should be modified."""
@@ -223,15 +293,15 @@ class TestAddHeaders(TestClient):
 
         # Make sure the new headers make their way into the internal requests.Session object
         for header, hval in headers.items():
-            self.assertTrue(header in self.client._Client__session.headers)
-            self.assertEqual(hval, self.client._Client__session.headers[header])
+            self.assertTrue(header in self.client._session.headers)
+            self.assertEqual(hval, self.client._session.headers[header])
 
         # Removed the modified header from the check as it was checked above
         del self.cfixt.headers["User-Agent"]
         # Make sure the original headers are still in the internal requests.Session object
         for head, headdata in self.cfixt.headers.items():
-            self.assertTrue(head in self.client._Client__session.headers)
-            self.assertEqual(self.client._Client__session.headers[head], headdata)
+            self.assertTrue(head in self.client._session.headers)
+            self.assertEqual(self.client._session.headers[head], headdata)
 
     def test_not_dictionary(self):
         """Raise an exception when not passed a dictionary."""
@@ -250,13 +320,13 @@ class TestRemoveHeaders(TestClient):
 
         # Make sure the headers are removed from the requests.Session object
         for head in headers:
-            self.assertFalse(head in self.client._Client__session.headers)
+            self.assertFalse(head in self.client._session.headers)
 
         # Make sure the rest of the headers we added before are still there
         for head, headdata in self.cfixt.headers.items():
             if head not in headers:
-                self.assertTrue(head in self.client._Client__session.headers)
-                self.assertEqual(self.client._Client__session.headers[head], headdata)
+                self.assertTrue(head in self.client._session.headers)
+                self.assertEqual(self.client._session.headers[head], headdata)
 
     def test_dictionary(self):
         """Remove headers correctly if passed a dictionary."""
@@ -266,13 +336,13 @@ class TestRemoveHeaders(TestClient):
 
         # Make sure the headers are removed from the requests.Session object
         for head in headers:
-            self.assertFalse(head in self.client._Client__session.headers)
+            self.assertFalse(head in self.client._session.headers)
 
         # Make sure the rest of the headers we added before are still there
         for head, headdata in self.cfixt.headers.items():
             if head not in headers:
-                self.assertTrue(head in self.client._Client__session.headers)
-                self.assertEqual(self.client._Client__session.headers[head], headdata)
+                self.assertTrue(head in self.client._session.headers)
+                self.assertEqual(self.client._session.headers[head], headdata)
 
 
 class TestGet(TestClient):

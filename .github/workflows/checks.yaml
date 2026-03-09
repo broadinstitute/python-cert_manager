@@ -22,3 +22,4 @@ jobs:
     uses: broadinstitute/shared-workflows/.github/workflows/python-unit-test.yaml@v6.0.0
     with:
       python_package_name: cert_manager
+      python_versions: '{ "versions": [ "3.9", "3.10", "3.11", "3.12", "3.13", "3.14" ] }'

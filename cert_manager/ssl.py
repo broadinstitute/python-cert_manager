@@ -14,8 +14,9 @@ class SSL(Certificates):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/ssl", api_version=api_version)
 
@@ -28,16 +29,25 @@ class SSL(Certificates):
         referenced at:
         https://sectigo.com/uploads/audio/Certificate-Manager-20.1-Rest-API.html#resource-SSL-list
 
-        :param dict kwargs: A dictionary of arguments to pass to the API
+        Args:
+            kwargs: A dictionary of arguments to pass to the API
 
-        :return iter: An iterator object is returned to cycle through the certificates
+        Returns:
+            iter: An iterator object is returned to cycle through the certificates
         """
         result = self._client.get(self._api_url, params=kwargs)
 
         return result.json()
 
     def get(self, cert_id):
-        """Retrieve a certificate corresponding to the given certificate ID."""
+        """Retrieve a certificate corresponding to the given certificate ID.
+
+        Args:
+            cert_id: The Certificate ID given on enroll success
+
+        Returns:
+            The certificate details returned by the API
+        """
         url = self._url(f"/{cert_id}")
         result = self._client.get(url)
 
@@ -46,8 +56,11 @@ class SSL(Certificates):
     def renew(self, cert_id):
         """Renew the certificate specified by the certificate ID.
 
-        :param int cert_id: The certificate ID
-        :return dict: The renewal result. "Successful" on success
+        Args:
+            cert_id: The certificate ID
+
+        Returns:
+            dict: The renewal result. "Successful" on success
         """
         url = self._url(f"/renewById/{cert_id}")
         result = self._client.post(url, data="")
@@ -56,7 +69,14 @@ class SSL(Certificates):
         return {}
 
     def count(self, **kwargs) -> int:
-        """Retrieve the number of certifictes."""
+        """Retrieve the number of certifictes.
+
+        Args:
+            kwargs: A dictionary of arguments to pass to the API
+
+        Returns:
+            The number of certificates
+        """
         result = self._client.head(self._api_url, params=kwargs)
 
         return int(result.headers['X-Total-Count'])

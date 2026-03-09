@@ -1,0 +1,26 @@
+---
+changelog:
+  exclude:
+    labels:
+      - duplicate
+      - ignore-for-release
+      - invalid
+      - maintenance
+      - question
+      - wontfix
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - backwards-incompatible
+        - breaking
+    - title: Fixed Bugs 🐛
+      labels:
+        - bug
+        - fix
+    - title: Exciting New Features 🎉
+      labels:
+        - enhancement
+        - feature
+    - title: 👒 Dependencies
+      labels:
+        - dependencies

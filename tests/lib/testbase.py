@@ -23,6 +23,8 @@ class ClientFixture(fixtures.Fixture):
         self.password = "test_password"
         self.user_crt_file = "/path/to/pub.key"
         self.user_key_file = "/path/to/priv.key"
+        self.client_id = "test_client_id"
+        self.client_secret = "test_client_secret"
 
         # This is basically the same code as the code used in Client.  This is used just to lock in the
         # data that the user-agent should have in it.

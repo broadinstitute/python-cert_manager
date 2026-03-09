@@ -17,7 +17,7 @@ repos:
           - --allow-missing-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: '.bumpversion.cfg'
+        exclude: ".bumpversion.cfg"
       - id: mixed-line-ending
       - id: name-tests-test
         args:

@@ -15,29 +15,32 @@ class Organization(Endpoint):
 
         Note: The *all* method will be run on object instantiation to fetch all organizations
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/organization", api_version=api_version)
 
-        self.__orgs = None
+        self._orgs = None
         self.all()
 
     def all(self, force=False):
         """Return a list of organizations from Sectigo.
 
-        :param bool force: If set to True, force refreshing the data from the API
+        Args:
+            force: If set to True, force refreshing the data from the API
 
-        :return list: A list of dictionaries representing the organizations
+        Returns:
+            list: A list of dictionaries representing the organizations
         """
-        if (self.__orgs) and (not force):
-            return self.__orgs
+        if (self._orgs) and (not force):
+            return self._orgs
 
         result = self._client.get(self._api_url)
 
-        self.__orgs = result.json()
+        self._orgs = result.json()
 
-        return self.__orgs
+        return self._orgs
 
     def find(self, org_name=None, dept_name=None):
         """Return a dictionary of organization information.
@@ -52,10 +55,12 @@ class Organization(Endpoint):
 
         If *neither* parameter is provided, all organizations will be returned (i.e. an alias for *all*)
 
-        :param str org_name: The name of the organization for which to search
-        :param str org_name: The name of the department for which to search
+        Args:
+            org_name: The name of the organization for which to search
+            dept_name: The name of the department for which to search
 
-        :return list: A list of dictionaries representing the organization or department
+        Returns:
+            list: A list of dictionaries representing the organization or department
         """
         ret = {}
 

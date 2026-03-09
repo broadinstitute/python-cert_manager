@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry_core>=2"]
 
 [project]
 authors = [
@@ -13,7 +13,7 @@ license = { text = "BSD-3-Clause" }
 name = "cert_manager"
 readme = "docs/README.md"
 requires-python = ">=3.9,<4.0.0"
-version = "2.4.0"
+version = "3.0.0"
 
 [project.urls]
 homepage = "https://github.com/broadinstitute/python-cert_manager.git"
@@ -28,10 +28,10 @@ bump2version = "^1.0.1"
 coverage = "^7.10.7"
 fixtures = "^4.2.6"
 mock = "^5.2.0"
+pytest = "^8.4.2"
 responses = "^0.26.0"
 testtools = "^2.7.2"
 yamllint = "^1.37.1"
-pytest = "^8.4.2"
 
 [tool.ruff]
 line-length = 120

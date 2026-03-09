@@ -15,8 +15,9 @@ class Person(Endpoint):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/person", api_version=api_version)
 
@@ -24,13 +25,16 @@ class Person(Endpoint):
     def list(self, **kwargs):
         """Return a list of people in sectigo.
 
-         The 'size' and 'position' parameters passed as arguments to this function will be used
+        The 'size' and 'position' parameters passed as arguments to this function will be used
         by the pagination wrapper to page through results.  All other filtering parameters can be
         referenced at:
         https://sectigo.com/knowledge-base/detail/SCM-Sectigo-Certificate-Manager-REST-API/kA01N000000XDkE
 
-        :param dict kwargs: A dictionary of arguments to pass to the API
-        :return iter: An iterator object is returned to cycle through the certificates
+        Args:
+            kwargs: A dictionary of arguments to pass to the API
+
+        Returns:
+            iter: An iterator object is returned to cycle through the certificates
         """
         result = self._client.get(self._api_url, params=kwargs)
         return result.json()
@@ -38,8 +42,11 @@ class Person(Endpoint):
     def find(self, email):
         """Return a list of people with the given email from the Sectigo API.
 
-        :param str email: The email address for which we are searching
-        :return list: A list of dictionaries representing the people found
+        Args:
+            email: The email address for which we are searching
+
+        Returns:
+            list: A list of dictionaries representing the people found
         """
         quoted_email = quote(email)
 
@@ -52,8 +59,11 @@ class Person(Endpoint):
     def get(self, person_id):
         """Returns the details of a person.
 
-        :param int person_id: The person's ID
-        :return dict: A dictionary of the person's details
+        Args:
+            person_id: The person's ID
+
+        Returns:
+            dict: A dictionary of the person's details
         """
         url = self._url(str(person_id))
         result = self._client.get(url)
@@ -62,18 +72,23 @@ class Person(Endpoint):
     def create(self, **kwargs) -> dict:
         """Create a person.
 
-        :param string first_name: The person's first name
-        :param string middleName: The person's middle name
-        :param string last_name: The person's last name
-        :param string email: The person's e-mail
-        :param string validation_type: Person's validation type. Values: [STANDARD, HIGH]
-        :param int org_id: The ID of the organization in which to enroll the certificate
-        :param string phone: The person's phone number
-        :param string common_name: The person's common name. If ommited, constructed from person's full name
-        :param list secondary_emails: The person's secondary e-mail(s)
-        :param string eppn: The person's EPPN
-        :param string upn: The person's UPN (User Principal Name)
-        :return dict: A dict containing the 'personId' of the created person
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Allowed fields are:
+                first_name: The person's first name
+                middleName: The person's middle name
+                last_name: The person's last name
+                email: The person's e-mail
+                validation_type: Person's validation type. Values: [STANDARD, HIGH]
+                org_id: The ID of the organization in which to enroll the certificate
+                phone: The person's phone number
+                common_name: The person's common name. If ommited, constructed from person's full name
+                secondary_emails: The person's secondary e-mail(s)
+                eppn: The person's EPPN
+                upn: The person's UPN (User Principal Name)
+
+        Returns:
+            dict: A dict containing the 'personId' of the created person
         """
         # Retrieve all the arguments
         email = kwargs.get("email")
@@ -103,18 +118,21 @@ class Person(Endpoint):
     def update(self, **kwargs) -> None:
         """Update a person.
 
-        :param string person_id: The person's id
-        :param string first_name: The person's first name
-        :param string middleName: The person's middle name
-        :param string last_name: The person's last name
-        :param string email: The person's e-mail
-        :param string validation_type: Person's validation type. Values: [STANDARD, HIGH]
-        :param int org_id: The ID of the organization in which to enroll the certificate
-        :param string phone: The person's phone number
-        :param string common_name: The person's common name. If ommited, constructed from person's full name
-        :param list secondary_emails: The person's secondary e-mail(s)
-        :param string eppn: The person's EPPN
-        :param string upn: The person's UPN (User Principal Name)
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Allowed fields are:
+                person_id: The person's ID
+                first_name: The person's first name
+                middleName: The person's middle name
+                last_name: The person's last name
+                email: The person's e-mail
+                validation_type: Person's validation type. Values: [STANDARD, HIGH]
+                org_id: The ID of the organization in which to enroll the certificate
+                phone: The person's phone number
+                common_name: The person's common name. If ommited, constructed from person's full name
+                secondary_emails: The person's secondary e-mail(s)
+                eppn: The person's EPPN
+                upn: The person's UPN (User Principal Name)
         """
         # Retrieve all the arguments
         person_id = kwargs.get("person_id")
@@ -140,7 +158,10 @@ class Person(Endpoint):
     def delete(self, **kwargs):
         """Delete a person.
 
-        :param string person_id: The person's id
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Allowed fields are:
+                person_id: The person's ID
         """
         person_id = kwargs.get("person_id")
         self._client.delete(self._url(str(person_id)))

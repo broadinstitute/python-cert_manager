@@ -20,35 +20,40 @@ class Domain(Endpoint):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/domain", api_version=api_version)
 
-        self.__domains = None
+        self._domains = None
 
     def all(self, force=False):
         """Return a list of domains from Sectigo.
 
-        :param bool force: If set to True, force refreshing the data from the API
+        Args:
+            force: If set to True, force refreshing the data from the API
 
-        :return list: A list of dictionaries representing the domains
+        Returns:
+            A list of dictionaries representing the domains
         """
-        if (self.__domains) and (not force):
-            return self.__domains
+        if (self._domains) and (not force):
+            return self._domains
 
         result = self._client.get(self._api_url)
 
-        self.__domains = result.json()
+        self._domains = result.json()
 
-        return self.__domains
+        return self._domains
 
     def find(self, **kwargs):
         """Return a list of domains matching the given parameters from Sectigo.
 
-        :param dict kwargs: A dictonary of parameters that will be passed to the API to execute teh search
+        Args:
+            kwargs: A dictionary of parameters that will be passed to the API to execute the search
 
-        :return list: A list of dictionaries representing the domains that match the given parameters
+        Returns:
+            A list of dictionaries representing the domains that match the given parameters
         """
         result = self._client.get(self._api_url, params=kwargs)
 
@@ -59,7 +64,11 @@ class Domain(Endpoint):
 
         If no parameters are given, the count will be of all domains.
 
-        :return dict: Count of domains matching the given parameters
+        Args:
+            kwargs: A dictionary of parameters that will be passed to the API to execute the search
+
+        Returns:
+            A dictionary containing the count of domains matching the given parameters
         """
         url = self._url("/count")
         result = self._client.get(url, params=kwargs)
@@ -69,12 +78,14 @@ class Domain(Endpoint):
     def create(self, name, org_id, cert_types, **kwargs):
         """Create a domain.
 
-        :param str name: Name of domain to create
-        :param int org_id: Organization Id to delegate the newly created domain to
-        :param list cert_types: Certificate types to delegate, allowed values are "SSL", "SMIME", and "CodeSign"
-        :param dict kwargs: A dictionary of additional fields to pass to the API
+        Args:
+            name: Name of domain to create
+            org_id: Organization Id to delegate the newly created domain to
+            cert_types: Certificate types to delegate, allowed values are "SSL", "SMIME", and "CodeSign"
+            kwargs: A dictionary of additional fields to pass to the API
 
-        :return _type_: _description_
+        Returns:
+            A dictionary containing the ID of the newly created domain
         """
         data = {
             "name": name,
@@ -119,9 +130,11 @@ class Domain(Endpoint):
     def get(self, domain_id):
         """Return a dictionary of domain information.
 
-        :param int domain_id: The ID of the domain to query
+        Args:
+            domain_id: The ID of the domain to query
 
-        return dict: The domain information
+        Returns:
+            A dictionary containing the domain information
         """
         url = self._url(str(domain_id))
         result = self._client.get(url)
@@ -131,9 +144,11 @@ class Domain(Endpoint):
     def delete(self, domain_id):
         """Delete a domain.
 
-        :param int domain_id: The ID of the domain to delete
+        Args:
+            domain_id: The ID of the domain to delete
 
-        :return bool: Deletion success or failure
+        Returns:
+            bool: Deletion success or failure
         """
         url = self._url(str(domain_id))
         result = self._client.delete(url)
@@ -143,9 +158,11 @@ class Domain(Endpoint):
     def activate(self, domain_id):
         """Activate a domain.
 
-        :param int domain_id: The ID of the domain to activate
+        Args:
+            domain_id: The ID of the domain to activate
 
-        :return bool: activation success or failure
+        Returns:
+            bool: Activation success or failure
         """
         url = self._url(str(domain_id), "activate")
         result = self._client.put(url)
@@ -155,9 +172,11 @@ class Domain(Endpoint):
     def suspend(self, domain_id):
         """Suspend a domain.
 
-        :param int domain_id: The ID of the domain to suspend
+        Args:
+            domain_id: The ID of the domain to suspend
 
-        :return bool: suspension success or failure
+        Returns:
+            bool: Suspension success or failure
         """
         url = self._url(str(domain_id), "suspend")
         result = self._client.put(url)
@@ -167,11 +186,13 @@ class Domain(Endpoint):
     def delegate(self, domain_id, org_id, cert_types):
         """Delegate a domain.
 
-        :param int domain_id: The ID of the domain to delegate
-        :param int org_id: The ID of the organization to delegate the domain to
-        :param list cert_types: List of certificate types to delegate, allowed values are "SSL", "SMIME", and "CodeSign"
+        Args:
+            domain_id: The ID of the domain to delegate
+            org_id: The ID of the organization to delegate the domain to
+            cert_types: List of certificate types to delegate, allowed values are "SSL", "SMIME", and "CodeSign"
 
-        :return bool: delegation success or failure
+        Returns:
+            bool: Delegation success or failure
         """
         url = self._url(str(domain_id), "delegation")
         data = {
@@ -185,12 +206,14 @@ class Domain(Endpoint):
     def remove_delegation(self, domain_id, org_id, cert_types):
         """Remove a delegation for a domain.
 
-        :param int domain_id: The ID of the domain to remove delegation for
-        :param int org_id: The ID of the organization to remove delegation from
-        :param list cert_types: List of certificate types to remove delegation for,
-        allowed values are "SSL", "SMIME", and "CodeSign"
+        Args:
+            domain_id: The ID of the domain to remove delegation for
+            org_id: The ID of the organization to remove delegation from
+            cert_types: List of certificate types to remove delegation for,
+            allowed values are "SSL", "SMIME", and "CodeSign"
 
-        :return bool: delegation removal success or failure
+        Returns:
+            bool: Delegation removal success or failure
         """
         url = self._url(str(domain_id), "delegation")
         data = {
@@ -204,10 +227,12 @@ class Domain(Endpoint):
     def approve_delegation(self, domain_id, org_id):
         """Approve a requested delegation.
 
-        :param int domain_id: The ID of the domain to approve
-        :param int org_id: The ID of the organization requesting the delegation
+        Args:
+            domain_id: The ID of the domain to approve
+            org_id: The ID of the organization requesting the delegation
 
-        :return bool: approval success or failure
+        Returns:
+            bool: approval success or failure
         """
         url = self._url(str(domain_id), "delegation", "approve")
         data = {
@@ -220,10 +245,12 @@ class Domain(Endpoint):
     def reject_delegation(self, domain_id, org_id):
         """Reject a requested delegation.
 
-        :param int domain_id: The ID of the domain to approve
-        :param int org_id: The ID of the organization requesting the delegation
+        Args:
+            domain_id: The ID of the domain to reject
+            org_id: The ID of the organization requesting the delegation
 
-        :return bool: True if request was rejected, False otherwise
+        Returns:
+            bool: True if request was rejected, False otherwise
         """
         url = self._url(str(domain_id), "delegation", "reject")
         data = {
