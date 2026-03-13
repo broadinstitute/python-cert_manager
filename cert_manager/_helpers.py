@@ -16,7 +16,8 @@ def traffic_log(traffic_logger=None):
 
     Note: The "DEBUG" level should *never* be used in production.
 
-    :param obj traffic_logger: a logging.Logger to use for logging messages.
+    Args:
+        traffic_logger (logging.Logger): a logging.Logger to use for logging messages.
     """
     def decorator(func):
         """Wrap the actual decorator so a reference to the function can be returned."""
@@ -81,7 +82,9 @@ def version_hack(service, version="v1"):
     temporarily change the version to something other than what the object was initialized with so that the internal
     *self.api_url* will be correct.
 
-    :param version: API version string to use. If None, 'v1'
+    Args:
+        service: The API service to use.
+        version: API version string to use. If None, 'v1'
     """
     def decorator(func):
         """Wrap the actual decorator so a reference to the function can be returned."""
@@ -125,10 +128,12 @@ def paginate(func):
         The `size` and `position` parameters passed through `kwargs` to this function will be used
         by the pagination wrapper to page through results.
 
-        :param list args: Positional parameters to pass to the wrapped function
-        :param dict kwargs: A dictionary with any parameters to add to the request URL
+        Args:
+            args: Positional parameters to pass to the wrapped function
+            kwargs: A dictionary with any parameters to add to the request URL
 
-        :return obj: Yield results from the wrapped function's response for each request
+        Returns:
+            Yield (generator) results from the wrapped function's response for each request
         """
         size = kwargs.pop("size", 200)  # max seems to be 200 by default
         position = kwargs.pop("position", 0)  # 0-..

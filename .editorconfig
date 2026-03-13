@@ -10,16 +10,16 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.md]
-indent_size = 2
-indent_style = space
-
 [LICENSE.txt]
 insert_final_newline = false
 
 [*.{diff,patch}]
 trim_trailing_whitespace = false
 
-[*.{json,yaml,yml}]
+[*.{json,md,yaml,yml}]
+indent_size = 2
+indent_style = space
+
+[.{prettierrc,yamllint}]
 indent_size = 2
 indent_style = space

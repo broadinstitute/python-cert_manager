@@ -15,22 +15,24 @@ class Report(Endpoint):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/report", api_version=api_version)
 
     def get(self, report_name, **kwargs):
         """Get any available reports provided in the REST Sctigo API.
 
-        :param str report_name: Name of report based on the api url suffix
-        :param dict kwargs: Additional fields that will be passed to the API
+        Args:
+            report_name: Name of report based on the api url suffix
+            kwargs: Additional fields that will be passed to the API
+                Search fields for reports can be found in the Sectigo API Documentation.
+                Additional request fields are documented in Sectigo API Documentation
+                https://scm.devx.sectigo.com/reference/generate-ssl-certificates-log
 
-        Search fields for reports can be found in the Sectigo API Documentation.
-        Additional request fields are documented in Sectigo API Documentation
-        https://sectigo.com/faqs/detail/Sectigo-Certificate-Manager-SCM-REST-API/kA01N000000XDkE
-
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         data = {}
         for key, value in kwargs.items():
@@ -57,15 +59,19 @@ class Report(Endpoint):
     def get_ssl_certs(self, **kwargs):
         """Get the specific SSL Certificate report.
 
-        The API provides several search fields commonly used available through kwargs:
+        Args:
+            kwargs: Additional fields that will be passed to the API
+            The API provides several search fields commonly used available through kwargs:
             "from": ISO date of start of date range
             "to": ISO date of start of date range
             "certificateDateAttribute": Date type(number) to search on: 2=revocation,3=expiration,4=requested,5=issuance
             "certificateStatus": Cert status(number): 0=Any,1=Requested,2=Issued,3=Revoked,4=Expired
             "organizationIds": Array of unique Org IDs to fiter search
-           Other fields:  certificateRequestSource, serialNumberFormat, externalRequester
+            Other fields:  certificateRequestSource, serialNumberFormat, externalRequester
+            https://scm.devx.sectigo.com/reference/generate-ssl-certificates-log
 
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         report_url = "ssl-certificates"
 
@@ -76,15 +82,19 @@ class Report(Endpoint):
     def get_client_certs(self, **kwargs):
         """Get the specific Client Certificate report.
 
-        The API provides several search fields commonly used available through kwargs:
+        Args:
+            kwargs: Additional fields that will be passed to the API
+            The API provides several search fields commonly used available through kwargs:
             "from": ISO date of start of date range
             "to": ISO date of start of date range
             "certificateDateAttribute": Date type(number) to search on: 0=entrolled, 1=downloaded,2=revocation,3=expired
             "certificateStatus": Cert status(number): 0=Any,2=Enrolled-downloaded,3=Revoked,4=Expired,
                                               5=Enrolled-Pending_download,6=not_enrolled
             "organizationIds": Array of unique Org IDs to fiter search
+            https://scm.devx.sectigo.com/reference/generate-smime-certificates-log
 
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         report_url = "client-certificates"
 
@@ -93,15 +103,19 @@ class Report(Endpoint):
     def get_device_certs(self, **kwargs):
         """Get the specific Device Certificate report.
 
-        The API provides several search fields commonly used available through kwargs:
+        Args:
+            kwargs: Additional fields that will be passed to the API
+            The API provides several search fields commonly used available through kwargs:
             "from": ISO date of start of date range
             "to": ISO date of start of date range
             "certificateDateAttribute": Date type(number) to search on: 2=revocation,3=expired,4=requested,5=issuance
             "certificateStatus": Cert status(number): 0=Any,2=Enrolled-downloaded,,3=Revoked,4=Expired,
                                    5=Enrolled-Pending_download, 6=not_enrolled
             "organizationIds": Array of unique Org IDs to fiter search
+            https://scm.devx.sectigo.com/reference/generate-device-certificates-log
 
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         report_url = "device-certificates"
 
@@ -110,11 +124,15 @@ class Report(Endpoint):
     def get_activity(self, **kwargs):
         """Get the specific Activity report.
 
-        The API provides 2 search fields to filter date range through kwargs:
+        Args:
+            kwargs: Additional fields that will be passed to the API
+            The API provides 2 search fields to filter date range through kwargs:
             "from": ISO date of start of date range
             "to": ISO date of start of date range
+            https://scm.devx.sectigo.com/reference/generate-activity-report
 
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         report_url = "activity"
 
@@ -123,7 +141,8 @@ class Report(Endpoint):
     def get_domains(self):
         """Get the specific Domains report.
 
-        return dict: The report data
+        Returns:
+            dict: The report data
         """
         report_url = "domains"
 

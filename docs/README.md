@@ -16,36 +16,52 @@ There are many API endpoints under Certificate Manager, and this library
 currently supports a subset of those endpoints. The current list of written and
 tested endpoint classes includes:
 
-- Organization (/organization)
-- Person (/person)
-- SSL (/ssl)
-- Client Administrator (/admin)
-- Domain (/domain)
-- Report (/report)
-
-Other endpoints we hope to add in the near future:
-
-- Code Signing Certificates (/csod)
-- Custom Fields (/customField)
+- Public ACME Accounts (/acme/v2/accounts)
+- Administrators (/admin)
 - Domain Control Validation (/dcv)
-- Device Certificates (/device)
-- Discovery (/discovery)
-- SMIME (/smime)
+- Domain (/domain)
+- Organization (/organization)
+- Persons (/person)
+- Reports (/report)
+- Client Certificates (/smime)
+- SSL Certificates (/ssl)
 
 ## Installing
 
 You can use pip to install cert_manager:
 
-```Shell
+```shell
 pip install cert_manager
 ```
 
+## Authentication
+
+Originally, Certificate Manager only allowed username and password, or client
+certificate and key as methods of authenticating to the REST API. However,
+OAuth2 is now supported via a completely different URL structure. This new model
+can be used by setting the `client_id` and `client_secret` parameters to the
+`Client` constructor. The Client ID and Client Secret are created via the UI in
+[Sectigo][2]. Information on how to create the Client ID and Client Secret can
+be found on
+[How Do You Implement OAuth 2.0 for SCM](https://www.sectigo.com/knowledge-base/detail/implement-oauth-2-0-for-scm)
+page.
+
+**NOTE** When using OAuth2 authentication with the new API URLs, pay particular
+attention to the version of the API you are using for each class. Typically the
+version is `v1`, but there isn't a consistent version across all endpoints. You
+may need to add `api_version` to many of the object instantiations for the API
+to work correctly. A complete API reference can be found on the
+[SCM DevX](https://scm.devx.sectigo.com/reference/) site. This, for example, is
+the first code snippet in [Examples](#examples) rewritten for the new API
+infrastructure:
+
 ## Examples
 
-This is a simple example that just shows initializing the `Client` object and
-using it to query the `Organization` and `SSL` endpoints:
+This is a simple example that just shows initializing the `Client` object to use
+username and password authentication and then using it to query the
+`Organization` and `SSL` endpoints:
 
-```Python
+```python
 from cert_manager import Organization
 from cert_manager import Client
 from cert_manager import SSL
@@ -64,10 +80,30 @@ print(ssl.types)
 print(org.all())
 ```
 
-The most common process you would do, however, is enroll and then collect a
-certificate you want to order from the Certificate Manager:
+The same basic code can be used with OAuth2 authentication parameters.
 
-```Python
+```python
+from cert_manager import Organization
+from cert_manager import Client
+from cert_manager import SSL
+
+client = Client(
+  client_id="client-id-from-sectigo",
+  client_secret="client-secret-from-sectigo",
+)
+
+org = Organization(client=client)
+ssl = SSL(client=client, api_version="v2")
+
+print(ssl.types)
+print(org.all())
+```
+
+The most common process you would do, however, is enroll and then collect a
+certificate you want to order from the Certificate Manager. This example uses
+the parameters to authenticate using certificate (client) authentication:
+
+```python
 from time import sleep
 
 from cert_manager import Organization
@@ -119,78 +155,59 @@ the CONTRIBUTING.md for specifics on contributions.
 We try to have a high level of test coverage on the code. Therefore, when adding
 anything to the repo, tests should be written to test a new feature or to test a
 bug fix so that there won't be a regression. This library is setup to be pretty
-simple to build a working development environment using [Docker][4]. Therefore,
-it is suggested that you have [Docker][4] installed where you clone this
-repository to make development easier.
+simple to build a working development environment using [Docker][4],
+[Podman][7], or [Mise][8]. Therefore, it is suggested that you have [Docker][4]
+[Podman][7], or [Mise][8] installed where you clone this repository to make
+development easier.
 
-To start a development environment, you should be able to just run the
-`dev.bash` script. This script will use the `Containerfile` in this repository
-to build a [Docker][4] container with all the dependencies for development
+To start a containerized development environment, you should be able to just run
+the `dev.bash` script. This script will use the `Containerfile` in this
+repository to build a container image with all the dependencies for development
 installed using [Poetry][3].
 
-```Shell
+```shell
 ./dev.bash
 ```
 
-The first time you run the script, it should build the [Docker][4] image and
-then drop you into the container's shell. The directory where you cloned this
+The first time you run the script, it should build the container image and then
+drop you into the container's shell. The directory where you cloned this
 repository should be volume mounted in to `/working`, which should also be the
 current working directory. From there, you can make changes as you see fit.
 Tests can be run from the `/working` directory by simply typing `pytest` as
 [pytest][5] has been setup to with the correct parameters.
 
+If you want to use [Mise][8], you should be able to set up the environment
+simply with:
+
+```shell
+mise install
+```
+
 ## Changelog
 
-To generate the `CHANGELOG.md`, you will need [Docker][4] and a GitHub personal
-access token. We currently use
-[github-changelog-generator](https://github.com/github-changelog-generator/github-changelog-generator)
-for this purpose. The following should generate the file using information from
-GitHub:
-
-```Shell
-docker run -it --rm \
-    -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
-    -v "$(pwd)":/working \
-    -w /working \
-    ferrarimarco/github-changelog-generator --verbose
-```
-
-To generate the log for an upcoming release that has not yet been tagged, you
-can run a command to include the upcoming release version. For example, `2.0.0`:
-
-```Shell
-docker run -it --rm \
-    -e CHANGELOG_GITHUB_TOKEN='yourtokenhere' \
-    -v "$(pwd)":/working \
-    -w /working \
-    ferrarimarco/github-changelog-generator --verbose --future-release 2.0.0 --unreleased
-```
-
-As a note, this repository uses the default labels for formatting the
-`CHANGELOG.md`. Label information can be found here:
-[Advanced-change-log-generation-examples](https://github.com/github-changelog-generator/github-changelog-generator/wiki/Advanced-change-log-generation-examples#section-options)
+Going forward, the Changelog will be visible in the GitHub releases for this
+repository. Changes for before version 3.0.0 can be found in the
+[CHANGELOG.md](CHANGELOG.md) file within this repository.
 
 ## Releases
 
-Releases to the codebase are typically done using the [bump2version][6] tool.
-This tool takes care of updating the version in all necessary files, updating
-its own configuration, and making a GitHub commit and tag. We typically do
-version bumps as part of a PR, so you don't want to have [bump2version][6] tag
-the version at the same time it does the commit as commit hashes may change.
-Therefore, to bump the version a patch level, one would run the command:
+Version updates to the codebase are typically done using the [bump2version][6]
+tool. This tool takes care of updating the version in all necessary files and
+updating its own configuration. To bump the version a patch level, one would run
+the command:
 
-```Shell
-bump2version --verbose --no-tag patch
+```shell
+bump2version --verbose --no-commit --no-tag patch
 ```
 
-Once the PR is merged, you can then checkout the new `main` branch and tag it
-using the new version number that is now in `.bumpversion.cfg`:
+Releases are now done through the GitHub
+[Release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
+system. The easiest way to create a new release draft is using the GitHub CLI
+(`gh`). For example, to create a new draft release for version `3.0.0` with
+autogenerated notes:
 
-```Shell
-git checkout main
-git pull --rebase
-git tag 1.0.0 -m 'Bump version: 0.1.0 → 1.0.0'
-git push --tags
+```shell
+gh release create 3.0.0 --draft --generate-notes --title 3.0.0
 ```
 
 [1]: https://www.python.org/ "Python"
@@ -199,3 +216,5 @@ git push --tags
 [4]: https://www.docker.com/ "Docker"
 [5]: https://docs.pytest.org/en/stable/ "pytest"
 [6]: https://pypi.org/project/bump2version/ "bump2version"
+[7]: https://podman.io/ "Podman"
+[8]: https://mise.jdx.dev/ "Mise"

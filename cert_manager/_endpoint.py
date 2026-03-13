@@ -11,9 +11,10 @@ class Endpoint:
     def __init__(self, client, endpoint, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string endpoint: The API endpoint you are accessing (for example: "/ssl")
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            endpoint: The API endpoint you are accessing (for example: "/ssl")
+            api_version: The API version to use; the default is "v1"
         """
         self._client = client
         self._api_version = api_version
@@ -35,14 +36,15 @@ class Endpoint:
     def create_api_url(base_url, service, version):
         """Build the entire Certificate Manager API URL for the service and version.
 
-        :param str base_url: The base URL you have i.e. for https://hard.cert-manager.com/api/ssl/v1/ the base URL
-            would be https://hard.cert-manager.com/api
-        :param str service: The API service to use i.e. for https://hard.cert-manager.com/api/ssl/v1/ the service would
-            be /ssl
-        :param str version: The API version to use i.e. for https://hard.cert-manager.com/api/ssl/v1/ the version would
-            be /v1
-        :return: The full URL
-        :rtype: str
+        Args:
+            base_url: The base URL you have
+                i.e. for https://hard.cert-manager.com/api/ssl/v1/ the base URL would be https://hard.cert-manager.com/api
+            service: The API service to use
+                i.e. for https://hard.cert-manager.com/api/ssl/v1/ the service would be /ssl
+            version: The API version to use
+                i.e. for https://hard.cert-manager.com/api/ssl/v1/ the version would be /v1
+        Returns:
+            The full URL
         """
         url = base_url.rstrip("/")
         url += "/" + service.strip("/")
@@ -54,9 +56,12 @@ class Endpoint:
     def _url(self, *args):
         """Build the endpoint URL based on the API URL inside this object.
 
-        :param str suffix: The suffix of the URL you wish to create i.e. for
-            https://hard.cert-manager.com/api/ssl/v1/types the suffix would be /types
-        :return str: The full URL
+        Args:
+            args: A list of suffixes of the URL you wish to create
+                i.e. for https://hard.cert-manager.com/api/ssl/v1/types the suffix would be /types
+
+        Returns:
+            The full URL
         """
         url = self._api_url.rstrip("/")
         for suffix in args:

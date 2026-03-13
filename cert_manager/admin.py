@@ -20,39 +20,35 @@ class Admin(Endpoint):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/admin", api_version=api_version)
 
-        self.__admins = None
+        self._admins = None
         self.all()
 
     def all(self, force=False):
         """Return a list of admins from Sectigo.
 
-        :param bool force: If set to True, force refreshing the data from the API
+        Args:
+            force: If set to True, force refreshing the data from the API
 
-        :return list: A list of dictionaries representing the admins
+        Returns:
+            A list of dictionaries representing the admins
         """
-        if (self.__admins) and (not force):
-            return self.__admins
+        if (self._admins) and (not force):
+            return self._admins
 
         result = self._client.get(self._api_url)
 
-        self.__admins = result.json()
+        self._admins = result.json()
 
-        return self.__admins
+        return self._admins
 
     def create(self, login, email, forename, surname, password, credentials, **kwargs):  # noqa: PLR0913
         """Create a new administrator.
-
-        :param str login: Login name of admin to create
-        :param str email: Email of admin to create
-        :param str forename: Fore/First name of admin
-        :param str surname: Sur/Last name of admin
-        :param list credentials: List of Credentials to apply to admin
-        :param dict kwargs: Additional fields that will be passed to the API
 
         Formating for "Credentials" can be found in the Sectigo API Documentation.
         Additional request fields are documented in Sectigo API Documentation
@@ -60,7 +56,17 @@ class Admin(Endpoint):
 
         Other parameters that may be useful are privileges, identityProviderId, and idpPersonId
 
-        :return dict: The id of the created admin
+        Args:
+            login: Login name of admin to create
+            email: Email of admin to create
+            forename: Fore/First name of admin
+            surname: Sur/Last name of admin
+            password: Password for the admin
+            credentials: List of Credentials to apply to admin
+            kwargs: Additional fields that will be passed to the API
+
+        Returns:
+            A dictionary containing the id of the created admin
         """
         data = {
             "login": login,
@@ -105,9 +111,11 @@ class Admin(Endpoint):
     def get(self, admin_id):
         """Return a dictionary of admin information.
 
-        :param int admin_id: The ID of the admin to query
+        Args:
+            admin_id: The ID of the admin to query
 
-        return dict: The admin information
+        Returns:
+            A dictionary representing the admin information
         """
         url = self._url(str(admin_id))
         result = self._client.get(url)
@@ -117,7 +125,8 @@ class Admin(Endpoint):
     def get_idps(self):
         """Return a list of IDPs.
 
-        :return list: A list of dictionaries representing the IDPs
+        Returns:
+            A list of dictionaries representing the IDPs
         """
         url = self._url("idp")
         result = self._client.get(url)
@@ -127,9 +136,11 @@ class Admin(Endpoint):
     def delete(self, admin_id):
         """Delete an admin.
 
-        :param int admin_id: The ID of the admin to delete
+        Args:
+            admin_id: The ID of the admin to delete
 
-        :return bool: Deletion success or failure
+        Returns:
+            Boolean indicating deletion success or failure
         """
         url = self._url(str(admin_id))
         result = self._client.delete(url)
@@ -139,10 +150,12 @@ class Admin(Endpoint):
     def update(self, admin_id, **kwargs):
         """Update an admin.
 
-        :param int admin_id: The ID of the admin to update
-        :param dict kwargs: A dictionary of properties to update
+        Args:
+            admin_id: The ID of the admin to update
+            kwargs: A dictionary of properties to update
 
-        :return bool: Update success or failure
+        Returns:
+            Boolean indicating update success or failure
         """
         data = {}
         for key, value in kwargs.items():

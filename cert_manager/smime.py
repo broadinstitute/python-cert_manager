@@ -15,11 +15,12 @@ class SMIME(Certificates):
     def __init__(self, client, api_version="v1"):
         """Initialize the class.
 
-        :param object client: An instantiated cert_manager.Client object
-        :param string api_version: The API version to use; the default is "v1"
+        Args:
+            client: An instantiated cert_manager.Client object
+            api_version: The API version to use; the default is "v1"
         """
         super().__init__(client=client, endpoint="/smime", api_version=api_version)
-        self.__reason_maxlen = 512
+        self._reason_maxlen = 512
 
     @paginate
     def list(self, **kwargs):
@@ -30,9 +31,11 @@ class SMIME(Certificates):
         referenced at:
         https://sectigo.com/knowledge-base/detail/SCM-Sectigo-Certificate-Manager-REST-API/kA01N000000XDkE
 
-        :param dict kwargs: A dictionary of arguments to pass to the API
+        Args:
+            kwargs: A dictionary of arguments to pass to the API
 
-        :return iter: An iterator object is returned to cycle through the certificates
+        Returns:
+            iter: An iterator object is returned to cycle through the certificates
         """
         result = self._client.get(self._api_url, params=kwargs)
         return result.json()
@@ -41,8 +44,11 @@ class SMIME(Certificates):
     def list_by_email(self, **kwargs):
         """Return a list of all client certificates for a person with given email.
 
-        :param str email: Person email
-        :return iter: An iterator object is returned to cycle through the certificates
+        Args:
+            kwargs: A dictionary of arguments to pass to the API
+
+        Returns:
+            iter: An iterator object is returned to cycle through the certificates
         """
         email = kwargs["email"]
 
@@ -52,24 +58,29 @@ class SMIME(Certificates):
     def enroll(self, **kwargs):
         """Enroll a client certificate request with Sectigo to generate a certificate.
 
-        :param string cert_type_name: The full cert type name
-            Note: the name must match names returned from the get_types() method
-        :param string csr: The Certificate Signing Request (CSR)
-        :param string email: The person's e-mail
-        :param string phone: The person's phone number
-        :param list secondary_emails: The person's secondary e-mail(s)
-        :param string first_name: The person's first name
-        :param string middleName: The person's middle name
-        :param string last_name: The person's last name
-        :param string common_name: The person's common name.
-            If ommited, constructed from person's full name
-        :param string eppn: The person's EPPN
-        :param string upn: The person's UPN (User Principal Name)
-        :param int term: The length, in days, for the certificate to be issued
-        :param int org_id: The ID of the organization in which to enroll the certificate
-        :param list custom_fields: zero or more objects representing custom fields and their values
-            Note: each object must have a 'name' key and a 'value' key
-        :return dict: The orderNumber (Obsolete, backendCertId should be used instead) and backendCertId
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Allowed fields are:
+                cert_type_name: The full cert type name
+                    Note: the name must match names returned from the get_types() method
+                csr: The Certificate Signing Request (CSR)
+                email: The person's e-mail
+                phone: The person's phone number
+                secondary_emails: The person's secondary e-mail(s)
+                first_name: The person's first name
+                middleName: The person's middle name
+                last_name: The person's last name
+                common_name: The person's common name.
+                    If ommited, constructed from person's full name
+                eppn: The person's EPPN
+                upn: The person's UPN (User Principal Name)
+                term: The length, in days, for the certificate to be issued
+                org_id: The ID of the organization in which to enroll the certificate
+                custom_fields: zero or more objects representing custom fields and their values
+                    Note: each object must have a 'name' key and a 'value' key
+
+        Returns:
+            The orderNumber (Obsolete, backendCertId should be used instead) and backendCertId
         """
         # Retrieve all the arguments
         cert_type_name = kwargs.get("cert_type_name")
@@ -121,8 +132,11 @@ class SMIME(Certificates):
 
         This method will raise a PendingError exception if the certificate is still in a pending state.
 
-        :param int cert_id: The Certificate ID given on enroll success
-        :return str: the string representing the certificate in the requested format
+        Args:
+            cert_id: The Certificate ID given on enroll success
+
+        Returns:
+            The string representing the certificate in the requested format
         """
         if not cert_id:
             raise ValueError("Argument 'cert_id' can't be None")
@@ -146,10 +160,13 @@ class SMIME(Certificates):
     def replace(self, **kwargs):
         """Replace a pre-existing client certificate.
 
-        :param int cert_id: The certificate ID
-        :param string csr: The Certificate Signing Request (CSR)
-        :param str reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
-        :param bool revoke: Revoke previous certificate if true. Default is True
+        Args:
+            kwargs: A dictionary of arguments to pass to the API.
+            Allowed fields are:
+                cert_id: The certificate ID
+                csr: The Certificate Signing Request (CSR)
+                reason: Reason for replacement (up to 512 characters), can be blank: "", but must exist.
+                revoke: Revoke previous certificate if true. Default is True
         """
         # Retrieve all the arguments
         cert_id = kwargs["cert_id"]
@@ -161,15 +178,19 @@ class SMIME(Certificates):
         data = {"csr": csr, "reason": reason, "revoke": revoke}
         self._client.post(url, data=data)
 
+        return {}
+
     @version_hack(service="smime", version="v2")
     def renew(self, order_num="", serial_num=""):
         """Renew a client certificate with the specified order or serial number.
 
-        :param int order_num: The certificate order number
-        :param str serial_num: The certificate serial number
-            You can provide either the order or serial number, not both.
+        Args:
+            order_num: The certificate order number
+            serial_num: The certificate serial number
+                You can provide either the order or serial number, not both.
 
-        :return dict: A dictionary containing the new order number and cert ID
+        Returns:
+            dict: A dictionary containing the new order number and cert ID
         """
         if order_num and serial_num:
             raise ValueError("Cannot provide both order number and serial number")
@@ -185,9 +206,10 @@ class SMIME(Certificates):
     def revoke(self, cert_id, reason=""):
         """Revoke a client certificate specified by the certificate ID.
 
-        :param int cert_id: The certificate ID
-        :param str reason: The Reason for revocation.
-            Reason can be up to 512 characters and cannot be blank (i.e. empty string)
+        Args:
+            cert_id: The certificate ID
+            reason: The Reason for revocation.
+                Reason can be up to 512 characters and cannot be blank (i.e. empty string)
         """
         url = self._url(f"/revoke/order/{cert_id}")
 
@@ -195,18 +217,21 @@ class SMIME(Certificates):
             raise ValueError("Argument 'cert_id' can't be None")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if not reason or len(reason) >= self.__reason_maxlen:
-            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
+        if not reason or len(reason) >= self._reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self._reason_maxlen} characters")
 
         data = {"reason": reason}
         self._client.post(url, data=data)
 
+        return {}
+
     def revoke_by_email(self, email, reason=""):
         """Revoke all client certificate related to an email.
 
-        :param str email: The person email address
-        :param str reason: The Reason for revocation.
-            Reason can be up to 512 characters and cannot be blank (i.e. empty string)
+        Args:
+            email: The person email address
+            reason: The Reason for revocation.
+                Reason can be up to 512 characters and cannot be blank (i.e. empty string)
         """
         url = self._url("/revoke")
 
@@ -214,8 +239,10 @@ class SMIME(Certificates):
             raise ValueError("Argument 'email' can't be empty or None")
 
         # Sectigo has a 512 character limit on the "reason" message, so catch that here.
-        if not reason or len(reason) >= self.__reason_maxlen:
-            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self.__reason_maxlen} characters")
+        if not reason or len(reason) >= self._reason_maxlen:
+            raise ValueError(f"Sectigo limit: reason must be > 0 character and < {self._reason_maxlen} characters")
 
         data = {"email": email, "reason": reason}
         self._client.post(url, data=data)
+
+        return {}
