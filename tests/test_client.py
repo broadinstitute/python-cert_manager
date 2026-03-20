@@ -11,6 +11,7 @@ import sys
 from unittest import mock
 
 import pytest
+import requests
 import responses
 from requests.exceptions import HTTPError
 from testtools import TestCase
@@ -137,6 +138,24 @@ class TestInit(TestClient):
         # Make sure the user-agent header is correct in the class and the internal requests.Session object
         self.assertEqual(client.headers["User-Agent"], user_agent)
         self.assertEqual(client._session.headers["User-Agent"], user_agent)
+
+    def test_session_passed(self):
+        """Test that a passed session is used."""
+        session = requests.Session()
+        client = Client(
+            base_url=self.cfixt.base_url,
+            login_uri=self.cfixt.login_uri,
+            username=self.cfixt.username,
+            password=self.cfixt.password,
+            session=session,
+        )
+        self.assertIs(client._session, session)
+
+    def test_session_created(self):
+        """Test that a session is created if not passed."""
+        # The setUp method already creates a client without a session passed
+        self.assertIsInstance(self.client._session, requests.Session)
+        self.assertIsNotNone(self.client._session)
 
     def test_need_crt(self):
         """Raise an exception without a cert file if cert_auth=True."""

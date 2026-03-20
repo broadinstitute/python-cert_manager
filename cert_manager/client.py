@@ -40,6 +40,8 @@ class Client:  # pylint: disable=too-many-instance-attributes
                 auth_url: The full URL to the Sectigo OAuth2 token endpoint; the default is "https://auth.sso.sectigo.com/auth/realms/apiclients/protocol/openid-connect/token"
                 client_id: The Client ID to use for OAuth2 authentication
                 client_secret: The Client Secret to use for OAuth2 authentication
+                session: A requests.Session object to use instead of creating a new one; the default is None,
+                    which will create a new session
         """
         # Initialize class variables
         self._base_url = None
@@ -51,7 +53,8 @@ class Client:  # pylint: disable=too-many-instance-attributes
         self._user_key_file = None
         self._username = None
 
-        self._session = requests.Session()
+        self._session = kwargs.get("session", requests.Session())
+
         # Set the default HTTP headers
         self._headers = {
             "Accept": "application/json",
