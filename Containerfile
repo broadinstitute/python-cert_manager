@@ -1,5 +1,6 @@
 FROM docker.io/node:bookworm AS prettier-install
-RUN yarn add prettier@3
+RUN npm install -g yarn \
+    && yarn add prettier@3
 
 FROM python:3.11-slim-bookworm
 

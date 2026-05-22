@@ -8,7 +8,7 @@ Manager REST API. python-cert_manager is open sourced under the
 
 ## Basics
 
-`cert_manager` runs on [Python][1] >= 3.9
+`cert_manager` runs on [Python][1] >= 3.11
 
 ## Features
 
