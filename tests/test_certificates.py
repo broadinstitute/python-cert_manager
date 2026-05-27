@@ -359,9 +359,9 @@ class TestEnroll(TestCertificates):
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester
+            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester,
+            "dcvMode": "CNAME",
         }
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(resp, self.test_result)
@@ -369,7 +369,8 @@ class TestEnroll(TestCertificates):
         self.assertEqual(responses.calls[0].request.url, self.test_types_url)
         self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
         self.assertEqual(responses.calls[2].request.url, self.test_url)
-        self.assertEqual(responses.calls[2].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[2].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
 
     @responses.activate
     def test_san_list(self):
@@ -393,9 +394,9 @@ class TestEnroll(TestCertificates):
         post_data = {
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": self.test_san, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
-            "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester
+            "comments": f"Enrolled by {self.client.user_agent}",
+            "externalRequester": self.test_external_requester, "dcvMode": "CNAME",
         }
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(resp, self.test_result)
@@ -403,7 +404,40 @@ class TestEnroll(TestCertificates):
         self.assertEqual(responses.calls[0].request.url, self.test_types_url)
         self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
         self.assertEqual(responses.calls[2].request.url, self.test_url)
-        self.assertEqual(responses.calls[2].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[2].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
+
+    @responses.activate
+    def test_dcv_mode(self):
+        """Handle a custom dcvMode correctly."""
+        # Setup the mocked responses
+        # We need to mock the /types and /customFields URLs as well
+        # since Certificates.types and Certificate.custom_fields are called from enroll
+        responses.add(responses.GET, self.test_types_url, json=self.types_data, status=200)
+        responses.add(responses.GET, self.test_customfields_url, json=self.cf_data, status=200)
+        responses.add(responses.POST, self.test_url, json=self.test_result, status=200)
+
+        # Call the function
+        resp = self.certobj.enroll(cert_type_name=self.test_ct_name, csr=self.test_csr, term=self.test_term,
+                                   org_id=self.test_org, external_requester=self.test_external_requester,
+                                   dcv_mode="HTTP")
+
+        # Mock up the data that should be sent with the post
+        post_data = {
+            "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
+            "numberServers": 1, "serverType": -1, "term": self.test_term,
+            "comments": f"Enrolled by {self.client.user_agent}",
+            "externalRequester": self.test_external_requester, "dcvMode": "HTTP",
+        }
+
+        # Verify all the query information
+        self.assertEqual(resp, self.test_result)
+        self.assertEqual(len(responses.calls), 3)
+        self.assertEqual(responses.calls[0].request.url, self.test_types_url)
+        self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
+        self.assertEqual(responses.calls[2].request.url, self.test_url)
+        test_json = json.loads(responses.calls[2].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
 
     @responses.activate
     def test_bad_cert_name(self):
@@ -465,9 +499,8 @@ class TestEnroll(TestCertificates):
             "orgId": self.test_org, "csr": self.test_csr.rstrip(), "subjAltNames": None, "certType": 224,
             "numberServers": 1, "serverType": -1, "term": self.test_term,
             "comments": f"Enrolled by {self.client.user_agent}", "externalRequester": self.test_external_requester,
-            "customFields": self.test_cf
+            "dcvMode": "CNAME", "customFields": self.test_cf
         }
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(resp, self.test_result)
@@ -475,7 +508,8 @@ class TestEnroll(TestCertificates):
         self.assertEqual(responses.calls[0].request.url, self.test_types_url)
         self.assertEqual(responses.calls[1].request.url, self.test_customfields_url)
         self.assertEqual(responses.calls[2].request.url, self.test_url)
-        self.assertEqual(responses.calls[2].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[2].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
 
     @responses.activate
     def test_mandatory_custom_fields_missing(self):
@@ -618,13 +652,14 @@ class TestRevoke(TestCertificates):
         # Call the function
         resp = self.certobj.revoke(cert_id=self.test_id, reason="Because")
 
-        post_json = json.dumps({"reason": "Because"})
+        post_json = {"reason": "Because"}
 
         # Verify all the query information
         self.assertEqual(resp, {})
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[0].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_json)
 
     @responses.activate
     def test_no_reason(self):
@@ -646,7 +681,8 @@ class TestRevoke(TestCertificates):
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+        test_json = responses.calls[0].request.body.decode("utf-8")
+        self.assertEqual(test_json, post_json)
 
 
 class TestReplace(TestCertificates):
@@ -677,13 +713,13 @@ class TestReplace(TestCertificates):
         # Mock up the data that should be sent with the post
         post_data = {"csr": self.test_csr, "commonName": self.test_cn, "subjectAlternativeNames": None,
                      "reason": self.test_reason}
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(resp, {})
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[0].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
 
     @responses.activate
     def test_san_string(self):
@@ -700,13 +736,13 @@ class TestReplace(TestCertificates):
         # Mock up the data that should be sent with the post
         post_data = {"csr": self.test_csr, "commonName": self.test_cn, "subjectAlternativeNames": san_list,
                      "reason": self.test_reason}
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(resp, {})
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[0].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
 
     @responses.activate
     def test_failure(self):
@@ -721,9 +757,9 @@ class TestReplace(TestCertificates):
         # Mock up the data that should be sent with the post
         post_data = {"csr": self.test_csr, "commonName": self.test_cn, "subjectAlternativeNames": None,
                      "reason": self.test_reason}
-        post_json = json.dumps(post_data)
 
         # Verify all the query information
         self.assertEqual(len(responses.calls), 1)
         self.assertEqual(responses.calls[0].request.url, self.test_url)
-        self.assertEqual(responses.calls[0].request.body, post_json.encode("utf-8"))
+        test_json = json.loads(responses.calls[0].request.body.decode("utf-8"))
+        self.assertEqual(test_json, post_data)
