@@ -156,6 +156,9 @@ class Certificates(Endpoint):
             external_requester: One or more e-mail addresses
             custom_fields: zero or more objects representing custom fields and their values
                 Note: each object must have a 'name' key and a 'value' key
+            dcv_mode: The DCV method to use for the certificate. Allowed values are "EMAIL",
+                "CNAME", and "HTTP" and "HTTPS". If not provided, "CNAME is the default.
+
         Returns:
             The certificate_id and the normal status messages for errors
         """
@@ -167,6 +170,7 @@ class Certificates(Endpoint):
         subject_alt_names = kwargs.get("subject_alt_names", None)
         external_requester = kwargs.get("external_requester", None)
         custom_fields = kwargs.get("custom_fields", [])
+        dcv_mode = kwargs.get("dcv_mode", "CNAME")
 
         # Make sure a valid certificate type name was provided
         if cert_type_name not in self.types:
@@ -193,7 +197,7 @@ class Certificates(Endpoint):
         data = {
             "orgId": org_id, "csr": csr.rstrip(), "subjAltNames": final_san, "certType": type_id,
             "numberServers": 1, "serverType": -1, "term": term, "comments": f"Enrolled by {self._client.user_agent}",
-            "externalRequester": external_requester
+            "externalRequester": external_requester, "dcvMode": dcv_mode,
         }
         if custom_fields:
             data['customFields'] = custom_fields
