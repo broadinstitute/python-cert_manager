@@ -25,10 +25,10 @@ toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^1.0.1"
-coverage = "^7.14.1"
+coverage = "^7.14.3"
 fixtures = "^4.2.6"
 mock = "^5.2.0"
-pytest = "^9.0.3"
+pytest = "^9.1.1"
 responses = "^0.26.0"
 testtools = "^2.7.2"
 yamllint = "^1.37.1"
