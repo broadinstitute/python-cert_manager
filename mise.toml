@@ -1,5 +1,5 @@
 [tools]
-"aqua:j178/prek" = "latest"
-"npm:prettier" = "latest"
 node = "latest"
+prek = "latest"
+prettier = "latest"
 python = "3.13"

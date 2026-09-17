@@ -47,7 +47,7 @@ class Admin(Endpoint):
 
         return self._admins
 
-    def create(self, login, email, forename, surname, password, credentials, **kwargs):  # noqa: PLR0913
+    def create(self, login, email, forename, surname, password, credentials, **kwargs):  # noqa: PLR0913,PLR0917
         """Create a new administrator.
 
         Formating for "Credentials" can be found in the Sectigo API Documentation.

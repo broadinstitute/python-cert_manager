@@ -28,12 +28,12 @@ repos:
           - -b main
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.14
+    rev: v0.16.8
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.25
+    rev: "0.26"
     hooks:
       - id: validate-pyproject
   - repo: https://github.com/adrienverge/yamllint.git
